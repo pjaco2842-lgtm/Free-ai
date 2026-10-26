@@ -9,6 +9,121 @@ out-of-sample result, coin-flip p-value, verdict.
 
 ---
 
+## 2026-10-26 (d) — the sweep that found a bug, and the three rules that survived it
+
+**The bug first, because it invalidates (c).** In `simulate()`, the loop variable holding
+`entry` (`"same_open"` / `"next_open"`) was overwritten with the fill price on the first
+trade. Every subsequent trade in a run therefore fell through to the `next_open` branch
+and entered a day late. Any rule whose signal *is* the open — `open_break`,
+`fade_trend_day`, `continue_trend_day`, `monday_gap_fade`, `nr_break`, `inside_day` — was
+silently handicapped from its second trade onward. The same shadowing bug existed in the
+coin-flip sampler. Both fixed by reading the flag once into `same_open` and using a
+separate price variable.
+
+Impact: the six-market sweep went from **4 of 51** rule/market pairs positive in both
+directions to **11 of 51**. Everything reported before this entry is superseded.
+
+**The sweep.** 22 symbols × 9 rules = **198 combinations** on daily bars 2009-2026, micro
+contract costs (commission + 1 tick each side), each rule validated **both ways**:
+parameters chosen on 2010-2020 then measured on 2020-2026, *and* chosen on 2020-2026 then
+measured on 2010-2020. Survivors then had to beat 500 random-entry versions of themselves
+with the same stop and the same number of trades in *both* halves.
+
+Universe: NQ, ES, YM, RTY, GC, CL, ZN, ZB, 6E, SI, HG, NG, ZC, ZS, BTC-USD, ETH-USD,
+QQQ, SPY, IWM, GLD, TLT.
+
+| Gate | Survived |
+|---|---|
+| positive in both directions of time | **24 of 198** |
+| …and beat 500 random versions in both halves (p<0.05 each) | **3** |
+| …and affordable at $25k with whole contracts | **2** (soybeans needs $535 of risk per contract) |
+
+With 198 shots, expected false positives at p<0.05 in both halves is about 0.5, so 3 is
+roughly six times chance — encouraging, not proof.
+
+### The three that cleared everything
+
+| Symbol | Rule | Params | Fwd test | Bwd test | coin flip p (fwd/bwd) | Trades |
+|---|---|---|---|---|---|---|
+| NQ=F | fade after trend day | trend 1.5 ATR, stop 0.5 ATR | +6.27R | +9.11R | **0.042 / 0.008** | 9 / 10 |
+| YM=F | fade after trend day | trend 1.5 ATR, stop 0.5 ATR | +8.70R | +6.88R | **0.022 / 0.038** | 20 / 15 |
+| ZS=F | NR7 breakout at the open | lookback 7, stop 0.5 ATR | +16.21R | +21.21R | **0.032 / 0.004** | 85 / 66 |
+
+Rule description, precisely: `fade_trend_day` = if yesterday's range ≥ 1.5 × ATR14, fade
+today's open (short after an up-trend day, long after a down-trend day), stop 0.5 ATR
+from the fill, exit at today's close. `nr_break` = if the last 7 sessions form the
+narrowest range of the last 7, buy a break above the previous day's high / sell a break
+below its low at the open, stop 0.5 ATR, exit at the close. No target on either.
+
+### What nearly passed, and why it is not in the portfolio
+
+- **ES inside_day** +13.41R / +6.50R, p 0.006 / **0.080** — strong but misses the luck gate
+  in one half. Inside day + 6.5R forward is tempting; it is one gate short.
+- **ZC open_break** +1.71R / +21.33R, p 0.074 / 0.000 — the corn edge is entirely in the
+  first half. That is a regime, not an edge.
+- **BTC continue_trend_day** p 0.002 / 0.146 — 11 forward trades. Too few to say anything.
+- **NG fade_trend_day** p 0.338 / 0.002 — the mirror problem.
+
+### Parameter neighbours (full-history R, same stop)
+
+    NQ fade_trend_day   1.2=+12.2R   1.5=+15.4R   2.0=-4.0R
+    YM fade_trend_day   1.2=+15.6R   1.5= +3.7R   2.0=-5.4R
+    ZS nr_break         5  =+28.4R   7  =+26.5R   10 =+37.4R
+
+NQ and soybeans are stable across neighbouring settings. **YM is the weak one**: the 1.5
+setting that passed is its *second-best* neighbour, and 2.0 loses money. A rule that only
+works at one setting is a coincidence, so YM comes with a downgrade — kept for trade
+frequency, at reduced size, flagged as the first thing to cut.
+
+### Sizing: the constraint nobody mentions
+
+At $25,000, risking 1% ($250) per trade, **one contract often does not fit**:
+
+| Instrument | Average risk per contract | Fits in 1% ($250)? |
+|---|---|---|
+| MNQ | $216 (but 150 pts × $2 at recent vol = $300) | sometimes |
+| MYM | $110 | yes |
+| ZS (soybeans) | $535 | **no** — 172 of 181 signals skipped |
+
+So the honest account experiment (`trading/target.py`, whole contracts, one position per
+symbol at a time) looks like this:
+
+| Risk/trade | Trades taken | Skipped | Final | Max DD | Median months to +5% | −10% breaches |
+|---|---|---|---|---|---|---|
+| 1% | 42 | 176 | $27,183 | $1,130 (4.5%) | 15.2 | 0 |
+| 2% | 163 | 55 | $43,387 | $4,783 (19.1%) | **10.8** | 3 |
+| 3% | 206 | 12 | $70,254 | $11,884 (47.5%) | 5.9 | — |
+
+Read the middle row as the real answer and the bottom row as the warning: 3% turns +5%
+into a five-month job and a 47% drawdown, which is exactly how the accounts in the video
+died. Median time to **+$1,250 is about 11 months at 2% risk**, with a 19% worst
+peak-to-trough along the way, and with the edge **halved** (`--haircut 0.5`) it stretches
+to 20 months and still gets there.
+
+### Correlation
+
+    NQ fade  vs YM fade   r = +0.39
+    NQ fade  vs ZS nr_break   r = +0.04
+    YM fade  vs ZS nr_break   r = +0.05
+
+NQ and YM are correlated (same asset class, same idea) — they are one bet with two
+receipts, not diversification. The soybeans rule is genuinely independent, which is why
+it is worth keeping despite being unaffordable in a $25k account today.
+
+**Verdict.** Three rules cleared every gate. Two are tradeable at this account size, both
+from the same family on correlated indices, which means the account's real risk is
+concentrated in one idea. Median 11 months to +5% at 2% risk with a 19% drawdown is a real
+plan and not a money printer. Forward testing started 2026-10-26 (`trading/forward.py`).
+
+**Next, in order of expected value.** (1) Find an affordable, uncorrelated rule — soybeans
+has the statistics but not the price of admission; the ETF/crypto universe (fractional
+sizing) or a soybean *mini* would unlock it. (2) Test `inside_day` on ES with more
+coin-flip draws, since it missed the luck gate by 0.03 in one half with a +13R result.
+(3) Re-run the sweep on intraday bars once paid 1-minute data exists — every rule here is
+daily because free intraday history is 60 days.
+
+---
+
 ## 2026-10-26 (b) — the video's three claims: open breakout, hold to close, fade the trend day
 
 **Idea under test.** The two videos make specific, checkable claims. Tested on daily
@@ -157,9 +272,13 @@ filter) and it should be tested on its own, on 2010-2020, before anything else.
 
 ## Tally
 
-Ideas tested: **2** families, plus the two videos' three specific claims.
-Survived out-of-sample: **2 of 5** symbols in family 1; **1 of 5** in the fade rule (NQ only).
-Beat the coin flip at p<0.05: **0**.
-Closest thing to an edge: NQ fade-after-trend-day, p 0.08 / 0.10, positive in both
-windows and across six parameter settings — a forward-test candidate, not a funded one.
-Cleared every gate: **0**.
+Ideas tested: **9** rule families, 3 specific video claims, across **22 markets** — 198
+rule/market combinations, plus ~600 parameter variants within them.
+Survived both directions of time: **24 of 198**.
+Beat 500 random-entry versions in both halves at p<0.05: **3** (NQ fade, YM fade, ZS NR7).
+Affordable at $25,000 with whole contracts: **2**.
+Cleared every gate: **3 statistics, 2 practical**.
+
+Earlier entries in this file (2010-2020 single-split results) were produced with a bug
+that entered open-based rules a day late; see the 2026-10-26 (d) entry. Their *direction*
+holds, their magnitudes do not. Nothing before that entry should be quoted as a number.
