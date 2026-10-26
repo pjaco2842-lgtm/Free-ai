@@ -102,7 +102,8 @@ DANGEROUS = [
     # Everything the model is shown also goes to the model provider, so a key
     # that gets `cat`-ed into an observation has left the machine.
     r"(?:\.env\b|\.env\.|\.encryption-key|\.llm-gateway|env\.sh|\.ssh/|\.aws/|\.npmrc|\.git-credentials|\.pem\b|id_rsa|id_ed25519)",
-    r"^\s*(?:env|printenv|export)\s*$",              # dump the whole environment
+    r"\bprintenv\b",                                 # dump the whole environment
+    r"(?:^|[|;&]\s*)env\s*(?:$|[|;&])",               # bare `env` as a command
     r"\bsecurity\s+find-(?:generic|internet)-password",
 ]
 
