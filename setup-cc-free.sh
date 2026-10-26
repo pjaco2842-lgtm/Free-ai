@@ -49,10 +49,14 @@ else
 fi
 
 # --- 2. gateway -------------------------------------------------------------
+PYTHON_BIN="$(command -v python3.12 || command -v python3.11 || command -v python3)"
+[ -n "$PYTHON_BIN" ] || die "No python3 found. Install it with: brew install python@3.12"
+
 if [ ! -x "$VENV/bin/litellm" ]; then
   say "2/5 Installing the local gateway (one time, 2-3 minutes, be patient)"
+  say "    using $PYTHON_BIN ($("$PYTHON_BIN" -V 2>&1))"
   rm -rf "$VENV"
-  python3 -m venv "$VENV" || die "Could not create the python venv."
+  "$PYTHON_BIN" -m venv "$VENV" || die "Could not create the python venv."
   "$VENV/bin/pip" install -q --upgrade pip
   "$VENV/bin/pip" install -q 'litellm[proxy]' || die "Gateway install failed."
 else
@@ -217,11 +221,12 @@ if [ -w /usr/local/bin ]; then
 else
   mkdir -p "$HOME/.local/bin"
   ln -sf "$DIR/cc" "$HOME/.local/bin/ccg" && LINKED="$HOME/.local/bin/ccg"
-  case ":$PATH:" in
-    *":$HOME/.local/bin:"*) ;;
-    *) grep -qs 'local/bin' "$HOME/.bashrc" 2>/dev/null || \
-         echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$HOME/.bashrc" ;;
-  esac
+  # macOS runs zsh by default, Linux runs bash: write the PATH line to both.
+  for rc in "$HOME/.zshrc" "$HOME/.bashrc"; do
+    touch "$rc" 2>/dev/null || continue
+    grep -qs 'HOME/.local/bin' "$rc" || \
+      printf '\nexport PATH="$HOME/.local/bin:$PATH"\n' >> "$rc"
+  done
 fi
 
 # --- verify ----------------------------------------------------------------
