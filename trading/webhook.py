@@ -42,15 +42,25 @@ Security
 * The default bind is 127.0.0.1 — only this machine can reach it.
 * Set TV_SECRET and put ?k=<secret> in the webhook URL. Anyone who finds a
   public tunnel URL can otherwise post fake alerts.
+* Binding to a public interface without TV_SECRET is refused at startup. That
+  is deliberate: a webhook that answers 200 to an unauthenticated stranger is
+  how a stranger gets to write your alerts file.
+* The secret is compared in constant time, repeat deliveries of the same body
+  within 2 minutes are dropped (webhooks get retried), and an alert carrying a
+  timestamp older than 5 minutes is rejected, so a captured request cannot be
+  replayed later.
 * Alerts are data, never instructions. This script stores text; nothing here
   places an order or executes anything from the message body.
 """
 
 from __future__ import annotations
 
+import hashlib
+import hmac
 import json
 import os
 import sys
+import time
 from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -61,6 +71,33 @@ PORT = int(os.environ.get("TV_PORT", "8787"))
 HOST = os.environ.get("TV_HOST", "127.0.0.1")
 SECRET = os.environ.get("TV_SECRET", "")
 MAX_BODY = 64 * 1024
+
+REPLAY_WINDOW_SEC = 300      # an alert whose own timestamp is older is stale
+DEDUPE_WINDOW_SEC = 120      # identical body re-sent within this is a retry
+RATE_LIMIT_PER_MIN = 60      # TradingView never comes close; a flood does
+
+_LOOPBACK = {"127.0.0.1", "::1", "localhost"}
+_seen: dict[str, float] = {}   # body digest -> first arrival (monotonic)
+_hits: dict[str, list[float]] = {}  # client ip -> recent request times
+
+
+def remember(store: dict[str, float], key: str, window: float) -> bool:
+    """True when `key` is new; entries older than `window` are forgotten."""
+    now_mono = time.monotonic()
+    for stale in [k for k, ts in store.items() if now_mono - ts > window]:
+        store.pop(stale, None)
+    if key in store:
+        return False
+    store[key] = now_mono
+    return True
+
+
+def rate_ok(ip: str) -> bool:
+    now_mono = time.monotonic()
+    recent = [t for t in _hits.get(ip, []) if now_mono - t < 60]
+    recent.append(now_mono)
+    _hits[ip] = recent
+    return len(recent) <= RATE_LIMIT_PER_MIN
 
 
 def now() -> str:
@@ -73,6 +110,35 @@ def looks_like_json(text: str) -> dict | None:
     except json.JSONDecodeError:
         return None
     return value if isinstance(value, dict) else None
+
+
+def fresh(alert: dict) -> bool:
+    """Reject an alert whose own timestamp is old. Missing timestamp is allowed.
+
+    TradingView's `{{timenow}}` looks like `2026-10-26T01:23:45Z`; `{{time}}`
+    can also be an epoch in milliseconds. Anything unparseable is passed through
+    rather than dropped — a lost real alert is worse than a noisy one.
+    """
+    for field in ("time", "timenow", "timestamp"):
+        value = alert.get(field)
+        if value is None:
+            continue
+        when: float | None = None
+        if isinstance(value, (int, float)):
+            when = value / 1000 if value > 1e11 else value
+        elif isinstance(value, str):
+            text = value.strip()
+            if text.isdigit():
+                num = float(text)
+                when = num / 1000 if num > 1e11 else num
+            else:
+                try:
+                    when = datetime.fromisoformat(text.replace("Z", "+00:00")).timestamp()
+                except ValueError:
+                    return True
+        if when is not None:
+            return abs(time.time() - when) <= REPLAY_WINDOW_SEC
+    return True
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -106,15 +172,32 @@ class Handler(BaseHTTPRequestHandler):
             for part in query.split("&"):
                 if part.startswith("k="):
                     key = part[2:]
-            if key != SECRET:
+            # compare_digest, not ==: a plain comparison leaks the secret one
+            # character at a time to anyone who can measure the response.
+            if not hmac.compare_digest(key, SECRET):
                 self._send(403, {"error": "bad secret"})
                 return
+
+        if not rate_ok(self.client_address[0]):
+            self._send(429, {"error": "too many alerts"})
+            return
 
         length = int(self.headers.get("content-length") or 0)
         if length <= 0 or length > MAX_BODY:
             self._send(400, {"error": "bad body size"})
             return
         raw = self.rfile.read(length).decode("utf-8", errors="replace").strip()
+
+        # Retries are normal (TradingView re-sends on a timeout), replays are not.
+        digest = hashlib.sha256(raw.encode()).hexdigest()
+        if not remember(_seen, digest, DEDUPE_WINDOW_SEC):
+            self._send(200, {"ok": True, "duplicate": True})
+            return
+
+        parsed_early = looks_like_json(raw)
+        if parsed_early and not fresh(parsed_early):
+            self._send(400, {"error": "stale alert"})
+            return
 
         # TradingView sends the alert message as the raw body; some templates
         # arrive as JSON. Store both shapes without interpreting them.
@@ -147,6 +230,14 @@ class Handler(BaseHTTPRequestHandler):
 
 
 def main() -> None:
+    if HOST not in _LOOPBACK and not SECRET:
+        sys.exit(
+            f"refusing to listen on {HOST} without TV_SECRET.\n"
+            "A public webhook with no secret accepts alerts from anyone who finds "
+            "the URL. Set one:\n\n    TV_SECRET=$(python3 -c 'import secrets;print(secrets.token_urlsafe(24))') \\\n"
+            "      python3 trading/webhook.py\n\nThen put ?k=<that value> on the end of the "
+            "webhook URL in TradingView."
+        )
     server = ThreadingHTTPServer((HOST, PORT), Handler)
     ALERTS.parent.mkdir(parents=True, exist_ok=True)
     print(f"listening on http://{HOST}:{PORT}  →  POST /tv")

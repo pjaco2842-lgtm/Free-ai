@@ -84,6 +84,10 @@ Rules:
 * If the task is impossible or unsafe, use finish with a summary saying why.
 """
 
+# Commands are refused when they match any of these. This is a floor, not a
+# sandbox: a determined model can still express harm in a way no regex catches,
+# which is why the environment is scrubbed below and the journal keeps every
+# step. Treat the worker as a capable intern, not as a security boundary.
 DANGEROUS = [
     r":\(\)\s*\{",                                   # fork bomb
     r"\brm\s+(-[a-zA-Z]*\s+)*-\S*\s*/\s*$",          # rm ... /
@@ -94,7 +98,22 @@ DANGEROUS = [
     r"\bwget\b[^|]*\|\s*(sudo\s+)?(ba|z|)sh",
     r"\bsudo\b", r"\bchmod\s+-R\s+777\s+/", r"\bchown\s+-R\b.*\s/(\s|$)",
     r"\bhistory\s+-c\b", r"\bgit\s+push\b.*--force",
+    # Secrets: never let a shell command read the files that hold credentials.
+    # Everything the model is shown also goes to the model provider, so a key
+    # that gets `cat`-ed into an observation has left the machine.
+    r"(?:\.env\b|\.env\.|\.encryption-key|\.llm-gateway|env\.sh|\.ssh/|\.aws/|\.npmrc|\.git-credentials|\.pem\b|id_rsa|id_ed25519)",
+    r"^\s*(?:env|printenv|export)\s*$",              # dump the whole environment
+    r"\bsecurity\s+find-(?:generic|internet)-password",
 ]
+
+# Paths the worker may never read or write, even inside the workspace. A task
+# that asks for one of these is refused and journalled.
+SECRET_NAMES = {
+    ".env", ".env.local", ".env.production", ".encryption-key", ".npmrc",
+    ".git-credentials", "id_rsa", "id_ed25519", "env.sh",
+}
+SECRET_SUFFIXES = (".pem", ".key", ".p12", ".pfx")
+SECRET_PARTS = (".ssh", ".aws", ".gnupg", ".llm-gateway")
 
 DONE, FAILED, RUNNING, PENDING = "done", "failed", "running", "pending"
 
@@ -203,9 +222,34 @@ def parse_action(text: str) -> dict:
 # ------------------------------------------------------------------ actions
 def safe_path(raw: str) -> Path:
     path = (WORKSPACE / raw).resolve()
-    if not str(path).startswith(str(WORKSPACE)):
-        raise ValueError(f"path outside the workspace: {raw}")
+    # relative_to, not startswith: `/w/chat` is a string prefix of `/w/chat-2`,
+    # so a prefix check lets a sibling directory through.
+    try:
+        path.relative_to(WORKSPACE)
+    except ValueError:
+        raise ValueError(f"path outside the workspace: {raw}") from None
+    if path.name in SECRET_NAMES or path.name.endswith(SECRET_SUFFIXES):
+        raise ValueError(f"refusing to touch a credentials file: {raw}")
+    if any(part in SECRET_PARTS for part in path.parts):
+        raise ValueError(f"refusing to touch a credentials directory: {raw}")
     return path
+
+
+def child_env() -> dict[str, str]:
+    """Environment for a model-chosen command: paths and locale, no secrets.
+
+    Without this the child inherits GEMINI_API_KEY, ANTHROPIC_AUTH_TOKEN and
+    anything else exported for the gateway, so a single `printenv` in a command
+    would post them into the model's context (and therefore to the provider).
+    """
+    keep = {
+        key: os.environ[key]
+        for key in ("PATH", "HOME", "LANG", "LC_ALL", "TERM", "SHELL", "PWD",
+                    "TMPDIR", "USER", "LOGNAME", "VIRTUAL_ENV")
+        if key in os.environ
+    }
+    keep.setdefault("PATH", "/usr/local/bin:/usr/bin:/bin")
+    return keep
 
 
 def blocked(command: str) -> str | None:
@@ -228,7 +272,7 @@ def act(action: str, args: dict) -> tuple[str, bool]:
         try:
             proc = subprocess.run(
                 command, shell=True, cwd=WORKSPACE, capture_output=True,
-                text=True, timeout=CMD_TIMEOUT,
+                text=True, timeout=CMD_TIMEOUT, env=child_env(),
             )
         except subprocess.TimeoutExpired:
             return f"error: timed out after {CMD_TIMEOUT}s", False
