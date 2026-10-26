@@ -152,7 +152,13 @@ for i in issues:
 
 crit = count['CRITICAL']
 high = count['HIGH']
-color = {'DO NOT INSTALL': '\033[1;31m', 'REVIEW': '\033[1;33m', 'SAFE': '\033[1;32m'}
+# SkillSpector labels an otherwise spotless scan 'CAUTION' because it also weighs
+# factors beyond findings. With zero findings and a zero score there is nothing
+# for a reader to act on, so say that instead of inventing alarm.
+if not issues and score == 0 and not crit and not high:
+    rec = 'CLEAN — nothing flagged'
+color = {'DO NOT INSTALL': '\033[1;31m', 'REVIEW': '\033[1;33m',
+         'SAFE': '\033[1;32m', 'CLEAN — nothing flagged': '\033[1;32m'}
 head  = color.get(rec, '\033[1m')
 
 print()
