@@ -64,6 +64,45 @@ under 0.05, because 42 trades is not enough to separate skill from luck. That is
 forward-test candidate, not a funded strategy. It would need roughly a year of live
 paper trades (one or two a month) before the number means anything.
 
+**In dollars, starting at $25,000 with 2 micro contracts** (`--equity 25000 --contracts 2`):
+
+| | Trades | Final | Return | Max drawdown | Worst single |
+|---|---|---|---|---|---|
+2010-2026 | 42 | **$31,720** | +26.9% | $3,672 (11.0%) | −$1,230 |
+IS 2010-2020 | 16 | $25,508 | +2.0% | $853 (3.3%) | −$294 |
+OOS 2020-2026 | 26 | $31,212 | +24.8% | $3,672 (11.2%) | −$1,230 |
+
+Average risk per trade: **$496** (2.0% of the starting balance). Longest losing run: 4
+trades, **−$2,635**.
+
+Year by year (this is the part that matters):
+
+```
+2011    1     -70      2018    1    -126      2023    2  -1,022
+2012    2    +178      2019    5      -9      2024    2    +594
+2013    1     -93      2020    6  +4,394      2025    6    -510
+2014    1    -146      2021    2  +1,621      2026    3    +954
+2015    3     +30      2022    5    +180
+2016    2    +745
+```
+
+**Read that again: +$4,394 of the +$6,720 total came from 2020 alone.** Ten years of
+2010-2019 produced +$508 combined. The rule is positive in R in both windows, so it is
+not purely a 2020 artefact — but the dollar result is one violent year plus interest,
+because a 0.5 ATR stop on 2022 volatility risks four times what the same stop risked
+in 2013. Same rule, same 2 micros, wildly different dollars.
+
+**What that means for a 25k account:**
+
+| Sizing | Final | Max DD | Longest losing run | Prop-firm safe? |
+|---|---|---|---|---|
+2 micros | $31,720 | $3,672 (11.0%) | −$2,635 | **No** — most 25k evals trail $1,500 |
+1 micro | ~$28,360 | ~$1,836 (7.3%) | ~−$1,317 | Marginal |
+
+A personal cash account can hold 2 micros through an 11% drawdown. A 25k prop
+evaluation cannot: a −$2,635 streak breaches the trailing limit before the edge has a
+chance to show up. That is the same trap the video described — right strategy, wrong size.
+
 **Cost model note.** The first run of this test was wrong: it charged MNQ commissions
 against crude oil's 1000-barrel point value, turning a 0.05R cost into 1.5R and
 inventing a disaster on CL and GC. Per-market contract specs are now explicit in

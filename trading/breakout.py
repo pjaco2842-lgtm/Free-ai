@@ -132,7 +132,7 @@ def trades_for(bars: list[Bar], atr: list[float | None], pick, stop_atr: float,
             r = (entry - exit_px) / risk
         cost_r = cost_usd / (risk * point_value)
         out.append({
-            "i": i, "side": side, "r": r, "net": r - cost_r,
+            "i": i, "side": side, "r": r, "net": r - cost_r, "risk_pts": risk,
             "stopped": stopped, "date": datetime.fromtimestamp(bar.t, timezone.utc).strftime("%Y-%m-%d"),
         })
         busy_until = i  # one trade per day, exit same day
@@ -154,13 +154,56 @@ def stats(rows: list[dict]) -> dict:
     }
 
 
+def equity(rows: list[dict], start: float, contracts: int, point_value: float) -> dict:
+    """Turn R-multiples into a dollar curve on a fixed contract count.
+
+    `contracts` is what the account actually trades (2 micros), not a percentage:
+    a fixed size is what a 25k account can hold, and it makes the drawdown honest
+    instead of letting a compounding curve hide it.
+    """
+    if not rows:
+        return {}
+    bal = start
+    peak = start
+    max_dd = max_dd_pct = 0.0
+    wins = losses = 0
+    worst = 0.0
+    curve = []
+    for r in rows:
+        pnl = r["net"] * r["risk_pts"] * point_value * contracts
+        bal += pnl
+        peak = max(peak, bal)
+        dd = peak - bal
+        if dd > max_dd:
+            max_dd, max_dd_pct = dd, (dd / peak * 100 if peak else 0)
+        wins += pnl > 0
+        losses += pnl <= 0
+        worst = min(worst, pnl)
+        curve.append((r["date"], bal, pnl))
+
+    years = {}
+    for date, _, pnl in curve:
+        y = date[:4]
+        years[y] = years.get(y, 0.0) + pnl
+    span = max(1, len({c[0][:4] for c in curve}))
+    risk_usd = [r["risk_pts"] * point_value * contracts for r in rows]
+    return {
+        "start": start, "final": bal, "pnl": bal - start,
+        "return_pct": (bal / start - 1) * 100,
+        "max_dd": max_dd, "max_dd_pct": max_dd_pct, "worst_trade": worst,
+        "wins": wins, "losses": losses, "per_year": len(rows) / span,
+        "avg_risk_usd": sum(risk_usd) / len(risk_usd),
+        "years": years, "curve": curve,
+    }
+
+
 def split(rows: list[dict]) -> tuple[list[dict], list[dict]]:
     is_rows = [r for r in rows if r["date"] < IS_END]
     oos_rows = [r for r in rows if r["date"] >= IS_END]
     return is_rows, oos_rows
 
 
-def build_rules(bars, atr):
+def build_rules(bars, atr, trend_atr: float = 1.5):
     """Every rule decides from the PREVIOUS bar only — nothing from the future."""
     def prev(i, k=1):
         return bars[i - k]
@@ -179,7 +222,7 @@ def build_rules(bars, atr):
     def trend_day_fade(i):
         p, p2 = prev(i), prev(i, 2)
         a = atr[i - 1]
-        if not a or (p.h - p.l) <= 1.5 * a:
+        if not a or (p.h - p.l) <= trend_atr * a:
             return None
         up_day = p.c > p2.c
         if bars[i].o > p.h and up_day:          # breakout in BOTH directions: fade it
@@ -191,7 +234,7 @@ def build_rules(bars, atr):
     def trend_day_continue(i):
         p, p2 = prev(i), prev(i, 2)
         a = atr[i - 1]
-        if not a or (p.h - p.l) <= 1.5 * a:
+        if not a or (p.h - p.l) <= trend_atr * a:
             return None
         up_day = p.c > p2.c
         if bars[i].o > p.h and up_day:
@@ -248,7 +291,8 @@ def random_baseline(bars, atr, rows: list[dict], stop_atr: float, runs: int = 30
     }
 
 
-def run_market(symbol: str, spec: tuple[str, float, float], stop_atr: float, runs: int) -> dict:
+def run_market(symbol: str, spec: tuple[str, float, float], stop_atr: float, runs: int,
+               trend_atr: float = 1.5, equity_start: float = 0.0, contracts: int = 2) -> dict:
     name, point_value, tick = spec
     start = int(datetime(2010, 1, 1, tzinfo=timezone.utc).timestamp())
     end = int(datetime.now(timezone.utc).timestamp())
@@ -256,7 +300,7 @@ def run_market(symbol: str, spec: tuple[str, float, float], stop_atr: float, run
     if len(bars) < 500:
         raise SystemExit(f"{symbol}: only {len(bars)} daily bars")
     atr = atr_series(bars)
-    rules = build_rules(bars, atr)
+    rules = build_rules(bars, atr, trend_atr)
     row = {"symbol": symbol, "name": name, "bars": len(bars), "stop_atr": stop_atr,
            "point_value": point_value, "tick": tick, "rules": {}}
 
@@ -264,6 +308,12 @@ def run_market(symbol: str, spec: tuple[str, float, float], stop_atr: float, run
         rows = trades_for(bars, atr, pick, stop_atr, point_value, tick)
         is_rows, oos_rows = split(rows)
         entry = {"all": stats(rows), "in_sample": stats(is_rows), "out_of_sample": stats(oos_rows)}
+        if equity_start and rows:
+            entry["equity"] = {
+                "all": equity(rows, equity_start, contracts, point_value),
+                "in_sample": equity(is_rows, equity_start, contracts, point_value) if is_rows else {},
+                "out_of_sample": equity(oos_rows, equity_start, contracts, point_value) if oos_rows else {},
+            }
         if oos_rows:
             entry["coin_flip"] = random_baseline(bars, atr, oos_rows, stop_atr, runs,
                                                  point_value, tick)
@@ -286,6 +336,16 @@ def print_market(row: dict) -> None:
         if cf:
             print(f"  {'  coin flip (OOS)':<24}{'':>7}{'':>7}{'':>9}{'p=' + str(cf['p_value']):>8}"
                   f"{'pct ' + str(int(cf['percentile'])):>14}")
+        eq = data.get("equity")
+        if eq:
+            for label, key in (("2010-2026", "all"), ("IS 2010-2020", "in_sample"),
+                               ("OOS 2020-2026", "out_of_sample")):
+                e = eq.get(key) or {}
+                if not e:
+                    continue
+                print(f"  ${label:<22} final ${e['final']:>9,.0f}  return {e['return_pct']:>+6.1f}%  "
+                      f"max dd ${e['max_dd']:>7,.0f} ({e['max_dd_pct']:>4.1f}%)  "
+                      f"{e['wins']}W/{e['losses']}L  worst ${e['worst_trade']:,.0f}")
 
 
 def main() -> None:
@@ -294,6 +354,11 @@ def main() -> None:
     ap.add_argument("--stop-atr", type=float, default=1.0)
     ap.add_argument("--runs", type=int, default=300)
     ap.add_argument("--all-markets", action="store_true")
+    ap.add_argument("--trend-atr", type=float, default=1.5,
+                    help="a 'trend day' is a prior range above this × ATR")
+    ap.add_argument("--equity", type=float, default=0.0,
+                    help="starting balance, e.g. 25000 — prints a dollar curve")
+    ap.add_argument("--contracts", type=int, default=2, help="micro contracts per trade")
     ap.add_argument("--json", default="")
     args = ap.parse_args()
 
@@ -303,7 +368,8 @@ def main() -> None:
         symbols = {args.symbol: MARKETS.get(args.symbol, (args.symbol, 2.0, 0.25))}
     rows = []
     for symbol, spec in symbols.items():
-        rows.append(run_market(symbol, spec, args.stop_atr, args.runs))
+        rows.append(run_market(symbol, spec, args.stop_atr, args.runs, args.trend_atr,
+                               args.equity, args.contracts))
 
     print("=" * 96)
     print("  Open breakout, hold to the close, no take-profit. Costs included.")
@@ -313,8 +379,9 @@ def main() -> None:
         print_market(row)
 
     if args.json:
-        Path(args.json).write_text(json.dumps({"generated": datetime.now(timezone.utc).isoformat(),
-                                               "stop_atr": args.stop_atr, "rows": rows}, indent=1))
+        payload = {"generated": datetime.now(timezone.utc).isoformat(),
+                   "stop_atr": args.stop_atr, "trend_atr": args.trend_atr, "rows": rows}
+        Path(args.json).write_text(json.dumps(payload, indent=1))
         print(f"\nwritten: {args.json}")
 
     print("\nReading it: `gross R` ignores costs, `net R` is what you would keep.")
