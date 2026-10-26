@@ -139,6 +139,8 @@ say "3/5 Writing configuration"
   printf 'export ANTHROPIC_DEFAULT_OPUS_MODEL="free"\n'
   printf 'export CLAUDE_CODE_MAX_CONTEXT_TOKENS="%s"\n' "${CLAUDE_CODE_MAX_CONTEXT_TOKENS:-131072}"
   printf 'export DISABLE_TELEMETRY=1\n'
+  printf 'export LITELLM_TELEMETRY_DISABLED=true\n'
+  printf 'export LITELLM_LOG=ERROR\n'
 } > "$DIR/env.sh"
 chmod 600 "$DIR/env.sh"
 
