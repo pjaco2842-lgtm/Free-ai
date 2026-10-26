@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Run the NQZ2026 paper trader every 5 minutes while the Mac is awake.
+  It needs no keys and cannot place a real order — it only writes local files.
+
+  Install:
+    1. Replace YOURNAME with your Mac username (run `whoami`).
+    2. Save as ~/Library/LaunchAgents/com.you.papertrader.plist
+    3. launchctl load ~/Library/LaunchAgents/com.you.papertrader.plist
+    4. Watch it:  tail -f ~/Library/Logs/papertrader.log
+                  cat ~/Free-ai/trading/paper/status.md
+
+  Change how often it runs: StartInterval is in seconds (300 = 5 minutes).
+  Stop it: launchctl unload ~/Library/LaunchAgents/com.you.papertrader.plist
+
+  Each run processes at most one newly closed bar and exits, so overlapping
+  runs are harmless — the state file records the last bar it handled.
+-->
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.you.papertrader</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/usr/bin/python3</string>
+        <string>/Users/YOURNAME/Free-ai/trading/paper.py</string>
+        <string>--once</string>
+        <string>--symbol</string>
+        <string>NQ=F</string>
+        <string>--tf</string>
+        <string>5m</string>
+        <string>--instrument</string>
+        <string>mnq</string>
+        <string>--account</string>
+        <string>25000</string>
+        <string>--risk-pct</string>
+        <string>2</string>
+        <string>--max-contracts</string>
+        <string>2</string>
+    </array>
+
+    <key>WorkingDirectory</key>
+    <string>/Users/YOURNAME/Free-ai</string>
+
+    <key>StartInterval</key>
+    <integer>300</integer>
+    <key>RunAtLoad</key>
+    <true/>
+
+    <key>StandardOutPath</key>
+    <string>/Users/YOURNAME/Library/Logs/papertrader.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/YOURNAME/Library/Logs/papertrader.log</string>
+</dict>
+</plist>

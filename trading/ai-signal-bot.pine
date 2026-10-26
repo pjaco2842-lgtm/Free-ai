@@ -1,0 +1,151 @@
+//@version=6
+// ============================================================================
+// AI SIGNAL BOT — structure + momentum, with a machine-readable alert payload
+// ----------------------------------------------------------------------------
+// What this is:
+//   A self-contained signal engine that reproduces the ideas on your chart
+//   (premium/discount location, RSI, stochastic, a Hull "butterfly" momentum
+//   oscillator) and fires ONE JSON message per confirmed signal.
+//
+//   The JSON is meant for a webhook: your agent receives it, applies its own
+//   rules, and logs or paper-trades the result.
+//
+// What this is NOT:
+//   It does not predict the future and it cannot read other indicators' values.
+//   Pine scripts can only see price/volume of the chart they run on. Third-party
+//   scripts (LuxAlgo, GapAlgo, ICT) are closed, so this recomputes equivalents.
+//
+// How to use:
+//   1. Paste into TradingView → Pine Editor → Save → "Add to chart".
+//   2. Create an alert → Condition: this indicator → "Any alert() function call".
+//   3. Notifications → Webhook URL (needs a paid TradingView plan).
+//   4. Your agent's endpoint reads the JSON body below.
+//
+// Reality check (measured, not guessed): trading/scanner.py runs the same rules
+// on free historical data. On 800 hourly NQ bars it produced 16 trades at an
+// 18.8% win rate with a 2R target — a losing mix, and 12 parameter variants
+// were negative too. The signals are candidates to test, not predictions.
+//
+// Alert payload (one line, JSON):
+//   {"v":1,"symbol":"NQ1!","tf":"5","side":"long","price":29175.25,
+//    "sl":29148.0,"tp":29229.75,"rsi":41.2,"osc":0.31,"zone":"discount",
+//    "reasons":"osc cross up, rsi rising, discount","time":"2026-10-25T20:59:00Z"}
+// ============================================================================
+indicator("AI Signal Bot — Structure + Momentum", "AI Signal Bot", overlay=false, max_labels_count=500)
+
+// ── Inputs ──────────────────────────────────────────────────────────────────
+grpS  = "Structure (premium / discount)"
+structLen  = input.int(50,  "Swing lookback",        minval=10, group=grpS)
+eqBandPct  = input.float(5, "Equilibrium band (%)",  minval=0,  maxval=40, step=0.5, group=grpS,
+     tooltip="Dead zone around the 50% level. No signals inside it.")
+
+grpM  = "Momentum"
+rsiLen   = input.int(14, "RSI length",              minval=2, group=grpM)
+stochK   = input.int(9,  "Stoch %K",                minval=1, group=grpM)
+stochS   = input.int(3,  "Stoch smoothing",         minval=1, group=grpM)
+stochD   = input.int(3,  "Stoch %D",                minval=1, group=grpM)
+hullFast = input.int(9,  "Hull fast",               minval=2, group=grpM)
+hullSlow = input.int(16, "Hull slow",               minval=3, group=grpM)
+
+grpF  = "Filters"
+useRsiFilter   = input.bool(true,  "Require RSI on the right side of 50", group=grpF)
+useStochFilter = input.bool(true,  "Require stochastic agreement",       group=grpF)
+useTrendFilter = input.bool(false, "Require price above/below EMA 200",  group=grpF)
+emaLen         = input.int(200, "EMA length",     minval=10, group=grpF)
+onePerBar      = input.bool(true,  "Max one signal per bar",             group=grpF)
+
+grpR  = "Risk (for the JSON payload only)"
+atrLen   = input.int(14,   "ATR length",   minval=2, group=grpR)
+slAtr    = input.float(1.0, "Stop (× ATR)",  minval=0.1, step=0.1, group=grpR)
+tpR      = input.float(2.0, "Target (× risk)", minval=0.1, step=0.1, group=grpR)
+
+// ── Structure: where price sits between the recent swing low and high ───────
+swingHi = ta.highest(high, structLen)
+swingLo = ta.lowest(low,  structLen)
+swingRange = swingHi - swingLo
+posPct  = swingRange > 0 ? (close - swingLo) / swingRange * 100 : 50.0
+isDiscount = posPct < 50 - eqBandPct
+isPremium  = posPct > 50 + eqBandPct
+zone = isDiscount ? "discount" : isPremium ? "premium" : "equilibrium"
+
+// ── Momentum ────────────────────────────────────────────────────────────────
+rsi   = ta.rsi(close, rsiLen)
+kRaw  = ta.stoch(close, high, low, stochK)
+k     = ta.sma(kRaw, stochS)
+d     = ta.sma(k, stochD)
+
+// Hull "butterfly": two HMAs of different speed, normalised by ATR so the
+// reading is comparable across symbols and timeframes.
+hf  = ta.hma(close, hullFast)
+hs  = ta.hma(close, hullSlow)
+atr = ta.atr(atrLen)
+osc = atr > 0 ? (hf - hs) / atr * 100 : 0.0
+
+emaTrend = ta.ema(close, emaLen)
+
+// ── Conditions: setup, then trigger ─────────────────────────────────────────
+// Requiring zone AND momentum to line up on the same bar fired almost never
+// (0-2 signals in 800 bars in the Python backtest). So the zone + RSI pair
+// opens a setup, it stays valid for setupWindow bars, and a momentum cross
+// inside that window is the trigger. trading/scanner.py uses the same rule.
+setupWindow = input.int(12, "Setup valid for (bars)", minval=1, group=grpF)
+
+var int lastLongSetup  = -100000
+var int lastShortSetup = -100000
+if isDiscount and (not useRsiFilter or rsi > 50)
+    lastLongSetup := bar_index
+if isPremium and (not useRsiFilter or rsi < 50)
+    lastShortSetup := bar_index
+
+oscUp   = ta.crossover(osc, 0)
+oscDown = ta.crossunder(osc, 0)
+trigLong  = oscUp   or ta.crossover(k, d)
+trigShort = oscDown or ta.crossunder(k, d)
+
+trendOkLong  = not useTrendFilter or close > emaTrend
+trendOkShort = not useTrendFilter or close < emaTrend
+
+longOk  = trigLong  and posPct < 50 and (not useRsiFilter or rsi > 50) and (not useStochFilter or k > d) and (bar_index - lastLongSetup  <= setupWindow) and trendOkLong
+shortOk = trigShort and posPct > 50 and (not useRsiFilter or rsi < 50) and (not useStochFilter or k < d) and (bar_index - lastShortSetup <= setupWindow) and trendOkShort
+
+// Signals are evaluated on the closed bar only, so the alert cannot repaint.
+barReady = barstate.isconfirmed
+longSig  = barReady and longOk  and (not onePerBar or not (longOk[1]  and barstate.isconfirmed[1]))
+shortSig = barReady and shortOk and (not onePerBar or not (shortOk[1] and barstate.isconfirmed[1]))
+
+// ── Visuals (so you can eyeball it against your own chart) ──────────────────
+plot(osc, "Hull butterfly", color=osc > 0 ? color.new(color.teal, 0) : color.new(color.maroon, 0), linewidth=2)
+hline(0, "Zero", color=color.new(color.gray, 60))
+plotshape(longSig,  "Long",  shape.triangleup,   location.bottom, color.new(color.teal, 0),   size=size.tiny)
+plotshape(shortSig, "Short", shape.triangledown, location.top,    color.new(color.maroon, 0), size=size.tiny)
+
+var table info = table.new(position.top_right, 2, 4, border_width=1)
+if barstate.islast
+    table.cell(info, 0, 0, "Zone",     text_size=size.small)
+    table.cell(info, 1, 0, zone + " (" + str.tostring(posPct, "#.0") + "%)", text_size=size.small)
+    table.cell(info, 0, 1, "RSI",      text_size=size.small)
+    table.cell(info, 1, 1, str.tostring(rsi, "#.0"), text_size=size.small)
+    table.cell(info, 0, 2, "Butterfly", text_size=size.small)
+    table.cell(info, 1, 2, str.tostring(osc, "#.00"), text_size=size.small)
+    table.cell(info, 0, 3, "Signal",   text_size=size.small)
+    table.cell(info, 1, 3, longSig ? "LONG" : shortSig ? "SHORT" : "—", text_size=size.small)
+
+// ── Alert payload ───────────────────────────────────────────────────────────
+// String helper: JSON-escape the only free-text field we build ourselves.
+reasonsLong  = "osc cross up" + (useRsiFilter ? ", rsi rising" : "") + (useStochFilter ? ", stoch up" : "") + ", " + zone
+reasonsShort = "osc cross down" + (useRsiFilter ? ", rsi falling" : "") + (useStochFilter ? ", stoch down" : "") + ", " + zone
+
+f_payload(string side, float px, float stop, float take, string reasons) =>
+    str.format("{\"v\":1,\"symbol\":\"{0}\",\"tf\":\"{1}\",\"side\":\"{2}\",\"price\":{3},\"sl\":{4},\"tp\":{5},\"rsi\":{6},\"osc\":{7},\"zone\":\"{8}\",\"reasons\":\"{9}\",\"time\":\"{10}\"}",
+         syminfo.ticker, timeframe.period, side,
+         str.tostring(px,  format.mintick), str.tostring(stop, format.mintick), str.tostring(take, format.mintick),
+         str.tostring(rsi, "#.0"), str.tostring(osc, "#.00"), zone, reasons,
+         str.format_time(time, "yyyy-MM-dd'T'HH:mm:ss'Z'", "UTC"))
+
+if longSig
+    risk = atr * slAtr
+    alert(f_payload("long", close, close - risk, close + risk * tpR, reasonsLong), alert.freq_once_per_bar_close)
+
+if shortSig
+    risk = atr * slAtr
+    alert(f_payload("short", close, close + risk, close - risk * tpR, reasonsShort), alert.freq_once_per_bar_close)

@@ -1,0 +1,123 @@
+//@version=6
+// Structure & Range Compass
+//
+// What it does:
+//   * Finds swing highs and lows (confirmed pivots, so nothing repaints).
+//   * Classifies structure: higher-high + higher-low = up, lower-high + lower-low = down,
+//     anything else = range/unclear.
+//   * Draws the previous completed day's high and low.
+//   * Draws a statistical "expected range" for the current day from the day's open
+//     plus/minus the previous day's ATR. This is a volatility expectation, NOT a forecast.
+//   * Flags the moment price closes through the last confirmed swing high or low.
+//
+// What it deliberately does NOT do: predict the next candle, curve-fit a "win rate",
+// or generate buy/sell calls. Those claims are the ones that lose accounts.
+//
+// Pasted into TradingView: Pine Editor -> paste -> "Add to chart".
+
+indicator("Structure & Range Compass", shorttitle="SRC", overlay=true, max_labels_count=500)
+
+// ---------------------------------------------------------------- inputs
+int   pivotLen  = input.int(5, "Swing strength (bars each side)", minval=1, maxval=50, group="Structure")
+bool  showSwings = input.bool(true, "Label swing highs and lows", group="Structure")
+bool  showBreaks = input.bool(true, "Mark structure breaks", group="Structure")
+
+int   atrLen    = input.int(14, "Daily ATR length", minval=2, maxval=100, group="Expected range")
+float rangeMult = input.float(1.0, "Range multiplier (x daily ATR)", minval=0.1, maxval=5.0, step=0.1, group="Expected range")
+bool  showRange = input.bool(true, "Show expected range", group="Expected range")
+
+bool  showPrev  = input.bool(true, "Show prior-day high and low", group="Levels")
+bool  showPanel = input.bool(true, "Show info panel", group="Display")
+
+string fmt(float v) => na(v) ? "—" : str.tostring(v, format.mintick)
+
+// ---------------------------------------------------------------- swing structure
+float ph = ta.pivothigh(high, pivotLen, pivotLen)
+float pl = ta.pivotlow(low, pivotLen, pivotLen)
+
+var float ph1 = na   // most recent confirmed swing high
+var float ph2 = na   // the one before it
+var float pl1 = na   // most recent confirmed swing low
+var float pl2 = na
+
+if not na(ph)
+    ph2 := ph1
+    ph1 := ph
+
+if not na(pl)
+    pl2 := pl1
+    pl1 := pl
+
+bool hh = not na(ph1) and not na(ph2) and ph1 > ph2
+bool lh = not na(ph1) and not na(ph2) and ph1 < ph2
+bool hl = not na(pl1) and not na(pl2) and pl1 > pl2
+bool ll = not na(pl1) and not na(pl2) and pl1 < pl2
+
+int    bias      = hh and hl ? 1 : (ll and lh ? -1 : 0)
+string biasText  = bias == 1 ? "Up (HH + HL)" : bias == -1 ? "Down (LH + LL)" : "Range / unclear"
+color  biasColor = bias == 1 ? color.teal : bias == -1 ? color.red : color.gray
+
+if showSwings and not na(ph)
+    label.new(bar_index - pivotLen, ph, "H", style=label.style_label_down,
+      color=color.new(color.red, 70), textcolor=color.white, size=size.tiny)
+
+if showSwings and not na(pl)
+    label.new(bar_index - pivotLen, pl, "L", style=label.style_label_up,
+      color=color.new(color.teal, 70), textcolor=color.white, size=size.tiny)
+
+// ---------------------------------------------------------------- prior day + daily ATR
+// [1] on a higher timeframe plus lookahead_off means these never repaint:
+// they describe the last COMPLETED day, not the one still forming.
+float pdh  = request.security(syminfo.tickerid, "D", high[1], lookahead=barmerge.lookahead_off)
+float pdl  = request.security(syminfo.tickerid, "D", low[1], lookahead=barmerge.lookahead_off)
+float datr = request.security(syminfo.tickerid, "D", ta.atr(atrLen)[1], lookahead=barmerge.lookahead_off)
+
+plot(showPrev ? pdh : na, "Prior day high", color=color.new(color.orange, 0), style=plot.style_linebr, linewidth=1)
+plot(showPrev ? pdl : na, "Prior day low", color=color.new(color.orange, 0), style=plot.style_linebr, linewidth=1)
+
+// ---------------------------------------------------------------- today's expected range
+var float dayOpen = na
+var int   dayKey  = na
+int todayKey = time("D")
+
+if na(dayKey) or todayKey != dayKey
+    dayKey  := todayKey
+    dayOpen := open
+
+float rangeUp = dayOpen + datr * rangeMult
+float rangeDn = dayOpen - datr * rangeMult
+
+plot(showRange ? rangeUp : na, "Expected high", color=color.new(color.blue, 30), style=plot.style_linebr, linewidth=1)
+plot(showRange ? rangeDn : na, "Expected low", color=color.new(color.blue, 30), style=plot.style_linebr, linewidth=1)
+
+// ---------------------------------------------------------------- structure breaks
+bool breakUp = showBreaks and not na(ph1) and close > ph1 and close[1] <= ph1
+bool breakDn = showBreaks and not na(pl1) and close < pl1 and close[1] >= pl1
+
+plotshape(breakUp, "Break of swing high", shape.triangleup, location.belowbar, color.new(color.teal, 0), size=size.tiny)
+plotshape(breakDn, "Break of swing low", shape.triangledown, location.abovebar, color.new(color.red, 0), size=size.tiny)
+
+alertcondition(breakUp, "Structure break UP", "Price closed above the last confirmed swing high")
+alertcondition(breakDn, "Structure break DOWN", "Price closed below the last confirmed swing low")
+
+// ---------------------------------------------------------------- info panel
+var table panel = table.new(position.top_right, 2, 6, border_width=1, frame_width=1, frame_color=color.new(color.gray, 50))
+
+if showPanel and barstate.islast
+    table.cell(panel, 0, 0, "Structure", text_color=color.gray, text_size=size.small)
+    table.cell(panel, 1, 0, biasText, text_color=biasColor, text_size=size.small)
+
+    table.cell(panel, 0, 1, "Last swing high", text_color=color.gray, text_size=size.small)
+    table.cell(panel, 1, 1, fmt(ph1), text_color=color.new(color.red, 0), text_size=size.small)
+
+    table.cell(panel, 0, 2, "Last swing low", text_color=color.gray, text_size=size.small)
+    table.cell(panel, 1, 2, fmt(pl1), text_color=color.new(color.teal, 0), text_size=size.small)
+
+    table.cell(panel, 0, 3, "Prior day H / L", text_color=color.gray, text_size=size.small)
+    table.cell(panel, 1, 3, fmt(pdh) + " / " + fmt(pdl), text_color=color.new(color.orange, 0), text_size=size.small)
+
+    table.cell(panel, 0, 4, "Expected high", text_color=color.gray, text_size=size.small)
+    table.cell(panel, 1, 4, fmt(rangeUp), text_color=color.new(color.blue, 0), text_size=size.small)
+
+    table.cell(panel, 0, 5, "Expected low", text_color=color.gray, text_size=size.small)
+    table.cell(panel, 1, 5, fmt(rangeDn), text_color=color.new(color.blue, 0), text_size=size.small)

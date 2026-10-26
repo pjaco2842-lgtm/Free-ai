@@ -1,0 +1,135 @@
+{
+  "generated": "2026-10-26T00:29:21.085238+00:00",
+  "rows": [
+    {
+      "symbol": "NQ=F",
+      "name": "Nasdaq-100",
+      "is_bars": 2514,
+      "oos_bars": 1716,
+      "params": {
+        "struct": 30,
+        "band": 5.0,
+        "sl_atr": 1.0,
+        "tp_r": 2.0
+      },
+      "in_sample": {
+        "trades": 24,
+        "win_rate": 50.0,
+        "total_r": 12.0,
+        "avg_r": 0.5,
+        "max_dd": 7.0
+      },
+      "out_of_sample": {
+        "trades": 9,
+        "win_rate": 33.3,
+        "total_r": 0.0,
+        "avg_r": 0.0,
+        "max_dd": 4.0
+      }
+    },
+    {
+      "symbol": "ES=F",
+      "name": "S&P 500",
+      "is_bars": 2514,
+      "oos_bars": 1716,
+      "params": {
+        "struct": 30,
+        "band": 0.0,
+        "sl_atr": 2.0,
+        "tp_r": 1.5
+      },
+      "in_sample": {
+        "trades": 24,
+        "win_rate": 58.3,
+        "total_r": 7.51,
+        "avg_r": 0.313,
+        "max_dd": 4.02
+      },
+      "out_of_sample": {
+        "trades": 23,
+        "win_rate": 30.4,
+        "total_r": -6.0,
+        "avg_r": -0.261,
+        "max_dd": 8.0
+      }
+    },
+    {
+      "symbol": "GC=F",
+      "name": "Gold",
+      "is_bars": 2513,
+      "oos_bars": 1716,
+      "params": {
+        "struct": 80,
+        "band": 0.0,
+        "sl_atr": 1.0,
+        "tp_r": 2.0
+      },
+      "in_sample": {
+        "trades": 71,
+        "win_rate": 40.8,
+        "total_r": 10.43,
+        "avg_r": 0.147,
+        "max_dd": 9.23
+      },
+      "out_of_sample": {
+        "trades": 35,
+        "win_rate": 28.6,
+        "total_r": -8.47,
+        "avg_r": -0.242,
+        "max_dd": 9.47
+      }
+    },
+    {
+      "symbol": "CL=F",
+      "name": "Crude oil",
+      "is_bars": 2514,
+      "oos_bars": 1715,
+      "params": {
+        "struct": 80,
+        "band": 10.0,
+        "sl_atr": 2.0,
+        "tp_r": 3.0
+      },
+      "in_sample": {
+        "trades": 37,
+        "win_rate": 56.8,
+        "total_r": 9.51,
+        "avg_r": 0.257,
+        "max_dd": 4.2
+      },
+      "out_of_sample": {
+        "trades": 27,
+        "win_rate": 48.1,
+        "total_r": 6.59,
+        "avg_r": 0.244,
+        "max_dd": 3.09
+      }
+    },
+    {
+      "symbol": "NKD=F",
+      "name": "Nikkei 225 (USD)",
+      "is_bars": 2514,
+      "oos_bars": 1716,
+      "params": {
+        "struct": 80,
+        "band": 5.0,
+        "sl_atr": 1.0,
+        "tp_r": 2.0
+      },
+      "in_sample": {
+        "trades": 56,
+        "win_rate": 46.4,
+        "total_r": 21.11,
+        "avg_r": 0.377,
+        "max_dd": 5.0
+      },
+      "out_of_sample": {
+        "trades": 32,
+        "win_rate": 43.8,
+        "total_r": 10.66,
+        "avg_r": 0.333,
+        "max_dd": 4.34
+      }
+    }
+  ]
+}

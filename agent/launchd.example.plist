@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Run the agent worker whenever your Mac is awake.
+
+  Install:
+    1. Edit the three paths below so they point at YOUR folders
+       (replace YOURNAME and the repo path).
+    2. Save this file as ~/Library/LaunchAgents/com.you.agentworker.plist
+    3. launchctl load ~/Library/LaunchAgents/com.you.agentworker.plist
+    4. Check it:  launchctl list | grep agentworker
+                  tail -f ~/Library/Logs/agentworker.log
+
+  Stop it:
+    launchctl unload ~/Library/LaunchAgents/com.you.agentworker.plist
+
+  Notes:
+    * KeepAlive restarts the worker if it crashes. RunAtLoad starts it at login.
+    * This does NOT survive the Mac sleeping. The worker checkpoints every step,
+      so waking it up costs you nothing but a delay.
+    * EnvironmentVariables below must match what the worker needs; the key is
+      the master key printed by setup-cc-free.sh in ~/.llm-gateway/master.key.
+-->
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.you.agentworker</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/usr/bin/python3</string>
+        <string>/Users/YOURNAME/Free-ai/agent/worker.py</string>
+    </array>
+
+    <key>WorkingDirectory</key>
+    <string>/Users/YOURNAME/Free-ai</string>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>AGENT_BASE_URL</key>
+        <string>http://127.0.0.1:4000/v1</string>
+        <key>AGENT_MODEL</key>
+        <string>free</string>
+        <key>AGENT_API_KEY</key>
+        <string>PASTE_THE_MASTER_KEY_FROM_~/.llm-gateway/master.key</string>
+        <key>AGENT_MAX_STEPS</key>
+        <string>25</string>
+        <key>AGENT_MAX_MINUTES</key>
+        <string>120</string>
+    </dict>
+
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+
+    <key>StandardOutPath</key>
+    <string>/Users/YOURNAME/Library/Logs/agentworker.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/YOURNAME/Library/Logs/agentworker.log</string>
+</dict>
+</plist>
