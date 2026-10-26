@@ -1,0 +1,521 @@
+{
+ "generated": "2026-10-26T02:57:20.869404+00:00",
+ "stop_atr": 1.0,
+ "rows": [
+  {
+   "symbol": "NQ=F",
+   "name": "Nasdaq-100",
+   "bars": 4230,
+   "stop_atr": 1.0,
+   "point_value": 2.0,
+   "tick": 0.25,
+   "rules": {
+    "open_break": {
+     "all": {
+      "trades": 216,
+      "win_rate": 50.5,
+      "total_r": -0.82,
+      "net_r": -4.89,
+      "avg_r": -0.023,
+      "stops": 17.6
+     },
+     "in_sample": {
+      "trades": 106,
+      "win_rate": 50.9,
+      "total_r": -2.6,
+      "net_r": -6.06,
+      "avg_r": -0.057,
+      "stops": 16.0
+     },
+     "out_of_sample": {
+      "trades": 110,
+      "win_rate": 50.0,
+      "total_r": 1.79,
+      "net_r": 1.17,
+      "avg_r": 0.011,
+      "stops": 19.1
+     },
+     "coin_flip": {
+      "p_value": 0.297,
+      "random_median": -2.6,
+      "percentile": 70.0
+     }
+    },
+    "trend_day_fade": {
+     "all": {
+      "trades": 19,
+      "win_rate": 63.2,
+      "total_r": 8.25,
+      "net_r": 7.96,
+      "avg_r": 0.419,
+      "stops": 21.1
+     },
+     "in_sample": {
+      "trades": 10,
+      "win_rate": 50.0,
+      "total_r": 5.37,
+      "net_r": 5.14,
+      "avg_r": 0.514,
+      "stops": 20.0
+     },
+     "out_of_sample": {
+      "trades": 9,
+      "win_rate": 77.8,
+      "total_r": 2.88,
+      "net_r": 2.82,
+      "avg_r": 0.314,
+      "stops": 22.2
+     },
+     "coin_flip": {
+      "p_value": 0.077,
+      "random_median": -0.17,
+      "percentile": 92.0
+     }
+    },
+    "trend_day_continue": {
+     "all": {
+      "trades": 19,
+      "win_rate": 31.6,
+      "total_r": -3.46,
+      "net_r": -3.75,
+      "avg_r": -0.197,
+      "stops": 36.8
+     },
+     "in_sample": {
+      "trades": 10,
+      "win_rate": 50.0,
+      "total_r": 0.46,
+      "net_r": 0.22,
+      "avg_r": 0.022,
+      "stops": 30.0
+     },
+     "out_of_sample": {
+      "trades": 9,
+      "win_rate": 11.1,
+      "total_r": -3.92,
+      "net_r": -3.97,
+      "avg_r": -0.442,
+      "stops": 44.4
+     },
+     "coin_flip": {
+      "p_value": 0.993,
+      "random_median": -0.3,
+      "percentile": 1.0
+     }
+    }
+   }
+  },
+  {
+   "symbol": "ES=F",
+   "name": "S&P 500",
+   "bars": 4230,
+   "stop_atr": 1.0,
+   "point_value": 5.0,
+   "tick": 0.25,
+   "rules": {
+    "open_break": {
+     "all": {
+      "trades": 229,
+      "win_rate": 44.5,
+      "total_r": 4.66,
+      "net_r": -2.4,
+      "avg_r": -0.01,
+      "stops": 15.3
+     },
+     "in_sample": {
+      "trades": 114,
+      "win_rate": 40.4,
+      "total_r": -3.05,
+      "net_r": -8.45,
+      "avg_r": -0.074,
+      "stops": 16.7
+     },
+     "out_of_sample": {
+      "trades": 115,
+      "win_rate": 48.7,
+      "total_r": 7.71,
+      "net_r": 6.05,
+      "avg_r": 0.053,
+      "stops": 13.9
+     },
+     "coin_flip": {
+      "p_value": 0.08,
+      "random_median": -4.81,
+      "percentile": 92.0
+     }
+    },
+    "trend_day_fade": {
+     "all": {
+      "trades": 20,
+      "win_rate": 55.0,
+      "total_r": 4.98,
+      "net_r": 4.41,
+      "avg_r": 0.22,
+      "stops": 25.0
+     },
+     "in_sample": {
+      "trades": 10,
+      "win_rate": 50.0,
+      "total_r": 4.32,
+      "net_r": 3.89,
+      "avg_r": 0.389,
+      "stops": 20.0
+     },
+     "out_of_sample": {
+      "trades": 10,
+      "win_rate": 60.0,
+      "total_r": 0.66,
+      "net_r": 0.52,
+      "avg_r": 0.052,
+      "stops": 30.0
+     },
+     "coin_flip": {
+      "p_value": 0.29,
+      "random_median": -0.37,
+      "percentile": 71.0
+     }
+    },
+    "trend_day_continue": {
+     "all": {
+      "trades": 20,
+      "win_rate": 35.0,
+      "total_r": -1.6,
+      "net_r": -2.17,
+      "avg_r": -0.109,
+      "stops": 30.0
+     },
+     "in_sample": {
+      "trades": 10,
+      "win_rate": 40.0,
+      "total_r": -0.09,
+      "net_r": -0.51,
+      "avg_r": -0.051,
+      "stops": 30.0
+     },
+     "out_of_sample": {
+      "trades": 10,
+      "win_rate": 30.0,
+      "total_r": -1.52,
+      "net_r": -1.66,
+      "avg_r": -0.166,
+      "stops": 30.0
+     },
+     "coin_flip": {
+      "p_value": 0.747,
+      "random_median": -0.41,
+      "percentile": 25.0
+     }
+    }
+   }
+  },
+  {
+   "symbol": "GC=F",
+   "name": "Gold",
+   "bars": 4229,
+   "stop_atr": 1.0,
+   "point_value": 10.0,
+   "tick": 0.1,
+   "rules": {
+    "open_break": {
+     "all": {
+      "trades": 1056,
+      "win_rate": 36.9,
+      "total_r": -5.86,
+      "net_r": -41.2,
+      "avg_r": -0.039,
+      "stops": 11.6
+     },
+     "in_sample": {
+      "trades": 949,
+      "win_rate": 34.9,
+      "total_r": -15.47,
+      "net_r": -49.18,
+      "avg_r": -0.052,
+      "stops": 11.3
+     },
+     "out_of_sample": {
+      "trades": 107,
+      "win_rate": 55.1,
+      "total_r": 9.61,
+      "net_r": 7.97,
+      "avg_r": 0.075,
+      "stops": 14.0
+     },
+     "coin_flip": {
+      "p_value": 0.097,
+      "random_median": -2.35,
+      "percentile": 90.0
+     }
+    },
+    "trend_day_fade": {
+     "all": {
+      "trades": 54,
+      "win_rate": 40.7,
+      "total_r": 1.5,
+      "net_r": -0.09,
+      "avg_r": -0.002,
+      "stops": 18.5
+     },
+     "in_sample": {
+      "trades": 44,
+      "win_rate": 40.9,
+      "total_r": 3.17,
+      "net_r": 1.77,
+      "avg_r": 0.04,
+      "stops": 11.4
+     },
+     "out_of_sample": {
+      "trades": 10,
+      "win_rate": 40.0,
+      "total_r": -1.67,
+      "net_r": -1.86,
+      "avg_r": -0.186,
+      "stops": 50.0
+     },
+     "coin_flip": {
+      "p_value": 0.843,
+      "random_median": -0.47,
+      "percentile": 16.0
+     }
+    },
+    "trend_day_continue": {
+     "all": {
+      "trades": 54,
+      "win_rate": 35.2,
+      "total_r": -1.08,
+      "net_r": -2.67,
+      "avg_r": -0.05,
+      "stops": 24.1
+     },
+     "in_sample": {
+      "trades": 44,
+      "win_rate": 34.1,
+      "total_r": -0.95,
+      "net_r": -2.35,
+      "avg_r": -0.053,
+      "stops": 20.5
+     },
+     "out_of_sample": {
+      "trades": 10,
+      "win_rate": 40.0,
+      "total_r": -0.13,
+      "net_r": -0.32,
+      "avg_r": -0.032,
+      "stops": 40.0
+     },
+     "coin_flip": {
+      "p_value": 0.493,
+      "random_median": -0.38,
+      "percentile": 51.0
+     }
+    }
+   }
+  },
+  {
+   "symbol": "CL=F",
+   "name": "Crude oil",
+   "bars": 4229,
+   "stop_atr": 1.0,
+   "point_value": 100.0,
+   "tick": 0.01,
+   "rules": {
+    "open_break": {
+     "all": {
+      "trades": 218,
+      "win_rate": 43.1,
+      "total_r": -12.7,
+      "net_r": -17.16,
+      "avg_r": -0.079,
+      "stops": 14.7
+     },
+     "in_sample": {
+      "trades": 114,
+      "win_rate": 46.5,
+      "total_r": -5.34,
+      "net_r": -8.03,
+      "avg_r": -0.07,
+      "stops": 14.9
+     },
+     "out_of_sample": {
+      "trades": 104,
+      "win_rate": 39.4,
+      "total_r": -7.36,
+      "net_r": -9.14,
+      "avg_r": -0.088,
+      "stops": 14.4
+     },
+     "coin_flip": {
+      "p_value": 0.913,
+      "random_median": -2.45,
+      "percentile": 9.0
+     }
+    },
+    "trend_day_fade": {
+     "all": {
+      "trades": 24,
+      "win_rate": 45.8,
+      "total_r": -1.66,
+      "net_r": -2.17,
+      "avg_r": -0.09,
+      "stops": 29.2
+     },
+     "in_sample": {
+      "trades": 11,
+      "win_rate": 45.5,
+      "total_r": -1.11,
+      "net_r": -1.37,
+      "avg_r": -0.124,
+      "stops": 27.3
+     },
+     "out_of_sample": {
+      "trades": 13,
+      "win_rate": 46.2,
+      "total_r": -0.55,
+      "net_r": -0.81,
+      "avg_r": -0.062,
+      "stops": 30.8
+     },
+     "coin_flip": {
+      "p_value": 0.63,
+      "random_median": 0.05,
+      "percentile": 37.0
+     }
+    },
+    "trend_day_continue": {
+     "all": {
+      "trades": 24,
+      "win_rate": 50.0,
+      "total_r": 0.05,
+      "net_r": -0.46,
+      "avg_r": -0.019,
+      "stops": 20.8
+     },
+     "in_sample": {
+      "trades": 11,
+      "win_rate": 54.5,
+      "total_r": 1.74,
+      "net_r": 1.49,
+      "avg_r": 0.135,
+      "stops": 9.1
+     },
+     "out_of_sample": {
+      "trades": 13,
+      "win_rate": 46.2,
+      "total_r": -1.69,
+      "net_r": -1.95,
+      "avg_r": -0.15,
+      "stops": 30.8
+     },
+     "coin_flip": {
+      "p_value": 0.79,
+      "random_median": -0.39,
+      "percentile": 21.0
+     }
+    }
+   }
+  },
+  {
+   "symbol": "RTY=F",
+   "name": "Russell 2000",
+   "bars": 2341,
+   "stop_atr": 1.0,
+   "point_value": 5.0,
+   "tick": 0.1,
+   "rules": {
+    "open_break": {
+     "all": {
+      "trades": 117,
+      "win_rate": 44.4,
+      "total_r": -10.9,
+      "net_r": -12.97,
+      "avg_r": -0.111,
+      "stops": 15.4
+     },
+     "in_sample": {
+      "trades": 24,
+      "win_rate": 45.8,
+      "total_r": 0.0,
+      "net_r": -0.74,
+      "avg_r": -0.031,
+      "stops": 12.5
+     },
+     "out_of_sample": {
+      "trades": 93,
+      "win_rate": 44.1,
+      "total_r": -10.9,
+      "net_r": -12.23,
+      "avg_r": -0.131,
+      "stops": 16.1
+     },
+     "coin_flip": {
+      "p_value": 0.953,
+      "random_median": -2.15,
+      "percentile": 5.0
+     }
+    },
+    "trend_day_fade": {
+     "all": {
+      "trades": 10,
+      "win_rate": 40.0,
+      "total_r": 0.73,
+      "net_r": 0.54,
+      "avg_r": 0.054,
+      "stops": 10.0
+     },
+     "in_sample": {
+      "trades": 2,
+      "win_rate": 100.0,
+      "total_r": 1.29,
+      "net_r": 1.23,
+      "avg_r": 0.616,
+      "stops": 0.0
+     },
+     "out_of_sample": {
+      "trades": 8,
+      "win_rate": 25.0,
+      "total_r": -0.55,
+      "net_r": -0.69,
+      "avg_r": -0.086,
+      "stops": 12.5
+     },
+     "coin_flip": {
+      "p_value": 0.62,
+      "random_median": -0.34,
+      "percentile": 38.0
+     }
+    },
+    "trend_day_continue": {
+     "all": {
+      "trades": 10,
+      "win_rate": 40.0,
+      "total_r": -2.52,
+      "net_r": -2.71,
+      "avg_r": -0.271,
+      "stops": 30.0
+     },
+     "in_sample": {
+      "trades": 2,
+      "win_rate": 0.0,
+      "total_r": -1.37,
+      "net_r": -1.43,
+      "avg_r": -0.714,
+      "stops": 50.0
+     },
+     "out_of_sample": {
+      "trades": 8,
+      "win_rate": 50.0,
+      "total_r": -1.14,
+      "net_r": -1.28,
+      "avg_r": -0.16,
+      "stops": 25.0
+     },
+     "coin_flip": {
+      "p_value": 0.747,
+      "random_median": -0.11,
+      "percentile": 25.0
+     }
+    }
+   }
+  }
+ ]
+}

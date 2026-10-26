@@ -41,8 +41,9 @@ repo stays clean — the first real run recreates it.
 ## Next
 1. Walk the Mac setup: Terminal → `git --version` → Homebrew → `python@3.12 node` →
    clone → Gemini key → `bash setup-cc-free.sh`. Nothing has been run on the Mac yet.
-2. Run `python3 trading/paper.py --once` and leave the launchd job on for a week; the
-   number to watch is the trade count, not the equity.
+2. Forward-test the NQ fade-after-trend-day rule from `trading/RESEARCH-LOG.md`
+   (2026-10-26 b): positive in both windows, p 0.08/0.10, one or two signals a month.
+   Also run `python3 trading/paper.py --once` daily; watch the trade count, not the equity.
 3. Decide `HOST=127.0.0.1` in `.env` (dashboard currently answers to the whole LAN).
 
 ## Avoid
