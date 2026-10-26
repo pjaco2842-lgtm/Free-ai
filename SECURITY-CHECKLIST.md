@@ -86,7 +86,7 @@ npm run build -w server && npx -w server vitest run
 
 | # | Item | Verdict | Where |
 |---|---|---|---|
-| 38 | Malicious packages | ⚠️ | Lockfile integrity hashes + `npm ci` in CI; nothing scans for typosquats. Skills *are* scanned: `agent/scan-skill.sh` |
+| 38 | Malicious packages | ✅ | npm: lockfile integrity hashes + `npm ci`. Skills: all three installed packs read in full — 515 files, 131k lines, every network/exec/write call site — no malware: `agent/skill-audits/2026-10-26-three-packs.md`. Repeatable with `./agent/scan-skill.sh --deep` |
 | 39 | Prompt injection | ⚠️ | Alerts and file contents are data, never instructions — but the worker cannot tell a malicious README from a task. Deny-lists and step limits reduce it; nothing eliminates it |
 | 40 | Unpermissioned AI access | 🔧 | The worker handed every model-chosen command your whole environment, `GEMINI_API_KEY` included. Now a scrubbed child env (paths and locale only) |
 | 41 | Excessive DB permissions | ✅ | One local file, one process, no shared DB user |

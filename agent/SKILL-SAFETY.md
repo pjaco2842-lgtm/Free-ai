@@ -30,8 +30,9 @@ Check a folder | `./agent/scan-skill.sh ~/Downloads/skill-folder` |
 Check straight from GitHub | `./agent/scan-skill.sh https://github.com/user/skill` |
 Audit everything already installed | `./agent/scan-skill.sh --all` |
 Keep a written report | `./agent/scan-skill.sh --save ~/Downloads/skill.zip` |
-Also fail on *high* findings | `./agent/scan-skill.sh --strict ~/Downloads/skill.zip` |
-Deeper read using your free model | `./agent/scan-skill.sh --llm ~/Downloads/skill.zip` |
+Also fail on *high* findings | `./agent/scan-skill.sh --strict ~/Downloads/skill.zip`| Deeper read using your free model | `./agent/scan-skill.sh --llm ~/Downloads/skill.zip` |
+| Read what the code actually does | `./agent/scan-skill.sh --deep ~/Downloads/skill.zip` |
+| Code read only (fast, big repos) | `./agent/scan-skill.sh --deep-only ~/.claude/skills/x` |
 
 Exit codes: **0** nothing critical · **1** something critical · **2** the scan failed or
 the target was not a skill. `--save` writes a table of every finding to
@@ -48,6 +49,12 @@ gateway is up). Without it you get static rule matching, which is what catches t
 obvious attacks anyway.
 
 ---
+
+**`--deep` is the one to run on anything you didn't write.** The scanner answers "does
+this match a known bad pattern"; `--deep` answers "what will this do to my machine" —
+the hosts it contacts, where it can run commands, where it touches home or key
+directories, where it posts data, and **which hooks run automatically on every
+prompt**. A hook with a command runs whether or not you remember installing it.
 
 ## How to read the result
 

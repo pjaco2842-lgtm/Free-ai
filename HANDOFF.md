@@ -20,6 +20,11 @@ setup has not been started, so all of this exists as files in this repo.
   exits 1 on critical findings. Verified on a benign zip (0/CLEAN), a deliberately
   malicious zip (100/YARA), a non-skill folder (refused), and a GitHub URL.
 - **Our own skill** — `skills/nq-desk/SKILL.md` declares its tool scope; scans CLEAN.
+- **Third-party skills read in full** — ponytail, addy-agent-skills, day-trader-skill:
+  515 files, 131k lines, every network/exec/write call site reviewed. No malware.
+  ponytail's task board is on by default (local CSV only) and it runs a Node hook on
+  every prompt; day-trader's broker module only writes tickets, never places orders.
+  Verdict and method: `agent/skill-audits/2026-10-26-three-packs.md`.
 - **Security fixes this round** — worker commands get a scrubbed child environment
   (no `GEMINI_API_KEY`), credential paths refused, `safe_path` prefix bug fixed;
   TradingView webhook fails closed, constant-time secret, replay + dedupe + rate
@@ -59,7 +64,7 @@ ccg                                # Claude Code on the free gateway
 python3 trading/paper.py --once    # one paper tick
 python3 trading/paper.py --status  # equity, open position, recent trades
 python3 trading/luck.py            # coin-flip test for a strategy
-./agent/scan-skill.sh <path|zip>   # check a skill before installing
+./agent/scan-skill.sh --deep <path|zip>   # code read + verdict, before installing
 npm run build -w server && npx -w server vitest run
 ```
 Repo root holds `agent/`, `trading/`, `skills/`, `SECURITY-*.md`, `HANDOFF.md`.

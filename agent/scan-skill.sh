@@ -20,6 +20,8 @@
 #   ./scan-skill.sh --save <target>    also write a markdown report
 #   ./scan-skill.sh --strict <target>  also fail on HIGH findings
 #   ./scan-skill.sh --llm <target>     use your free local model, not just static rules
+#   ./scan-skill.sh --deep <target>    read the code: hosts, exec, writes, hooks
+#   ./scan-skill.sh --deep-only <t>    only the code read (fast, big repos)
 #
 # Exit codes: 0 nothing critical · 1 critical (or HIGH with --strict) · 2 error
 
@@ -34,6 +36,8 @@ STRICT=0
 USE_LLM=0
 SAVE=0
 SCAN_ALL=0
+DEEP=0
+DEEP_ONLY=0
 TARGET=""
 
 say()  { printf '\n\033[1m%s\033[0m\n' "$*"; }
@@ -49,6 +53,8 @@ usage() {
 while [ $# -gt 0 ]; do
   case "$1" in
     --all)     SCAN_ALL=1 ;;
+    --deep)      DEEP=1 ;;
+    --deep-only) DEEP=1; DEEP_ONLY=1 ;;
     --save)    SAVE=1 ;;
     --strict)  STRICT=1 ;;
     --llm)     USE_LLM=1 ;;
@@ -230,6 +236,8 @@ PY
 }
 
 scan_one() { # $1=target  $2=label
+  [ "$DEEP" -eq 1 ] && deep_report "$1" "$2"
+  [ "$DEEP_ONLY" -eq 1 ] && return 0
   local json err rc report
   # Portable across macOS and Linux (macOS mktemp accepts -t, GNU needs XXXXXX).
   json="$(mktemp "${TMPDIR:-/tmp}/skillspector.XXXXXX")" || die "Cannot create a temp file."
@@ -253,6 +261,109 @@ scan_one() { # $1=target  $2=label
   rc=$?
   rm -f "$json" "$err"
   return $rc
+}
+
+# --- --deep: read the code, not just the score --------------------------------
+# SkillSpector answers "does this match a known bad pattern". It cannot answer
+# "what will this thing do on my machine" — which hosts it contacts, whether it
+# can run commands, where it writes, and whether it installs hooks that fire on
+# every prompt. That is the question that decides an install, so --deep reads the
+# source and prints the answer.
+deep_report() { # $1=target $2=label
+  python3 - "$1" "$2" <<'PY'
+import os, re, sys, zipfile, tempfile, shutil
+
+target, label = sys.argv[1], sys.argv[2]
+CODE = {'.py', '.js', '.mjs', '.cjs', '.ts', '.tsx', '.jsx', '.sh', '.bash', '.zsh', '.ps1'}
+SKIP = {'.git', 'node_modules', 'dist', 'build', '__pycache__', '.venv', 'venv'}
+
+HOST   = re.compile(r'https?://([A-Za-z0-9._:-]+)')
+EGRESS = re.compile(r'(fetch\s*\(|urlopen\s*\(|requests\.(post|put)\(|\bcurl\b[^\n]*-d|method\s*:\s*[\'"]POST)')
+EXEC   = re.compile(r'(execSync|execFileSync|spawnSync|spawn\s*\(|subprocess\.|os\.system|os\.popen|shell\s*=\s*True|Runtime\.getRuntime)')
+HOME   = re.compile(r'(homedir\(\)|\$HOME|~/\.|USERPROFILE|\.config/|\.ssh|\.aws|keychain)', re.I)
+HOOKEV = ('SessionStart', 'SessionEnd', 'PreToolUse', 'PostToolUse', 'UserPromptSubmit', 'SubagentStart', 'Stop')
+HIDDEN = '\u200b\u200c\u200d\u200e\u200f\u202a\u202b\u202c\u202d\u202e\u2060\ufeff'
+
+def walk(root):
+    for dp, dn, fns in os.walk(root):
+        dn[:] = [d for d in dn if d not in SKIP]
+        for fn in fns:
+            yield os.path.join(dp, fn)
+
+tmp = None
+if target.lower().endswith(('.zip', '.skill')):
+    tmp = tempfile.mkdtemp()
+    try:
+        with zipfile.ZipFile(target) as z:
+            z.extractall(tmp)
+    except Exception as err:
+        print(f"\n  could not read the archive: {err}")
+        shutil.rmtree(tmp, ignore_errors=True)
+        sys.exit(0)
+    root = tmp
+elif os.path.isdir(target):
+    root = target
+else:
+    print("\n  --deep needs a folder or a .zip")
+    sys.exit(0)
+
+hosts, egress, execs, homes, hooks, hidden = {}, [], [], [], [], []
+for path in walk(root):
+    ext = os.path.splitext(path)[1].lower()
+    rel = os.path.relpath(path, root)
+    try:
+        text = open(path, encoding='utf-8', errors='replace').read()
+    except OSError:
+        continue
+    if any(ch in text for ch in HIDDEN):
+        hidden.append(rel)
+    if ext in CODE:
+        for i, line in enumerate(text.splitlines(), 1):
+            for m in HOST.finditer(line):
+                host = m.group(1).rstrip('.,)')
+                if host.startswith(('127.0.0.1', 'localhost')):
+                    continue
+                hosts[host] = hosts.get(host, 0) + 1
+            if EGRESS.search(line): egress.append(f"{rel}:{i}  {line.strip()[:70]}")
+            if EXEC.search(line):   execs.append(f"{rel}:{i}")
+            if HOME.search(line):   homes.append(f"{rel}:{i}")
+    if ext == '.json':
+        for ev in HOOKEV:
+            if ev in text:
+                for m in re.finditer(r'"command"\s*:\s*"([^"]{0,100})', text):
+                    hooks.append((ev, rel, m.group(1)))
+                break
+
+def section(title, items, limit=5):
+    print(f"\n  {title}")
+    if not items:
+        print("    none")
+        return
+    for it in items[:limit]:
+        print(f"    {it}")
+    if len(items) > limit:
+        print(f"    ... {len(items) - limit} more")
+
+print(f"\n  \033[1mWhat it does\033[0m - {label}")
+if hosts:
+    print("\n  Hosts it contacts")
+    for host, n in sorted(hosts.items(), key=lambda kv: -kv[1])[:8]:
+        print(f"    {host}  ({n})")
+else:
+    print("\n  Hosts it contacts\n    none")
+section("Runs commands at", execs)
+section("Touches home / config / keys at", homes)
+section("Sends or posts at", egress)
+if hooks:
+    print("\n  \033[1;33mRuns automatically\033[0m")
+    for ev, rel, cmd in hooks[:6]:
+        print(f"    {ev:<16} {rel} :: {cmd}")
+else:
+    print("\n  Runs automatically\n    no hook commands registered")
+print("\n  Invisible characters: " + ("NONE" if not hidden else ", ".join(hidden[:4])))
+if tmp:
+    shutil.rmtree(tmp, ignore_errors=True)
+PY
 }
 
 # --- run --------------------------------------------------------------------
