@@ -33,11 +33,22 @@ jobs:
       - name: Record the book
         run: python trading/paper_oracle.py
 
+      # The buffer-safe challenger runs in parallel, with its own ledger, so the two can
+      # be compared forward instead of argued about. Its stops are small enough that a
+      # losing run does not end the account on its own.
+      - name: Record the buffer-safe challenger
+        run: |
+          python trading/paper_oracle.py \
+            --book trading/desk/oracle-safe.json \
+            --state trading/desk/oracle-safe-state.json \
+            --out trading/desk/oracle-safe-forward.md
+
       - name: Commit the record
         run: |
           git config user.name "desk-bot"
           git config user.email "desk-bot@users.noreply.github.com"
-          git add trading/desk/oracle-forward.md trading/desk/oracle-state.json
+          git add trading/desk/oracle-forward.md trading/desk/oracle-state.json \
+                  trading/desk/oracle-safe-forward.md trading/desk/oracle-safe-state.json
           if git diff --cached --quiet; then
             echo "no change to record"
           else

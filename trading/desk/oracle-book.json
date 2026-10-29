@@ -11,6 +11,8 @@
     "symbol": "NQ=F",
     "test_net": 41450.82,
     "test_trades": 979,
+    "test_win": 55.6,
+    "med_risk": 1006.96,
     "luck_pct": 96.4,
     "plateau": 0.75
   },
@@ -26,22 +28,26 @@
     "symbol": "NQ=F",
     "test_net": 37650.03,
     "test_trades": 703,
+    "test_win": 55.8,
+    "med_risk": 755.22,
     "luck_pct": 100.0,
     "plateau": 0.83
   },
   {
-    "family": "nday_fade",
-    "n": 5,
-    "stop": 0.5,
-    "exit": "tp1",
+    "family": "nr_break",
+    "n": 2,
+    "stop": 1.0,
+    "exit": "tp2",
     "gap": "any",
     "trend": false,
     "dow": "all",
     "dir": "both",
     "symbol": "NQ=F",
-    "test_net": 31389.23,
-    "test_trades": 703,
-    "luck_pct": 100.0,
-    "plateau": 0.67
+    "test_net": 31247.25,
+    "test_trades": 490,
+    "test_win": 57.8,
+    "med_risk": 1006.96,
+    "luck_pct": 99.6,
+    "plateau": 1.0
   }
 ]

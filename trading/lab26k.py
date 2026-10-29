@@ -60,6 +60,7 @@ from scalp import MARKETS  # noqa: E402
 HERE = Path(__file__).resolve().parent
 DESK = HERE / "desk"
 BOOK = DESK / "oracle-book.json"
+SAFE_BOOK = DESK / "oracle-safe.json"
 REPORT = DESK / "oracle26k.md"
 RAW = DESK / "oracle26k.json"
 
@@ -401,6 +402,7 @@ def splits(D: dict) -> dict:
 def sweep(D: dict, floor_train: int = 100, floor_test: int = 60):
     """Returns (all configs, configs that passed the sample and unseen-year floors)."""
     sp = splits(D)
+    pv = MARKETS[D["symbol"]][1]
     sess = {k: len({D["dates"][i] for i in np.where(m)[0]}) for k, m in sp.items()}
     legcache = {(fam, n): spec_legs(D, {"family": fam, "n": n})
                 for fam in FAMILIES for n in (LOOKBACKS if fam in N_FAMILIES else [None])}
@@ -429,6 +431,12 @@ def sweep(D: dict, floor_train: int = 100, floor_test: int = 60):
                                     allrows.append(row)
                                     if (tr["trades"] >= floor_train and tr["net"] > 0
                                             and te["trades"] >= floor_test and te["net"] > 0):
+                                        # risk per stop at *current* volatility, not the
+                                        # 17-year average: a 1 ATR stop was $176 on NQ in
+                                        # 2009 and is $1,155 today, and only the second
+                                        # number decides whether the buffer survives.
+                                        row["med_risk"] = float(
+                                            spec["stop"] * np.nanmedian(D["atr_prev"][-252:]) * pv)
                                         passed.append(row)
     return allrows, passed
 
@@ -505,9 +513,42 @@ def verify(D: dict, spec: dict) -> tuple[float, float]:
     return vec, scalar
 
 
+def pick_book(gated: list[dict], data: dict, top: int) -> list[dict]:
+    """One rule per row: dedupe by the sessions a config actually trades.
+
+    Deduping on results only catches exact copies. The 5-day fade at a 0.75 ATR stop and
+    the same fade at 0.5 ATR take *the same trades* with different stops, so they are one
+    position sized twice — two micros of exposure the account never chose. Two configs
+    whose trade days overlap 90% or more are treated as one.
+    """
+    out: list[dict] = []
+    taken: list[set[int]] = []
+    for g in gated:
+        D = data[g["symbol"]]
+        _, trig = spec_pnl(D, g["spec"])
+        days = set(np.where(trig & spec_mask(D, g["spec"]))[0].tolist())
+        if not days:
+            continue
+        if any(len(days & t) / len(days | t) >= 0.9 for t in taken):
+            continue
+        taken.append(days)
+        out.append({**g["spec"], "symbol": g["symbol"],
+                    "test_net": round(g["test"]["net"], 2),
+                    "test_trades": g["test"]["trades"],
+                    "test_win": round(g["test"]["win"], 1),
+                    "med_risk": round(float(g.get("med_risk", 0.0)), 2),
+                    "luck_pct": round(g["luck"]["pct"], 1),
+                    "plateau": round(g["plateau"], 2)})
+        if len(out) >= top:
+            break
+    return out
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--symbols", default="NQ=F")
+    ap.add_argument("--risk-cap", type=float, default=250.0,
+                    help="per-stop dollars a buffer-safe variant may risk")
     ap.add_argument("--runs", type=int, default=500)
     ap.add_argument("--top", type=int, default=3)
     ap.add_argument("--candidates", type=int, default=60,
@@ -559,23 +600,16 @@ def main() -> None:
         print(f"  chance alone would pass about {0.05 * tested_top:.0f} of those "
               f"{tested_top} on a 95th-percentile luck gate")
 
-    book = []
-    seen = set()
-    for g in gated:
-        # nday_break n=1 and nr_break n=1 are the same rule (the prior session's range),
-        # so identical results are the same trade twice, not two strategies. Dedupe them
-        # or the paper book multiplies one position by however many aliases score top.
-        key = (g["symbol"], g["test"]["trades"], round(g["test"]["net"], 2))
-        if key in seen:
-            continue
-        seen.add(key)
-        book.append({**g["spec"], "symbol": g["symbol"],
-                     "test_net": round(g["test"]["net"], 2),
-                     "test_trades": g["test"]["trades"],
-                     "luck_pct": round(g["luck"]["pct"], 1),
-                     "plateau": round(g["plateau"], 2)})
-        if len(book) >= args.top:
-            break
+    book = pick_book(gated, data, args.top)
+
+    # The account this is for has a $1,000 end-of-day buffer, so a "best net" book whose
+    # stop is $1,155 a trade has already failed before it starts. This is the same search
+    # with the sizing constraint applied first, ranked by win rate instead of net.
+    safe_pool = sorted([g for g in gated
+                        if g.get("med_risk", 9e9) <= args.risk_cap
+                        and g["test"]["trades"] >= 100],
+                       key=lambda g: (-g["test"]["win"], -g["test"]["net"]))
+    safe = pick_book(safe_pool, data, args.top)
     unvalidated = False
     if not book:
         unvalidated = True
@@ -612,6 +646,13 @@ def main() -> None:
 
     BOOK.parent.mkdir(parents=True, exist_ok=True)
     BOOK.write_text(json.dumps(book, indent=2))
+    SAFE_BOOK.write_text(json.dumps(safe, indent=2))
+    if safe:
+        print("  buffer-safe challenger (win rate first):")
+        for b in safe:
+            print(f"    {b['family']}-{b['n']} {b['stop']}A {b['exit']} {b['dir']}: "
+                  f"{b['test_trades']} trades, {b['test_win']:.0f}% win, "
+                  f"${b['test_net']:+,.0f}, risk ${b['med_risk']:,.0f}/stop")
 
     # ---------------------------------------------------------------- report
     def by(key):
@@ -661,6 +702,18 @@ def main() -> None:
                   "edge. The book below holds the top scorers marked `unvalidated` so they can be "
                   "watched forward, not trusted."]
 
+    if safe:
+        lines += ["", "## Buffer-safe challenger — win rate first", "",
+                  f"Same sweep, but only configs whose median stop is ≤ ${args.risk_cap:,.0f} — "
+                  "so a normal losing run fits inside the $1,000 buffer — ranked by "
+                  "out-of-sample win rate instead of net profit.", "",
+                  "| market | family | n | stop | exit | dir | trades | win | net $ | median risk/stop |",
+                  "|---|---|---|---|---|---|---|---|---|---|"]
+        for b in safe:
+            lines.append(f"| {b['symbol']} | {b['family']} | {b['n']} | {b['stop']}A | {b['exit']} "
+                         f"| {b['dir']} | {b['test_trades']} | {b['test_win']:.0f}% "
+                         f"| ${b['test_net']:+,.0f} | ${b['med_risk']:,.0f} |")
+
     lines += ["", "## What the whole population says", "",
               f"All {len(allrows):,} configurations, including the losers — otherwise this is "
               "just a list of winners. `positive` is the share with a positive test result.", ""]
@@ -697,6 +750,18 @@ def main() -> None:
                   f"{SPACE * len(data):,} tested. With this many trials, some win by chance; "
                   "the plateau and luck gates exist to throw those out, and the number that "
                   "survives them is the honest answer to \"how many real edges are in here\".", ""]
+
+    # log every idea before it is believed (desk rule: count the variations out loud)
+    log = HERE / "paper" / "research-log.md"
+    log.parent.mkdir(parents=True, exist_ok=True)
+    book_names = "; ".join(f"{b['family']}-{b['n']} {b['stop']}A {b['exit']} {b['dir']}"
+                           for b in book)
+    with log.open("a") as fh:
+        fh.write(f"\n## {datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%MZ')} — "
+                 f"{SPACE:,}-config sweep on {', '.join(data)}\n"
+                 f"- gates: unseen years, plateau, 2025 regime, {args.runs}-run luck\n"
+                 f"- {len(passed):,} positive in both halves, {len(gated)} through all gates\n"
+                 f"- paper book: {book_names}\n")
 
     REPORT.write_text("\n".join(lines))
     RAW.write_text(json.dumps({"space": SPACE, "both_halves": len(passed),

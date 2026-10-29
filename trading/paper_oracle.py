@@ -250,11 +250,15 @@ def write(state: dict, rows: list[dict], ledger_today: list[dict], path: Path, t
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--replay", type=int, default=0)
+    ap.add_argument("--book", default=str(BOOK), help="which book to trade")
+    ap.add_argument("--state", default=str(STATE), help="ledger file for that book")
+    ap.add_argument("--out", default=str(FORWARD), help="report file for that book")
     args = ap.parse_args()
+    book_path, state_path, out_path = Path(args.book), Path(args.state), Path(args.out)
 
-    if not BOOK.exists():
-        raise SystemExit("no oracle-book.json — run trading/lab26k.py first")
-    book = json.loads(BOOK.read_text())
+    if not book_path.exists():
+        raise SystemExit(f"no {book_path.name} — run trading/lab26k.py first")
+    book = json.loads(book_path.read_text())
     if not book:
         raise SystemExit("the book is empty")
 
@@ -276,12 +280,12 @@ def main() -> None:
         for sym, D in data.items():
             step(sym, D, by_sym[sym], state, len(D["dates"]))
         rows = [r for sym, D in data.items() for r in watch(D, by_sym[sym], len(D["dates"]) - 1)]
-        write(state, rows[:0], state["ledger"], REPLAY_MD,
+        write(state, rows[:0], state["ledger"], out_path,
               f"Replay — the book over the last {args.replay} sessions", unvalidated)
-        print(f"  replay: {len(state['ledger'])} trades, ${state['equity']:+,.2f} → {REPLAY_MD}")
+        print(f"  replay: {len(state['ledger'])} trades, ${state['equity']:+,.2f} → {out_path}")
         return
 
-    state = json.loads(STATE.read_text()) if STATE.exists() else blank()
+    state = json.loads(state_path.read_text()) if state_path.exists() else blank()
     fresh: list[dict] = []
     for sym, D in data.items():
         upto = complete_len(D, now)
@@ -297,8 +301,8 @@ def main() -> None:
 
     rows = [r for sym, D in data.items()
             for r in watch(D, by_sym[sym], complete_len(D, now))]
-    STATE.write_text(json.dumps(state, indent=2))
-    write(state, rows, fresh, FORWARD, "The 26,000-test paper book", unvalidated)
+    state_path.write_text(json.dumps(state, indent=2))
+    write(state, rows, fresh, out_path, "The 26,000-test paper book", unvalidated)
     print(f"  {len(state['ledger'])} closed trades, equity ${state['equity']:+,.2f}, "
           f"{len(rows)} orders standing")
     print(f"  written to {FORWARD}")
