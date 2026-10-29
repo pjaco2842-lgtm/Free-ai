@@ -551,6 +551,8 @@ def main() -> None:
                     help="per-stop dollars a buffer-safe variant may risk")
     ap.add_argument("--exclude-family", default="",
                     help="families kept out of the main book, comma separated")
+    ap.add_argument("--pin", default="",
+                    help="force one config into the book as family:n, e.g. nr_break:2")
     ap.add_argument("--runs", type=int, default=500)
     ap.add_argument("--top", type=int, default=3)
     ap.add_argument("--candidates", type=int, default=60,
@@ -604,6 +606,13 @@ def main() -> None:
 
     excluded = {f.strip() for f in args.exclude_family.split(",") if f.strip()}
     book_pool = [g for g in gated if g["spec"]["family"] not in excluded]
+    if args.pin:
+        # Ranking cannot express "the narrow-range one": nr_break with n=1 out-earns n=2
+        # but is the prior-day rule renamed, so a spec has to be named, not inferred.
+        fam, _, num = args.pin.partition(":")
+        want = int(num) if num else None
+        book_pool = [g for g in book_pool
+                     if g["spec"]["family"] == fam and g["spec"]["n"] == want]
     book = pick_book(book_pool, data, args.top)
     print(f"  book families: {', '.join(sorted({b['family'] for b in book})) or 'none'}"
           + (f" (excluded: {', '.join(sorted(excluded))})" if excluded else ""))
