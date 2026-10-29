@@ -193,7 +193,10 @@ def write(state: dict, rows: list[dict], ledger_today: list[dict], path: Path, t
             dist = "—" if r["dist"] is None else f"{r['dist']:+,.2f}"
             lines.append(f"| {r['date']} | {r['market']} | {r['rule']} | {r['side']} | {lvl} "
                          f"| {dist} | ${r['risk']:,.0f} |")
-        worst = sum(r["risk"] for r in rows)
+        # only one side of a level can fill in a session: a buy stop above and a sell stop
+        # below cannot both trigger, so summing every order overstates the worst case.
+        worst = max(sum(r["risk"] for r in rows if r["side"] == "long"),
+                    sum(r["risk"] for r in rows if r["side"] == "short"))
         lines += ["", "A level is a resting buy/sell stop: if the session trades through it, "
                       "the trade is taken and the record shows it after the close.",
                   "", f"**Worst case next session**: if every standing order fills and every "
