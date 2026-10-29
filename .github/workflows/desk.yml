@@ -61,9 +61,11 @@ jobs:
         continue-on-error: true
         run: python3 trading/swarm.py --force
 
-      - name: Ask the six bots what they would do right now
+      - name: Ask the bots what they would do right now
         continue-on-error: true
-        run: python3 trading/desk.py --board
+        run: |
+          rm -f trading/desk/board.md
+          python3 trading/desk.py --board
 
       - name: Rebuild the analytics tables
         continue-on-error: true
@@ -81,6 +83,10 @@ jobs:
       - name: Record it
         run: |
           set -euo pipefail
+          # Put the board at the top of the run page, so a phone can read the
+          # result without downloading anything. If board.md is missing the board
+          # step failed, and this failing loudly is the point.
+          cat trading/desk/board.md >> "$GITHUB_STEP_SUMMARY"
           git config user.name  "desk-bot"
           git config user.email "desk-bot@users.noreply.github.com"
           git add -A trading/desk
@@ -99,7 +105,8 @@ jobs:
           fi
           last_day="$(git log -1 --format=%cd --date=short -- trading/desk/dashboard.html 2>/dev/null || true)"
           today="$(date -u +%F)"
-          if [ "$traded" = true ] || [ "$last_day" != "$today" ]; then
+          added=$(git diff --cached --name-only --diff-filter=A | wc -l)
+          if [ "$traded" = true ] || [ "$added" -gt 0 ] || [ "$last_day" != "$today" ]; then
             git commit -m "desk: record $(date -u +%Y-%m-%dT%H:%MZ)"
             git push
           else

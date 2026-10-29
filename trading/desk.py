@@ -850,7 +850,28 @@ def board_cmd(as_json: bool = False, classic: bool = False) -> None:
                 "regime": r.get("regime"),
                 "governor": r.get("governor"),
             }) + "\n")
-    print(f"  board written to {BOARD}; call appended to {calls.name}")
+    # A markdown board, because the JSON is for programs and this is for a phone.
+    md = ["# The board — " + now_iso(), "",
+          "| market | call | conf | regime | setup | risk | roll |",
+          "|---|---|---|---|---|---|---|"]
+    for r in rows:
+        if r.get("error"):
+            md.append(f"| {r['symbol']} | feed down | — | — | — | — | — |")
+            continue
+        b = r.get("bots", {})
+        md.append("| {sym} | **{call}** | {conf} | {reg} | {setup} | {risk} | {roll}d |".format(
+            sym=r["symbol"], call=r["call"], conf=r["confidence"],
+            reg=r.get("regime", "?"),
+            setup=(b.get("1_opportunity") or {}).get("setup", "?"),
+            risk=(b.get("5_risk") or {}).get("action", "?"),
+            roll=(b.get("9_roll") or {}).get("days", "?")))
+    md.append("")
+    for r in rows:
+        if r.get("call") in ("BUY", "SELL"):
+            md.append(f"- **{r['symbol']} {r['call']}** — {r['why']}")
+    md.append("")
+    (DESK / "board.md").write_text("\n".join(md))
+    print(f"  board written to {BOARD} and board.md; call appended to {calls.name}")
 
 
 def main() -> None:
