@@ -1,0 +1,32 @@
+{
+  "_source": "Lucid Trading — LucidFlex evaluation, 25K. Rules read 2026-10-29; confirm on your dashboard after any firm update.",
+  "firm": "Lucid Trading",
+  "product": "LucidFlex",
+  "phase": "evaluation",
+  "start_balance": 25000,
+  "profit_target": 1250,
+  "max_loss": 1000,
+  "drawdown": {
+    "type": "end_of_day_trailing",
+    "amount": 1000,
+    "basis": "end-of-day balance high-water mark — intraday excursions do not count",
+    "lock_at_start_balance": true
+  },
+  "daily_loss_limit": null,
+  "stop_loss_required": false,
+  "consistency": {
+    "rule": 0.40,
+    "add_on": 0.5,
+    "applies_to": "evaluation only; the rule is dropped once funded",
+    "formula": "largest single day profit / account profit must be at or below the limit"
+  },
+  "desk": {
+    "risk_per_trade_pct": 1.0,
+    "max_open": 1,
+    "daily_stop": 400,
+    "buffer_guard_stops": 2.0,
+    "governor_halt_fraction": 0.3,
+    "governor_caution_fraction": 0.55,
+    "why": "1% of equity = $250 is the smallest budget that still fits one MES ($209) or MCL ($223) stop — there is no smaller contract, so size cannot shrink further. One position at a time because two concurrent micro stops are 42% of a $1,000 buffer. The buffer guard refuses new risk unless two stops of room remain, so a loss never eats the last one; the self-imposed $400 daily stop ends a two-loss day."
+  }
+}

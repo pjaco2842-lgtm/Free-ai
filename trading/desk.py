@@ -68,7 +68,8 @@ from basket import CONFIGS, HAIRCUT, contracts_for, pending_orders  # noqa: E402
 from edge import CONTRACTS  # noqa: E402
 from lab import COMMS, COMMISSION, RULES, atr_series, ema, fetch_daily  # noqa: E402
 from scanner import Bar, rsi  # noqa: E402
-from bots import live as bots_live  # noqa: E402
+from account import ACCOUNT  # noqa: E402  (the firm's rulebook)
+from bots import DAILY_STOP, EQUITY, MAX_OPEN, RISK, live as bots_live  # noqa: E402
 
 HERE = Path(__file__).resolve().parent
 DESK = HERE / "desk"
@@ -81,11 +82,10 @@ REPORT = DESK / "report.md"
 SINCE = DESK / "since.txt"
 BOARD = DESK / "board.json"
 
-EQUITY = 25000.0
-RISK = 0.01              # planned risk per trade = $250
+# EQUITY, RISK, DAILY_STOP and MAX_OPEN are read from trading/desk/account.json
+# through bots.py, so the forward pass and the board can never disagree about
+# what the account allows.
 MIN_EDGE_R = 0.10        # below this net expectancy a signal is not worth the cost
-DAILY_STOP = 500.0       # stop the whole desk for the day at -2%
-MAX_OPEN = 2             # never carry more than two positions of risk at once
 UA = {"User-Agent": "Mozilla/5.0 (compatible; free-ai-desk/1.0)"}
 
 

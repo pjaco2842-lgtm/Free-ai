@@ -40,16 +40,17 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
+from account import ACCOUNT  # noqa: E402  (the firm's rulebook)
 from basket import CONFIGS, HAIRCUT, contracts_for, trades_for  # noqa: E402
 from lab import atr_series, ema, fetch_daily  # noqa: E402
 
 DESK = HERE / "desk"
 OUT = DESK / "montecarlo.json"
 
-EQUITY = 25_000.0
-TARGET = 1_250.0
-MAX_LOSS = 1_000.0
-CONSISTENCY = 0.50
+EQUITY = float(ACCOUNT["start_balance"])
+TARGET = float(ACCOUNT["profit_target"])
+MAX_LOSS = float(ACCOUNT["max_loss"])
+CONSISTENCY = float(ACCOUNT["consistency"]["rule"])
 BLOCK = 3
 
 

@@ -45,17 +45,24 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+from account import ACCOUNT, buffer_now  # noqa: E402  (the firm's rulebook)
 from basket import CONFIGS, HAIRCUT, contracts_for  # noqa: E402
 from edge import CONTRACTS  # noqa: E402
 from lab import COMMS, COMMISSION, atr_series, ema  # noqa: E402
 from scanner import rsi  # noqa: E402
 
-EQUITY = 25_000.0
-RISK = 0.01              # $250 of planned risk
-DAILY_STOP = 500.0
-MAX_OPEN = 2
-TARGET = 1_250.0         # Lucid 25K evaluation
-CONSISTENCY = 0.50       # best day may not exceed half of the profit target
+# All of these come from trading/desk/account.json — the LucidFlex rulebook, not
+# from taste. Change the account, change that file; do not re-tune these here.
+EQUITY = float(ACCOUNT["start_balance"])
+RISK = float(ACCOUNT["desk"]["risk_per_trade_pct"]) / 100.0
+TARGET = float(ACCOUNT["profit_target"])
+MAX_LOSS = float(ACCOUNT["max_loss"])
+CONSISTENCY = float(ACCOUNT["consistency"]["rule"])
+BUFFER_STOPS = float(ACCOUNT["desk"]["buffer_guard_stops"])
+HALT_AT = float(ACCOUNT["desk"]["governor_halt_fraction"])
+CAUTION_AT = float(ACCOUNT["desk"]["governor_caution_fraction"])
+MAX_OPEN = int(ACCOUNT["desk"]["max_open"])
+DAILY_STOP = float(ACCOUNT["desk"]["daily_stop"])   # self-imposed; the firm has no DLL
 MIN_OPPORTUNITY = 45     # below this there is no setup worth planning
 
 SETUP_NAMES = ("breakout", "pullback", "momentum", "continuation", "reversal")
@@ -432,6 +439,22 @@ def bot5_risk(symbol, plan: dict, state: dict | None, news: dict | None,
 
     check("budget", n > 0,
           f"one {meta['trade_as']} stop is ${stop_usd:,.0f} against a ${EQUITY * RISK:,.0f} budget")
+
+    # The account's life, not the trade's size. A $1,000 end-of-day buffer is
+    # about four micro stops, so the desk refuses new risk while it still has
+    # fewer than BUFFER_STOPS (2.0) stops of room to be wrong in. This is the
+    # check that turns "four losses and you're done" into "two losses and you stand down".
+    # Two stops of room *before* entering, never one: after this loss the account
+    # must still have a full stop of survival, and the desk must still be able to
+    # trade its way back. Demanding the room after the trade instead would lock
+    # the desk out of a recovery it is still capable of making.
+    room_buffer = buffer_now(state)
+    room_after = room_buffer - stop_usd
+    stops = room_buffer / max(stop_usd, 1e-9)
+    check("drawdown buffer", room_buffer >= BUFFER_STOPS * stop_usd,
+          f"${room_buffer:,.0f} of the ${MAX_LOSS:,.0f} end-of-day buffer is left "
+          f"({stops:.1f} stops); entering needs {BUFFER_STOPS:.1f} and would leave "
+          f"${room_after:,.0f} ({room_after / max(stop_usd, 1e-9):.1f} stops)")
     day_pnl = float(state.get("day_pnl", 0.0))
     check("daily stop", day_pnl > -DAILY_STOP,
           f"today is ${day_pnl:+,.0f}, stop at ${-DAILY_STOP:,.0f}")
@@ -494,7 +517,8 @@ def bot5_risk(symbol, plan: dict, state: dict | None, news: dict | None,
         "risk_pct": round(100 * stop_usd / EQUITY, 2),
         "checks": checks, "hard_blockers": hard, "soft_flags": soft,
         "headroom": {"daily_stop": round(DAILY_STOP + day_pnl, 2),
-                     "consistency": round(limit - win_usd, 2)},
+                     "consistency": round(limit - win_usd, 2),
+                     "drawdown_buffer": round(room_buffer, 2)},
         "consistency": {"limit": round(limit, 2),
                         "projected_best_day": round(projected, 2),
                         "min_target_to_comply": round(min_target, 2)},
@@ -784,8 +808,13 @@ def bot12_governor(state: dict | None, history: list[dict] | None,
     soft: list[str] = []
     if (DESK / "KILL").exists():
         hard.append("kill switch engaged")
-    if dd >= 800:
-        hard.append(f"drawdown ${dd:,.0f} against an $800 circuit breaker")
+    buffer = buffer_now(state)
+    halt_at, caution_at = MAX_LOSS * HALT_AT, MAX_LOSS * CAUTION_AT
+    if buffer <= halt_at:
+        hard.append(f"${buffer:,.0f} of the ${MAX_LOSS:,.0f} drawdown buffer left "
+                    f"— inside the ${halt_at:,.0f} circuit breaker")
+    elif buffer <= caution_at:
+        soft.append(f"${buffer:,.0f} of the ${MAX_LOSS:,.0f} drawdown buffer left")
     if day <= -DAILY_STOP:
         hard.append(f"daily loss ${day:,.0f}")
     if losses >= 4:
@@ -793,6 +822,7 @@ def bot12_governor(state: dict | None, history: list[dict] | None,
     action = "halt" if hard else "caution" if soft else "run"
     return {"bot": 12, "name": "governor", "action": action,
             "drawdown": round(dd, 2), "day_pnl": round(day, 2), "streak": losses,
+            "buffer": round(buffer, 2),
             "reasons": hard + soft,
             "note": ({"halt": "HALTED: " + "; ".join(hard),
                       "caution": "caution: " + "; ".join(soft),

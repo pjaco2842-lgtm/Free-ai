@@ -35,15 +35,17 @@ import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
+from account import ACCOUNT  # the firm's rules live in desk/account.json
+
 HERE = Path(__file__).resolve().parent
 DESK = HERE / "desk"
 OUT = DESK / "dashboard.html"
 ALERTS = DESK / "alerts.jsonl"
 
-TARGET = 1_250.0
-MAX_LOSS = 1_000.0
-EQUITY_START = 25_000.0
-CONSISTENCY = 0.50
+TARGET = float(ACCOUNT["profit_target"])
+MAX_LOSS = float(ACCOUNT["max_loss"])
+EQUITY_START = float(ACCOUNT["start_balance"])
+CONSISTENCY = float(ACCOUNT["consistency"]["rule"])
 SILENT_DAYS = 21
 
 

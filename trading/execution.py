@@ -46,6 +46,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
+from account import ACCOUNT  # noqa: E402  (the firm's rulebook, same file the bots read)
 from basket import CONFIGS, EQUITY, HAIRCUT, contracts_for  # noqa: E402  # noqa: F401
 from edge import CONTRACTS  # noqa: E402
 from lab import COMMS, COMMISSION, RULES, atr_series, ema, fetch_daily  # noqa: E402
@@ -55,9 +56,13 @@ ORDERS = DESK / "orders.jsonl"
 STATE = DESK / "state.json"
 KILL = DESK / "KILL"
 
-RISK = 0.01
-DAILY_STOP = 500.0
-MAX_OPEN = 2
+# A $500 daily stop and two open positions were guesses about somebody else's
+# account. LucidFlex has no daily loss limit, so $400 is the desk's own rail, and
+# one position at a time is what a $1,000 end-of-day buffer can actually survive.
+EQUITY = float(ACCOUNT["start_balance"])
+RISK = float(ACCOUNT["desk"]["risk_per_trade_pct"]) / 100.0
+DAILY_STOP = float(ACCOUNT["desk"]["daily_stop"])
+MAX_OPEN = int(ACCOUNT["desk"]["max_open"])
 MAX_SPREAD_TICKS = 3      # a paper fill this wide is not a fill, it is a hope
 MAX_DAILY_ORDERS = 6
 STATES = ("DRAFT", "VALIDATED", "SUBMITTED", "ACCEPTED", "PARTIAL", "FILLED",
