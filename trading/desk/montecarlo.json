@@ -1,0 +1,26 @@
+{
+  "paths": 10000,
+  "trades_in_sample": 28,
+  "trades_per_path": 200,
+  "block": 3,
+  "seed": 7,
+  "mean_r": 0.196,
+  "p_target": 74.93,
+  "p_breach": 24.78,
+  "p_neither": 0.29,
+  "consistency_fails": 0.0,
+  "median_trades_to_target": 36,
+  "median_max_drawdown": 855.0,
+  "p95_max_drawdown": 1815.0,
+  "final_usd_percentiles": {
+    "p5": -1112,
+    "p50": 1303,
+    "p95": 1542
+  },
+  "median_best_day": 388.0,
+  "source": "backtest",
+  "since": "2020-01-01",
+  "hindsight": false,
+  "honest": true,
+  "at": "2026-10-29T13:28:20Z"
+}

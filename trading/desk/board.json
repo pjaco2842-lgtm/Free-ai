@@ -1,0 +1,1223 @@
+{
+ "at": "2026-10-29T13:53:41Z",
+ "rows": [
+  {
+   "symbol": "ES=F",
+   "as": "MES",
+   "at": "2026-10-29T13:53:39Z",
+   "regime": "drift",
+   "governor": "run",
+   "classic": false,
+   "bots": {
+    "1_opportunity": {
+     "bot": 1,
+     "name": "opportunity",
+     "score": 37,
+     "setup": "pullback",
+     "setups": [
+      {
+       "name": "pullback",
+       "confidence": 54,
+       "note": "price at the 20 EMA inside a rising 50/200 structure, bar closed against the trend"
+      }
+     ],
+     "note": "price at the 20 EMA inside a rising 50/200 structure, bar closed against the trend",
+     "metrics": {
+      "range_z": -1.47,
+      "rvol": 0.3,
+      "gap_atr": -0.19,
+      "atr_percentile": 42,
+      "compression": 0.64,
+      "rsi": 49.0,
+      "trend": 1,
+      "close_pos": 0.23
+     }
+    },
+    "2_catalyst": {
+     "bot": 2,
+     "name": "catalyst",
+     "verdict": "unknown",
+     "blackout": false,
+     "polarity": 0.0,
+     "fresh": 10,
+     "verified": true,
+     "degraded": true,
+     "next_event": {
+      "label": "month-end rebalance",
+      "in_min": 1806,
+      "impact": "medium"
+     },
+     "headlines": [
+      {
+       "title": "Bay Street Looks Headed For Weak Start",
+       "feed": "nasdaq_markets",
+       "age_min": 24.7,
+       "polarity": -1.0
+      },
+      {
+       "title": "Builders FirstSource Q3 26 Earnings Conference Call At 10:00 AM ET",
+       "feed": "nasdaq_markets",
+       "age_min": 25.8,
+       "polarity": 0.0
+      },
+      {
+       "title": "Vulcan Materials Q3 26 Earnings Conference Call At 10:00 AM ET",
+       "feed": "nasdaq_markets",
+       "age_min": 25.8,
+       "polarity": 0.0
+      },
+      {
+       "title": "Xcel Energy Q3 26 Earnings Conference Call At 10:00 AM ET",
+       "feed": "nasdaq_markets",
+       "age_min": 25.8,
+       "polarity": 0.0
+      }
+     ],
+     "note": "news feed is stale or unreachable \u2014 treated as unknown, not as quiet"
+    },
+    "3_sentiment": {
+     "bot": 3,
+     "name": "sentiment",
+     "score": 46,
+     "label": "neutral",
+     "tone": -0.1,
+     "hype": 0,
+     "crowding": 46,
+     "stretch_atr": -0.16,
+     "rsi": 49.0,
+     "basis": "headline lexicon + price crowding (no social feed, no model)",
+     "note": "headline tone -0.10 over 10 verified item(s), hype 0/100, price -0.2 ATR from the 20 EMA, RSI 49"
+    },
+    "4_levels": {
+     "bot": 4,
+     "name": "levels",
+     "ok": true,
+     "trend": "up",
+     "aligned": true,
+     "side": "long",
+     "entry": 7742.0,
+     "stop": 7701.2232,
+     "target": 7823.5536,
+     "risk_pts": 40.7768,
+     "reward_pts": 81.5536,
+     "rr": 2.0,
+     "atr": 81.5536,
+     "trade_as": "MES",
+     "levels": {
+      "prior_day_high": 7819.5,
+      "prior_day_low": 7750.25,
+      "prior_week_high": 7819.5,
+      "prior_week_low": 7648.5,
+      "round_number": 7700.0,
+      "ema20": 7755.4499
+     },
+     "blockers": [],
+     "note": "up structure; long at 7,742.00 with stop 7,701.22 (40.78 pts) and target 7,823.55 (2.0:1)"
+    },
+    "5_risk": {
+     "bot": 5,
+     "name": "risk",
+     "action": "approve",
+     "contracts": 1,
+     "stop_usd": 208.86,
+     "win_usd": 300.85,
+     "risk_pct": 0.84,
+     "checks": [
+      {
+       "check": "budget",
+       "ok": true,
+       "detail": "one MES stop is $209 against a $250 budget"
+      },
+      {
+       "check": "daily stop",
+       "ok": true,
+       "detail": "today is $+0, stop at $-500"
+      },
+      {
+       "check": "position cap",
+       "ok": true,
+       "detail": "0 of 2 allowed positions open"
+      },
+      {
+       "check": "correlation",
+       "ok": true,
+       "detail": "no correlated position in the same direction"
+      },
+      {
+       "check": "volatility",
+       "ok": true,
+       "detail": "ATR at the 42th percentile of the last 120 sessions"
+      },
+      {
+       "check": "consistency",
+       "ok": true,
+       "detail": "a full win sets your best day at $301 against a $625 limit \u2014 this bracket needs a $602 profit target to satisfy a 50% rule, or a partial exit near $150"
+      }
+     ],
+     "hard_blockers": [],
+     "soft_flags": [
+      "news feed stale \u2014 sizing kept, confidence will be marked down"
+     ],
+     "headroom": {
+      "daily_stop": 500.0,
+      "consistency": 324.15
+     },
+     "consistency": {
+      "limit": 625.0,
+      "projected_best_day": 300.85,
+      "min_target_to_comply": 601.69
+     },
+     "note": "approved 1 contract(s), $209 at risk (0.8% of equity), winning pays $301"
+    },
+    "6_final": {
+     "bot": 6,
+     "name": "final",
+     "call": "WAIT",
+     "side": "long",
+     "confidence": 48,
+     "why": "no setup worth planning (opportunity 37/100)",
+     "falsifier": "a close back through 7,701.22 invalidates it; if month-end rebalance lands against the position before the target, take the stop, not a wider one",
+     "desk": {
+      "regime": "drift",
+      "governor": "run",
+      "roll": "ok"
+     },
+     "inputs": {
+      "opportunity": 37,
+      "catalyst": "unknown",
+      "sentiment": "neutral",
+      "risk": "approve"
+     }
+    },
+    "0_regime": {
+     "bot": 0,
+     "name": "regime",
+     "label": "drift",
+     "favours": [
+      "pullback",
+      "continuation"
+     ],
+     "atr_percentile": 42,
+     "separation_atr": 4.26,
+     "slope_atr": 0.72,
+     "compression": 0.64,
+     "note": "drift: 50/200 gap +4.3 ATR, 20-bar slope +0.7 ATR, 20-day range 64% of the 60-day, ATR 42th pct"
+    },
+    "7_session": {
+     "bot": 7,
+     "name": "session",
+     "where": "US cash hours",
+     "hour_utc": 13.72,
+     "range_atr": 1.07,
+     "stretched": false,
+     "note": "13:43Z, cash hours; the last 18 hours have travelled 1.1 ATR"
+    },
+    "8_liquidity": {
+     "bot": 8,
+     "name": "liquidity",
+     "score": 97,
+     "thin": false,
+     "median_bar_atr": 0.098,
+     "flat_share": 0.01,
+     "note": "median 15m bar is 0.10 ATR of the daily, 1% of bars printed flat"
+    },
+    "9_roll": {
+     "bot": 9,
+     "name": "roll",
+     "status": "ok",
+     "days": 41.4,
+     "when": "2026-12-10",
+     "label": "quarterly roll",
+     "note": "quarterly roll in 41.4 days (2026-12-10) \u2014 comfortable"
+    },
+    "10_benchmark": {
+     "bot": 10,
+     "name": "benchmark",
+     "desk_total_r": 0.0,
+     "buy_hold_pct": null,
+     "note": "0 settled trades \u2014 nothing to compare yet"
+    },
+    "11_calibration": {
+     "bot": 11,
+     "name": "calibration",
+     "samples": 4,
+     "accuracy": {},
+     "note": "4 settled decisions \u2014 calibration needs twenty"
+    },
+    "12_governor": {
+     "bot": 12,
+     "name": "governor",
+     "action": "run",
+     "drawdown": 0.0,
+     "day_pnl": 0.0,
+     "streak": 0,
+     "reasons": [],
+     "note": "clear \u2014 $0 drawdown, $+0 today"
+    }
+   },
+   "call": "WAIT",
+   "confidence": 48,
+   "why": "no setup worth planning (opportunity 37/100)"
+  },
+  {
+   "symbol": "CL=F",
+   "as": "MCL",
+   "at": "2026-10-29T13:53:40Z",
+   "regime": "drift",
+   "governor": "run",
+   "classic": false,
+   "bots": {
+    "1_opportunity": {
+     "bot": 1,
+     "name": "opportunity",
+     "score": 1,
+     "setup": "none",
+     "setups": [],
+     "note": "no pattern present",
+     "metrics": {
+      "range_z": -1.07,
+      "rvol": 0.38,
+      "gap_atr": -0.19,
+      "atr_percentile": 41,
+      "compression": 0.66,
+      "rsi": 55.0,
+      "trend": 1,
+      "close_pos": 0.05
+     }
+    },
+    "2_catalyst": {
+     "bot": 2,
+     "name": "catalyst",
+     "verdict": "unknown",
+     "blackout": false,
+     "polarity": 0.0,
+     "fresh": 1,
+     "verified": true,
+     "degraded": true,
+     "next_event": {
+      "label": "EIA petroleum status",
+      "in_min": 8736,
+      "impact": "high"
+     },
+     "headlines": [
+      {
+       "title": "Iran War Hikes EU\u2019s Oil Import Bill By $11 Billion Per Month",
+       "feed": "oilprice",
+       "age_min": 0.3,
+       "polarity": 0.0
+      }
+     ],
+     "note": "news feed is stale or unreachable \u2014 treated as unknown, not as quiet"
+    },
+    "3_sentiment": {
+     "bot": 3,
+     "name": "sentiment",
+     "score": 50,
+     "label": "neutral",
+     "tone": 0.0,
+     "hype": 0,
+     "crowding": 62,
+     "stretch_atr": 0.43,
+     "rsi": 55.0,
+     "basis": "headline lexicon + price crowding (no social feed, no model)",
+     "note": "headline tone +0.00 over 1 verified item(s), hype 0/100, price +0.4 ATR from the 20 EMA, RSI 55"
+    },
+    "4_levels": {
+     "bot": 4,
+     "name": "levels",
+     "ok": true,
+     "trend": "up",
+     "aligned": false,
+     "side": "short",
+     "entry": 100.02,
+     "stop": 102.2004,
+     "target": 86.9379,
+     "risk_pts": 2.1804,
+     "reward_pts": 13.0821,
+     "rr": 6.0,
+     "atr": 4.3607,
+     "trade_as": "MCL",
+     "levels": {
+      "prior_day_high": 103.55,
+      "prior_day_low": 99.75,
+      "prior_week_high": 103.92,
+      "prior_week_low": 97.72,
+      "round_number": 100.0,
+      "ema20": 98.1606
+     },
+     "blockers": [
+      "trend is up, trade is short"
+     ],
+     "note": "up structure; short at 100.02 with stop 102.20 (2.18 pts) and target 86.94 (6.0:1)"
+    },
+    "5_risk": {
+     "bot": 5,
+     "name": "risk",
+     "action": "approve",
+     "contracts": 1,
+     "stop_usd": 222.52,
+     "win_usd": 976.68,
+     "risk_pct": 0.89,
+     "checks": [
+      {
+       "check": "budget",
+       "ok": true,
+       "detail": "one MCL stop is $223 against a $250 budget"
+      },
+      {
+       "check": "daily stop",
+       "ok": true,
+       "detail": "today is $+0, stop at $-500"
+      },
+      {
+       "check": "position cap",
+       "ok": true,
+       "detail": "0 of 2 allowed positions open"
+      },
+      {
+       "check": "correlation",
+       "ok": true,
+       "detail": "no correlated position in the same direction"
+      },
+      {
+       "check": "volatility",
+       "ok": true,
+       "detail": "ATR at the 41th percentile of the last 120 sessions"
+      },
+      {
+       "check": "consistency",
+       "ok": false,
+       "detail": "a full win sets your best day at $977 against a $625 limit \u2014 this bracket needs a $1,953 profit target to satisfy a 50% rule, or a partial exit near $488"
+      },
+      {
+       "check": "structure",
+       "ok": false,
+       "detail": "trend is up, trade is short"
+      }
+     ],
+     "hard_blockers": [],
+     "soft_flags": [
+      "a full win sets your best day at $977 against a $625 limit \u2014 this bracket needs a $1,953 profit target to satisfy a 50% rule, or a partial exit near $488",
+      "trend is up, trade is short",
+      "news feed stale \u2014 sizing kept, confidence will be marked down"
+     ],
+     "headroom": {
+      "daily_stop": 500.0,
+      "consistency": -351.68
+     },
+     "consistency": {
+      "limit": 625.0,
+      "projected_best_day": 976.68,
+      "min_target_to_comply": 1953.36
+     },
+     "note": "approved 1 contract(s), $223 at risk (0.9% of equity), winning pays $977"
+    },
+    "6_final": {
+     "bot": 6,
+     "name": "final",
+     "call": "WAIT",
+     "side": "short",
+     "confidence": 12,
+     "why": "no setup worth planning (opportunity 1/100)",
+     "falsifier": "a close back through 102.20 invalidates it; if EIA petroleum status lands against the position before the target, take the stop, not a wider one",
+     "desk": {
+      "regime": "drift",
+      "governor": "run",
+      "roll": "ok"
+     },
+     "inputs": {
+      "opportunity": 1,
+      "catalyst": "unknown",
+      "sentiment": "neutral",
+      "risk": "approve"
+     }
+    },
+    "0_regime": {
+     "bot": 0,
+     "name": "regime",
+     "label": "drift",
+     "favours": [
+      "pullback",
+      "continuation"
+     ],
+     "atr_percentile": 41,
+     "separation_atr": 2.03,
+     "slope_atr": 0.95,
+     "compression": 0.66,
+     "note": "drift: 50/200 gap +2.0 ATR, 20-bar slope +0.9 ATR, 20-day range 66% of the 60-day, ATR 41th pct"
+    },
+    "7_session": {
+     "bot": 7,
+     "name": "session",
+     "where": "US cash hours",
+     "hour_utc": 13.72,
+     "range_atr": 0.63,
+     "stretched": false,
+     "note": "13:43Z, cash hours; the last 18 hours have travelled 0.6 ATR"
+    },
+    "8_liquidity": {
+     "bot": 8,
+     "name": "liquidity",
+     "score": 81,
+     "thin": false,
+     "median_bar_atr": 0.078,
+     "flat_share": 0.01,
+     "note": "median 15m bar is 0.08 ATR of the daily, 1% of bars printed flat"
+    },
+    "9_roll": {
+     "bot": 9,
+     "name": "roll",
+     "status": "ok",
+     "days": 41.4,
+     "when": "2026-12-10",
+     "label": "quarterly roll",
+     "note": "quarterly roll in 41.4 days (2026-12-10) \u2014 comfortable"
+    },
+    "10_benchmark": {
+     "bot": 10,
+     "name": "benchmark",
+     "desk_total_r": 0.0,
+     "buy_hold_pct": null,
+     "note": "0 settled trades \u2014 nothing to compare yet"
+    },
+    "11_calibration": {
+     "bot": 11,
+     "name": "calibration",
+     "samples": 4,
+     "accuracy": {},
+     "note": "4 settled decisions \u2014 calibration needs twenty"
+    },
+    "12_governor": {
+     "bot": 12,
+     "name": "governor",
+     "action": "run",
+     "drawdown": 0.0,
+     "day_pnl": 0.0,
+     "streak": 0,
+     "reasons": [],
+     "note": "clear \u2014 $0 drawdown, $+0 today"
+    }
+   },
+   "call": "WAIT",
+   "confidence": 12,
+   "why": "no setup worth planning (opportunity 1/100)"
+  },
+  {
+   "symbol": "NKD=F",
+   "as": "NKD (no micro)",
+   "at": "2026-10-29T13:53:40Z",
+   "regime": "drift",
+   "governor": "run",
+   "classic": false,
+   "bots": {
+    "1_opportunity": {
+     "bot": 1,
+     "name": "opportunity",
+     "score": 56,
+     "setup": "pullback",
+     "setups": [
+      {
+       "name": "pullback",
+       "confidence": 79,
+       "note": "price at the 20 EMA inside a rising 50/200 structure, bar closed with the trend"
+      }
+     ],
+     "note": "price at the 20 EMA inside a rising 50/200 structure, bar closed with the trend",
+     "metrics": {
+      "range_z": -1.1,
+      "rvol": 0.98,
+      "gap_atr": -0.36,
+      "atr_percentile": 41,
+      "compression": 1.0,
+      "rsi": 45.0,
+      "trend": 1,
+      "close_pos": 0.6
+     }
+    },
+    "2_catalyst": {
+     "bot": 2,
+     "name": "catalyst",
+     "verdict": "unknown",
+     "blackout": false,
+     "polarity": 0.0,
+     "fresh": 0,
+     "verified": true,
+     "degraded": true,
+     "next_event": null,
+     "headlines": [],
+     "note": "news feed is stale or unreachable \u2014 treated as unknown, not as quiet"
+    },
+    "3_sentiment": {
+     "bot": 3,
+     "name": "sentiment",
+     "score": 50,
+     "label": "neutral",
+     "tone": 0.0,
+     "hype": 0,
+     "crowding": 37,
+     "stretch_atr": -0.48,
+     "rsi": 45.0,
+     "basis": "headline lexicon + price crowding (no social feed, no model)",
+     "note": "headline tone +0.00 over 0 verified item(s), hype 0/100, price -0.5 ATR from the 20 EMA, RSI 45"
+    },
+    "4_levels": {
+     "bot": 4,
+     "name": "levels",
+     "ok": true,
+     "trend": "up",
+     "aligned": true,
+     "side": "long",
+     "entry": 64570.0,
+     "stop": 63746.6071,
+     "target": 69510.3571,
+     "risk_pts": 823.3929,
+     "reward_pts": 4940.3571,
+     "rr": 6.0,
+     "atr": 1646.7857,
+     "trade_as": "NKD (no micro)",
+     "levels": {
+      "prior_day_high": 65520.0,
+      "prior_day_low": 64000.0,
+      "prior_week_high": 65520.0,
+      "prior_week_low": 61680.0,
+      "round_number": 65000.0,
+      "ema20": 65360.8204
+     },
+     "blockers": [],
+     "note": "up structure; long at 64,570.00 with stop 63,746.61 (823.39 pts) and target 69,510.36 (6.0:1)"
+    },
+    "5_risk": {
+     "bot": 5,
+     "name": "risk",
+     "action": "reject",
+     "contracts": 0,
+     "stop_usd": 4169.44,
+     "win_usd": 18473.86,
+     "risk_pct": 16.68,
+     "checks": [
+      {
+       "check": "budget",
+       "ok": false,
+       "detail": "one NKD (no micro) stop is $4,169 against a $250 budget"
+      },
+      {
+       "check": "daily stop",
+       "ok": true,
+       "detail": "today is $+0, stop at $-500"
+      },
+      {
+       "check": "position cap",
+       "ok": true,
+       "detail": "0 of 2 allowed positions open"
+      },
+      {
+       "check": "correlation",
+       "ok": true,
+       "detail": "no correlated position in the same direction"
+      },
+      {
+       "check": "volatility",
+       "ok": true,
+       "detail": "ATR at the 41th percentile of the last 120 sessions"
+      },
+      {
+       "check": "consistency",
+       "ok": false,
+       "detail": "a full win sets your best day at $18,474 against a $625 limit \u2014 this bracket needs a $36,948 profit target to satisfy a 50% rule, or a partial exit near $9,237"
+      }
+     ],
+     "hard_blockers": [
+      "one NKD (no micro) stop is $4,169 against a $250 budget"
+     ],
+     "soft_flags": [
+      "a full win sets your best day at $18,474 against a $625 limit \u2014 this bracket needs a $36,948 profit target to satisfy a 50% rule, or a partial exit near $9,237",
+      "news feed stale \u2014 sizing kept, confidence will be marked down"
+     ],
+     "headroom": {
+      "daily_stop": 500.0,
+      "consistency": -17848.86
+     },
+     "consistency": {
+      "limit": 625.0,
+      "projected_best_day": 18473.86,
+      "min_target_to_comply": 36947.72
+     },
+     "note": "rejected: one NKD (no micro) stop is $4,169 against a $250 budget"
+    },
+    "6_final": {
+     "bot": 6,
+     "name": "final",
+     "call": "SKIP",
+     "side": "long",
+     "confidence": 41,
+     "why": "rejected: one NKD (no micro) stop is $4,169 against a $250 budget",
+     "falsifier": "a close back through 63,746.61 invalidates it; if the next release lands against the position before the target, take the stop, not a wider one",
+     "desk": {
+      "regime": "drift",
+      "governor": "run",
+      "roll": "ok"
+     },
+     "inputs": {
+      "opportunity": 56,
+      "catalyst": "unknown",
+      "sentiment": "neutral",
+      "risk": "reject"
+     }
+    },
+    "0_regime": {
+     "bot": 0,
+     "name": "regime",
+     "label": "drift",
+     "favours": [
+      "pullback",
+      "continuation"
+     ],
+     "atr_percentile": 41,
+     "separation_atr": 2.49,
+     "slope_atr": 0.04,
+     "compression": 1.0,
+     "note": "drift: 50/200 gap +2.5 ATR, 20-bar slope +0.0 ATR, 20-day range 100% of the 60-day, ATR 41th pct"
+    },
+    "7_session": {
+     "bot": 7,
+     "name": "session",
+     "where": "US cash hours",
+     "hour_utc": 13.72,
+     "range_atr": 0.98,
+     "stretched": false,
+     "note": "13:43Z, cash hours; the last 18 hours have travelled 1.0 ATR"
+    },
+    "8_liquidity": {
+     "bot": 8,
+     "name": "liquidity",
+     "score": 90,
+     "thin": false,
+     "median_bar_atr": 0.09,
+     "flat_share": 0.01,
+     "note": "median 15m bar is 0.09 ATR of the daily, 1% of bars printed flat"
+    },
+    "9_roll": {
+     "bot": 9,
+     "name": "roll",
+     "status": "ok",
+     "days": 11.4,
+     "when": "2026-11-10",
+     "label": "monthly roll (approximate)",
+     "note": "monthly roll (approximate) in 11.4 days (2026-11-10) \u2014 comfortable"
+    },
+    "10_benchmark": {
+     "bot": 10,
+     "name": "benchmark",
+     "desk_total_r": 0.0,
+     "buy_hold_pct": null,
+     "note": "0 settled trades \u2014 nothing to compare yet"
+    },
+    "11_calibration": {
+     "bot": 11,
+     "name": "calibration",
+     "samples": 4,
+     "accuracy": {},
+     "note": "4 settled decisions \u2014 calibration needs twenty"
+    },
+    "12_governor": {
+     "bot": 12,
+     "name": "governor",
+     "action": "run",
+     "drawdown": 0.0,
+     "day_pnl": 0.0,
+     "streak": 0,
+     "reasons": [],
+     "note": "clear \u2014 $0 drawdown, $+0 today"
+    }
+   },
+   "call": "SKIP",
+   "confidence": 41,
+   "why": "rejected: one NKD (no micro) stop is $4,169 against a $250 budget"
+  },
+  {
+   "symbol": "NQ=F",
+   "as": "MNQ",
+   "at": "2026-10-29T13:53:41Z",
+   "regime": "drift",
+   "governor": "run",
+   "classic": false,
+   "bots": {
+    "1_opportunity": {
+     "bot": 1,
+     "name": "opportunity",
+     "score": 43,
+     "setup": "pullback",
+     "setups": [
+      {
+       "name": "pullback",
+       "confidence": 54,
+       "note": "price at the 20 EMA inside a rising 50/200 structure, bar closed against the trend"
+      }
+     ],
+     "note": "price at the 20 EMA inside a rising 50/200 structure, bar closed against the trend",
+     "metrics": {
+      "range_z": -0.8,
+      "rvol": 0.43,
+      "gap_atr": -0.31,
+      "atr_percentile": 61,
+      "compression": 0.92,
+      "rsi": 43.7,
+      "trend": 1,
+      "close_pos": 0.31
+     }
+    },
+    "2_catalyst": {
+     "bot": 2,
+     "name": "catalyst",
+     "verdict": "unknown",
+     "blackout": false,
+     "polarity": 0.0,
+     "fresh": 2,
+     "verified": true,
+     "degraded": true,
+     "next_event": {
+      "label": "month-end rebalance",
+      "in_min": 1806,
+      "impact": "medium"
+     },
+     "headlines": [
+      {
+       "title": "MISL vs. JETS ETFs: Defense Stability Versus Airline Cyclicality",
+       "feed": "nasdaq_markets",
+       "age_min": 18.3,
+       "polarity": 0.0
+      },
+      {
+       "title": "Trane Technologies Q3 26 Earnings Conference Call At 10:00 AM ET",
+       "feed": "nasdaq_markets",
+       "age_min": 25.8,
+       "polarity": 0.0
+      }
+     ],
+     "note": "news feed is stale or unreachable \u2014 treated as unknown, not as quiet"
+    },
+    "3_sentiment": {
+     "bot": 3,
+     "name": "sentiment",
+     "score": 50,
+     "label": "neutral",
+     "tone": 0.0,
+     "hype": 0,
+     "crowding": 32,
+     "stretch_atr": -0.73,
+     "rsi": 43.7,
+     "basis": "headline lexicon + price crowding (no social feed, no model)",
+     "note": "headline tone +0.00 over 2 verified item(s), hype 0/100, price -0.7 ATR from the 20 EMA, RSI 44"
+    },
+    "4_levels": {
+     "bot": 4,
+     "name": "levels",
+     "ok": true,
+     "trend": "up",
+     "aligned": true,
+     "side": "long",
+     "entry": 29526.25,
+     "stop": 29228.3036,
+     "target": 31313.9286,
+     "risk_pts": 297.9464,
+     "reward_pts": 1787.6786,
+     "rr": 6.0,
+     "atr": 595.8929,
+     "trade_as": "MNQ",
+     "levels": {
+      "prior_day_high": 30178.0,
+      "prior_day_low": 29674.25,
+      "prior_week_high": 30178.0,
+      "prior_week_low": 28987.0,
+      "round_number": 30000.0,
+      "ema20": 29958.4735
+     },
+     "blockers": [],
+     "note": "up structure; long at 29,526.25 with stop 29,228.30 (297.95 pts) and target 31,313.93 (6.0:1)"
+    },
+    "5_risk": {
+     "bot": 5,
+     "name": "risk",
+     "action": "reject",
+     "contracts": 0,
+     "stop_usd": 599.37,
+     "win_usd": 2678.04,
+     "risk_pct": 2.4,
+     "checks": [
+      {
+       "check": "budget",
+       "ok": false,
+       "detail": "one MNQ stop is $599 against a $250 budget"
+      },
+      {
+       "check": "daily stop",
+       "ok": true,
+       "detail": "today is $+0, stop at $-500"
+      },
+      {
+       "check": "position cap",
+       "ok": true,
+       "detail": "0 of 2 allowed positions open"
+      },
+      {
+       "check": "correlation",
+       "ok": true,
+       "detail": "no correlated position in the same direction"
+      },
+      {
+       "check": "volatility",
+       "ok": true,
+       "detail": "ATR at the 61th percentile of the last 120 sessions"
+      },
+      {
+       "check": "consistency",
+       "ok": false,
+       "detail": "a full win sets your best day at $2,678 against a $625 limit \u2014 this bracket needs a $5,356 profit target to satisfy a 50% rule, or a partial exit near $1,339"
+      }
+     ],
+     "hard_blockers": [
+      "one MNQ stop is $599 against a $250 budget"
+     ],
+     "soft_flags": [
+      "a full win sets your best day at $2,678 against a $625 limit \u2014 this bracket needs a $5,356 profit target to satisfy a 50% rule, or a partial exit near $1,339",
+      "news feed stale \u2014 sizing kept, confidence will be marked down"
+     ],
+     "headroom": {
+      "daily_stop": 500.0,
+      "consistency": -2053.04
+     },
+     "consistency": {
+      "limit": 625.0,
+      "projected_best_day": 2678.04,
+      "min_target_to_comply": 5356.08
+     },
+     "note": "rejected: one MNQ stop is $599 against a $250 budget"
+    },
+    "6_final": {
+     "bot": 6,
+     "name": "final",
+     "call": "SKIP",
+     "side": "long",
+     "confidence": 37,
+     "why": "rejected: one MNQ stop is $599 against a $250 budget",
+     "falsifier": "a close back through 29,228.30 invalidates it; if month-end rebalance lands against the position before the target, take the stop, not a wider one",
+     "desk": {
+      "regime": "drift",
+      "governor": "run",
+      "roll": "ok"
+     },
+     "inputs": {
+      "opportunity": 43,
+      "catalyst": "unknown",
+      "sentiment": "neutral",
+      "risk": "reject"
+     }
+    },
+    "0_regime": {
+     "bot": 0,
+     "name": "regime",
+     "label": "drift",
+     "favours": [
+      "pullback",
+      "continuation"
+     ],
+     "atr_percentile": 61,
+     "separation_atr": 2.77,
+     "slope_atr": 0.34,
+     "compression": 0.92,
+     "note": "drift: 50/200 gap +2.8 ATR, 20-bar slope +0.3 ATR, 20-day range 92% of the 60-day, ATR 61th pct"
+    },
+    "7_session": {
+     "bot": 7,
+     "name": "session",
+     "where": "US cash hours",
+     "hour_utc": 13.72,
+     "range_atr": 1.3,
+     "stretched": false,
+     "note": "13:43Z, cash hours; the last 18 hours have travelled 1.3 ATR"
+    },
+    "8_liquidity": {
+     "bot": 8,
+     "name": "liquidity",
+     "score": 94,
+     "thin": false,
+     "median_bar_atr": 0.095,
+     "flat_share": 0.01,
+     "note": "median 15m bar is 0.10 ATR of the daily, 1% of bars printed flat"
+    },
+    "9_roll": {
+     "bot": 9,
+     "name": "roll",
+     "status": "ok",
+     "days": 41.4,
+     "when": "2026-12-10",
+     "label": "quarterly roll",
+     "note": "quarterly roll in 41.4 days (2026-12-10) \u2014 comfortable"
+    },
+    "10_benchmark": {
+     "bot": 10,
+     "name": "benchmark",
+     "desk_total_r": 0.0,
+     "buy_hold_pct": null,
+     "note": "0 settled trades \u2014 nothing to compare yet"
+    },
+    "11_calibration": {
+     "bot": 11,
+     "name": "calibration",
+     "samples": 4,
+     "accuracy": {},
+     "note": "4 settled decisions \u2014 calibration needs twenty"
+    },
+    "12_governor": {
+     "bot": 12,
+     "name": "governor",
+     "action": "run",
+     "drawdown": 0.0,
+     "day_pnl": 0.0,
+     "streak": 0,
+     "reasons": [],
+     "note": "clear \u2014 $0 drawdown, $+0 today"
+    }
+   },
+   "call": "SKIP",
+   "confidence": 37,
+   "why": "rejected: one MNQ stop is $599 against a $250 budget"
+  },
+  {
+   "symbol": "GC=F",
+   "as": "MGC",
+   "at": "2026-10-29T13:53:41Z",
+   "regime": "drift",
+   "governor": "run",
+   "classic": false,
+   "bots": {
+    "1_opportunity": {
+     "bot": 1,
+     "name": "opportunity",
+     "score": 43,
+     "setup": "continuation",
+     "setups": [
+      {
+       "name": "continuation",
+       "confidence": 66.0,
+       "note": "trend down, lower highs intact, gap +0.44 ATR"
+      }
+     ],
+     "note": "trend down, lower highs intact, gap +0.44 ATR",
+     "metrics": {
+      "range_z": -0.6,
+      "rvol": 0.56,
+      "gap_atr": 0.44,
+      "atr_percentile": 1,
+      "compression": 0.35,
+      "rsi": 36.4,
+      "trend": -1,
+      "close_pos": 0.2
+     }
+    },
+    "2_catalyst": {
+     "bot": 2,
+     "name": "catalyst",
+     "verdict": "unknown",
+     "blackout": false,
+     "polarity": 0.0,
+     "fresh": 0,
+     "verified": true,
+     "degraded": true,
+     "next_event": {
+      "label": "Non-farm payrolls",
+      "in_min": 11519,
+      "impact": "high"
+     },
+     "headlines": [],
+     "note": "news feed is stale or unreachable \u2014 treated as unknown, not as quiet"
+    },
+    "3_sentiment": {
+     "bot": 3,
+     "name": "sentiment",
+     "score": 50,
+     "label": "neutral",
+     "tone": 0.0,
+     "hype": 0,
+     "crowding": 14,
+     "stretch_atr": -1.39,
+     "rsi": 36.4,
+     "basis": "headline lexicon + price crowding (no social feed, no model)",
+     "note": "headline tone +0.00 over 0 verified item(s), hype 0/100, price -1.4 ATR from the 20 EMA, RSI 36"
+    },
+    "4_levels": {
+     "bot": 4,
+     "name": "levels",
+     "ok": true,
+     "trend": "down",
+     "aligned": true,
+     "side": "short",
+     "entry": 4037.8,
+     "stop": 4071.5107,
+     "target": 3835.5359,
+     "risk_pts": 33.7107,
+     "reward_pts": 202.2642,
+     "rr": 6.0,
+     "atr": 67.4214,
+     "trade_as": "MGC",
+     "levels": {
+      "prior_day_high": 4097.2002,
+      "prior_day_low": 4036.8999,
+      "prior_week_high": 4164.2998,
+      "prior_week_low": 3989.1001,
+      "round_number": 4000.0,
+      "ema20": 4131.3348
+     },
+     "blockers": [],
+     "note": "down structure; short at 4,037.80 with stop 4,071.51 (33.71 pts) and target 3,835.54 (6.0:1)"
+    },
+    "5_risk": {
+     "bot": 5,
+     "name": "risk",
+     "action": "reject",
+     "contracts": 0,
+     "stop_usd": 341.59,
+     "win_usd": 1512.5,
+     "risk_pct": 1.37,
+     "checks": [
+      {
+       "check": "budget",
+       "ok": false,
+       "detail": "one MGC stop is $342 against a $250 budget"
+      },
+      {
+       "check": "daily stop",
+       "ok": true,
+       "detail": "today is $+0, stop at $-500"
+      },
+      {
+       "check": "position cap",
+       "ok": true,
+       "detail": "0 of 2 allowed positions open"
+      },
+      {
+       "check": "correlation",
+       "ok": true,
+       "detail": "no correlated position in the same direction"
+      },
+      {
+       "check": "volatility",
+       "ok": true,
+       "detail": "ATR at the 1th percentile of the last 120 sessions"
+      },
+      {
+       "check": "consistency",
+       "ok": false,
+       "detail": "a full win sets your best day at $1,513 against a $625 limit \u2014 this bracket needs a $3,025 profit target to satisfy a 50% rule, or a partial exit near $756"
+      }
+     ],
+     "hard_blockers": [
+      "one MGC stop is $342 against a $250 budget"
+     ],
+     "soft_flags": [
+      "a full win sets your best day at $1,513 against a $625 limit \u2014 this bracket needs a $3,025 profit target to satisfy a 50% rule, or a partial exit near $756",
+      "news feed stale \u2014 sizing kept, confidence will be marked down"
+     ],
+     "headroom": {
+      "daily_stop": 500.0,
+      "consistency": -887.5
+     },
+     "consistency": {
+      "limit": 625.0,
+      "projected_best_day": 1512.5,
+      "min_target_to_comply": 3025.0
+     },
+     "note": "rejected: one MGC stop is $342 against a $250 budget"
+    },
+    "6_final": {
+     "bot": 6,
+     "name": "final",
+     "call": "SKIP",
+     "side": "short",
+     "confidence": 37,
+     "why": "rejected: one MGC stop is $342 against a $250 budget",
+     "falsifier": "a close back through 4,071.51 invalidates it; if Non-farm payrolls lands against the position before the target, take the stop, not a wider one",
+     "desk": {
+      "regime": "drift",
+      "governor": "run",
+      "roll": "ok"
+     },
+     "inputs": {
+      "opportunity": 43,
+      "catalyst": "unknown",
+      "sentiment": "neutral",
+      "risk": "reject"
+     }
+    },
+    "0_regime": {
+     "bot": 0,
+     "name": "regime",
+     "label": "drift",
+     "favours": [
+      "pullback",
+      "continuation"
+     ],
+     "atr_percentile": 1,
+     "separation_atr": -1.1,
+     "slope_atr": -1.93,
+     "compression": 0.35,
+     "note": "drift: 50/200 gap -1.1 ATR, 20-bar slope -1.9 ATR, 20-day range 35% of the 60-day, ATR 1th pct"
+    },
+    "7_session": {
+     "bot": 7,
+     "name": "session",
+     "where": "US cash hours",
+     "hour_utc": 13.72,
+     "range_atr": 1.04,
+     "stretched": false,
+     "note": "13:43Z, cash hours; the last 18 hours have travelled 1.0 ATR"
+    },
+    "8_liquidity": {
+     "bot": 8,
+     "name": "liquidity",
+     "score": 98,
+     "thin": false,
+     "median_bar_atr": 0.104,
+     "flat_share": 0.01,
+     "note": "median 15m bar is 0.10 ATR of the daily, 1% of bars printed flat"
+    },
+    "9_roll": {
+     "bot": 9,
+     "name": "roll",
+     "status": "ok",
+     "days": 41.4,
+     "when": "2026-12-10",
+     "label": "quarterly roll",
+     "note": "quarterly roll in 41.4 days (2026-12-10) \u2014 comfortable"
+    },
+    "10_benchmark": {
+     "bot": 10,
+     "name": "benchmark",
+     "desk_total_r": 0.0,
+     "buy_hold_pct": null,
+     "note": "0 settled trades \u2014 nothing to compare yet"
+    },
+    "11_calibration": {
+     "bot": 11,
+     "name": "calibration",
+     "samples": 4,
+     "accuracy": {},
+     "note": "4 settled decisions \u2014 calibration needs twenty"
+    },
+    "12_governor": {
+     "bot": 12,
+     "name": "governor",
+     "action": "run",
+     "drawdown": 0.0,
+     "day_pnl": 0.0,
+     "streak": 0,
+     "reasons": [],
+     "note": "clear \u2014 $0 drawdown, $+0 today"
+    }
+   },
+   "call": "SKIP",
+   "confidence": 37,
+   "why": "rejected: one MGC stop is $342 against a $250 budget"
+  }
+ ]
+}

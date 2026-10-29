@@ -1,0 +1,100 @@
+# The desk, once an hour, for free, with no laptop involved.
+#
+# Why this exists: a Codespace sleeps and a Mac has to be on. GitHub's scheduler
+# does not. Each run does one desk pass, and commits the record back to the repo
+# so `trading/desk/ledger.jsonl` becomes the paper trading account.
+#
+# Accuracy does not depend on how often this runs. Fills are re-derived from
+# fifteen-minute bars every pass, so a stop that traded at 02:00 is resolved
+# correctly whether the run happened at 02:00 or 09:00. Running hourly keeps the
+# record fresh and stays inside the free minutes of a private repo (720 runs a
+# month); a *public* repo has unlimited minutes, so you can drop to "*/15".
+#
+# Security notes, because this file can push to your repo:
+#   * one job, one permission (contents: write), nothing else granted
+#   * the action is pinned to a commit SHA, not a moving tag
+#   * no secrets, no tokens, no user-controlled values interpolated into a shell
+#   * `git add` is limited to trading/desk, so a stray file cannot be pushed
+#   * no pull_request trigger, so a fork cannot run this
+
+name: desk
+
+on:
+  schedule:
+    - cron: "7 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: desk-cycle
+  cancel-in-progress: false
+
+jobs:
+  cycle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: true
+
+      - name: One pass of the desk
+        run: |
+          set -euo pipefail
+          python3 --version
+          python3 trading/desk.py --cycle
+
+      # The next three are informative, not load-bearing: a flaky feed or a dead
+      # news source must never stop the record from being committed.
+      - name: Read the public feeds and verify the timestamps
+        continue-on-error: true
+        run: python3 trading/swarm.py --force
+
+      - name: Ask the six bots what they would do right now
+        continue-on-error: true
+        run: python3 trading/desk.py --board
+
+      - name: Rebuild the analytics tables
+        continue-on-error: true
+        run: python3 trading/analytics.py
+
+      - name: Rebuild the dashboard and the alerts
+        continue-on-error: true
+        run: python3 trading/dashboard.py
+
+      # Commit discipline, because the board and dashboard change every run:
+      #   * a new trade, decision or order  -> commit immediately
+      #   * otherwise                       -> one snapshot per day, not per hour
+      # Hourly commits of a page that says the same thing would be 720 commits a
+      # month of noise in a repo whose history is supposed to mean something.
+      - name: Record it
+        run: |
+          set -euo pipefail
+          git config user.name  "desk-bot"
+          git config user.email "desk-bot@users.noreply.github.com"
+          git add -A trading/desk
+          if git diff --cached --quiet; then
+            echo "nothing changed"
+            exit 0
+          fi
+          traded=false
+          if ! git diff --cached --quiet -- \
+               trading/desk/ledger.jsonl \
+               trading/desk/decisions.jsonl \
+               trading/desk/shadow.jsonl \
+               trading/desk/shadow_decisions.jsonl \
+               trading/desk/orders.jsonl; then
+            traded=true
+          fi
+          last_day="$(git log -1 --format=%cd --date=short -- trading/desk/dashboard.html 2>/dev/null || true)"
+          today="$(date -u +%F)"
+          if [ "$traded" = true ] || [ "$last_day" != "$today" ]; then
+            git commit -m "desk: record $(date -u +%Y-%m-%dT%H:%MZ)"
+            git push
+          else
+            git reset -q
+            echo "no trade this hour; today's snapshot is already saved"
+          fi

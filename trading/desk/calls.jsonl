@@ -1,0 +1,15 @@
+{"at": "2026-10-29T13:37:36Z", "symbol": "ES=F", "call": "WAIT", "confidence": 52, "setup": "pullback", "regime": "drift", "governor": "run"}
+{"at": "2026-10-29T13:37:36Z", "symbol": "CL=F", "call": "WAIT", "confidence": 16, "setup": "none", "regime": "drift", "governor": "run"}
+{"at": "2026-10-29T13:37:37Z", "symbol": "NKD=F", "call": "SKIP", "confidence": 50, "setup": "pullback", "regime": "drift", "governor": "run"}
+{"at": "2026-10-29T13:37:37Z", "symbol": "NQ=F", "call": "SKIP", "confidence": 42, "setup": "pullback", "regime": "drift", "governor": "run"}
+{"at": "2026-10-29T13:37:38Z", "symbol": "GC=F", "call": "SKIP", "confidence": 46, "setup": "continuation", "regime": "drift", "governor": "run"}
+{"at": "2026-10-29T13:38:22Z", "symbol": "ES=F", "call": "WAIT", "confidence": 52, "setup": "pullback", "regime": "drift", "governor": "run"}
+{"at": "2026-10-29T13:38:23Z", "symbol": "CL=F", "call": "WAIT", "confidence": 16, "setup": "none", "regime": "drift", "governor": "run"}
+{"at": "2026-10-29T13:38:23Z", "symbol": "NKD=F", "call": "SKIP", "confidence": 50, "setup": "pullback", "regime": "drift", "governor": "run"}
+{"at": "2026-10-29T13:38:24Z", "symbol": "NQ=F", "call": "SKIP", "confidence": 42, "setup": "pullback", "regime": "drift", "governor": "run"}
+{"at": "2026-10-29T13:38:25Z", "symbol": "GC=F", "call": "SKIP", "confidence": 46, "setup": "continuation", "regime": "drift", "governor": "run"}
+{"at": "2026-10-29T13:53:39Z", "symbol": "ES=F", "call": "WAIT", "confidence": 48, "setup": "pullback", "regime": "drift", "governor": "run"}
+{"at": "2026-10-29T13:53:40Z", "symbol": "CL=F", "call": "WAIT", "confidence": 12, "setup": "none", "regime": "drift", "governor": "run"}
+{"at": "2026-10-29T13:53:40Z", "symbol": "NKD=F", "call": "SKIP", "confidence": 41, "setup": "pullback", "regime": "drift", "governor": "run"}
+{"at": "2026-10-29T13:53:41Z", "symbol": "NQ=F", "call": "SKIP", "confidence": 37, "setup": "pullback", "regime": "drift", "governor": "run"}
+{"at": "2026-10-29T13:53:41Z", "symbol": "GC=F", "call": "SKIP", "confidence": 37, "setup": "continuation", "regime": "drift", "governor": "run"}

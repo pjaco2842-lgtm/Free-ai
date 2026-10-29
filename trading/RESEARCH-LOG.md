@@ -9,6 +9,95 @@ out-of-sample result, coin-flip p-value, verdict.
 
 ---
 
+## 2026-10-26 (e) — small accounts: micros make it tradeable, they do not make it compound
+
+**CORRECTION (same day).** The first version of this entry scaled every symbol by
+1/10 for "micro" sizing. That was wrong in both directions: `MARKETS` already
+holds MNQ/MYM point values for NQ/YM, so those were shrunk twice, and ZS needed the
+real MZS spec (500 bu, 0.5-cent tick) rather than a blind price cut. `--micro` now
+converts only ZS, and the account also enforces one planned-risk budget per *day*
+rather than one per trade. Every number below is from the corrected code.
+
+**Idea.** Size the three survivors for a $2,500 account.
+
+**Parameters.** `target.py --equity 2500 --risk 0.02 --micro` — 2% planned risk per
+day, whole contracts, 20-contract daily cap (a prop-firm style limit).
+
+**Result.** 65 trades over 16.3 years, **final $2,457** — a small loss, −0.1%/yr,
+12.2% max drawdown, eight breaches of −10%. 153 signals skipped: at $50 of daily
+risk, one MZS or MNQ stop often does not fit. The target is never reached from any
+sampled start date.
+
+**Why this is worse than the earlier $4,339 figure.** That number came from the
+double-scaled NQ/YM values plus a per-*trade* risk budget. Fixing the contract map
+and moving to a per-day budget removes the extra contracts that were manufacturing
+position size the account could not actually carry.
+
+**Verdict.** On $2,500 this portfolio is not a growth engine; it is roughly
+break-even before the market teaches you anything. The 10.5x target needs a
+different instrument or a different account, not a bigger risk setting.
+
+---
+
+## 2026-10-26 (f) — Lucid 25K evaluation: the constraints are the problem, not the profit target
+
+**Idea.** The user's live goal is a Lucid 25K evaluation: +$1,250 with a 50%
+consistency rule, then a funded account. The profit target is small; the survival
+rules are not. Test the three rules against them.
+
+**Rules used (official Lucid help center, read 2026-10-26).**
+- 25K evaluation: profit target **$1,250**, max loss limit **$1,000**, max size
+  **2 minis / 20 micros**, EOD trailing drawdown on Pro/Flex (initial trail balance
+  **$26,100**, locked MLL **$25,100**). Daily loss limit: none on Pro 25K, $600 on
+  the front page config, optional on Daily/Flex.
+- Consistency = **largest single-day profit / account profit**. At a $1,250 target,
+  50% means **$625** (Lucid's published cushion example is $650, and it explicitly
+  says that is not a fixed allowance). Pro uses 40% for *funded* payouts, not for
+  the pass; Daily offers 40% standard or 50% as a paid add-on.
+
+**Method.** `target.py` now replays the Lucid constraints from every historical
+signal date: fresh $25,000, EOD trailing floor, largest-day/gross-profit
+consistency, 20-contract daily cap, and a planned daily risk budget.
+
+| planned daily risk | starts that pass profit+consistency without breach | breach before pass | median days to pass |
+|---|---|---|---|
+| 0.5% | 2 / 207 (1.0%) | 0 (205 unfinished) | 3,928 |
+| **1.0%** | **39 / 207 (18.8%)** | **114** | **603** |
+| 2.0% | 53 / 207 (25.6%) | 145 | 301 |
+
+**Reading it.** More risk buys a slightly higher pass rate and a much higher
+failure rate. At 1% daily risk you pass about one start in five, fail more than
+half, and the median pass takes ~20 months of trading days. At 2% the pass rate
+edges to 26% while 70% breach the $1,000 limit.
+
+**Caveats — this is not an official simulator.** Daily bars only, so intraday
+drawdown, intraday trailing breaches, commissions on the evaluation's own fills,
+and Lucid's exact cushion arithmetic are all approximated. Treat the percentages
+as an order of magnitude, not a promise.
+
+**One-week horizon — the question that matters for "pass in a week".**
+`--horizon-days 5` limits every replay to a five-trading-day attempt:
+
+| planned daily risk | pass both gates in 5 days | breached $1,000 first |
+|---|---|---|
+| 2% | 5 / 207 (2.4%) | 57 |
+| 3% | 6 / 207 (2.9%) | 108 |
+| 5% | 5 / 207 (2.4%) | 132 |
+
+Tripling the risk does not raise the pass rate; it roughly doubles the failure rate.
+And the reason is frequency, not size: the portfolio fires **12.4 signals a year**,
+the **median gap between signal days is 18 days**, the longest is 193, and only
+**19% of seven-day windows contain even one signal**. In 81% of weeks there is
+nothing to size. Aggression cannot manufacture a trade that does not exist.
+
+**Verdict.** The three rules do not solve the evaluation; they occasionally survive
+it. A 20% pass rate per attempt also means most attempts are re-buys, so the
+evaluation fee is a real cost of this plan. If a one-week pass is the requirement,
+the work is **more signals** (new rules / additional markets with their own luck
+screens), not higher risk per trade.
+
+---
+
 ## 2026-10-26 (d) — the sweep that found a bug, and the three rules that survived it
 
 **The bug first, because it invalidates (c).** In `simulate()`, the loop variable holding
@@ -263,6 +352,62 @@ filter) and it should be tested on its own, on 2010-2020, before anything else.
 
 ---
 
+## 2026-10-26 (g) — the five December contracts, and what a coin-flip win rate is worth
+
+**Question.** Can the desk trade NQZ2026, ESZ2026, GCZ2026, CLZ2026 and NKDZ2026, and
+can it be made to win "a coin flip" while earning the most money?
+
+**Method.** `trading/edge.py` crosses 9 entry rules x 2 parameter sets x 4 stops x 6
+targets x 5 max-holds on each of the five front-month feeds — 9,288 eligible settings —
+and scores every one on both halves of history. Then it does the thing that matters:
+it chooses a setting using ONE half and scores the half it never saw, once in each
+direction. Finally it replays the five as one $25,000 book against the real $1,250
+target with EOD trailing drawdown and the 50% consistency rule.
+
+**Result 1 — win rate is cheap, expectancy is not.** 2,942 of 9,288 settings won at
+least 50% of the time. Only 499 of those (17%) made money in both halves. The highest
+win rate found anywhere was 92.9%, on ES `inside_day` 1.5/0.5/10, averaging +0.21R over
+42 trades in seventeen years: a target one third of the stop wins often and pays little.
+
+**Result 2 — one setting does both.** ES `inside_day`, 0.5 ATR stop / 1.0 ATR target /
+5-bar hold: **58.1% win, +0.62R average, +26.7R over 43 trades, positive both halves
+(+14.1R early, +12.6R late), coin-flip p < 0.01.** This is the follow-up the previous
+entry's "test ES inside_day harder" item asked for, and it passed.
+
+**Result 3 — the blind selection test.** Chosen on 2009-2019, scored on 2020-2026:
+ES fade +9.3R, CL fade +4.0R, NKD continue-trend +13.4R; NQ -4.4R and GC -16.6R failed.
+NKD `continue_trend_day` 0.5/3.0/5 was selected **identically from both directions**,
+the strongest single result in the study.
+
+**Result 4 — the number that overrides the rest.** With settings frozen on the early
+half and the account run only on 2020-2026: **38 trades, final $24,603 from $25,000,
+-0.2%/yr, 51 signals skipped** because one contract's stop did not fit the budget. The
++8.4%/yr available from full-history settings is hindsight. Out of sample the book does
+not compound, which repeats what entry (e) found on the $2,500 account.
+
+**Result 5 — affordability is the binding constraint, not accuracy.** Typical stop on
+one contract at $25,000: MES $199, MCL $218 (both fit a 1% / $250 budget); MNQ $478 and
+MGC $490 do not; **NKD $3,946 = 15.8% of the account.** The best-measured signal in the
+study cannot be traded at this size. The flat equity curve is a sizing problem wearing
+a statistics costume.
+
+**Result 6 — $1,250 in one week.** Replaying every historical week: 3.0% of starts pass
+at 1% daily risk; 4.9% at 2%, with 35% breaching the $1,000 limit first. The basket
+produces ~37 signals a year, so a week contains ~0.7 of a signal. More risk does not
+create trades — this repeats entry (f) with a wider market set.
+
+**What changed in the codebase.** `trading/edge.py` (the sweep + blind test + account
+replay), `trading/basket.py` (live forward paper ledger using only the settings that
+survived, with resting-order output for phone execution), `trading/START-HERE.md`
+(beginner walkthrough), `trading/edge.json` (full results).
+
+**Honest verdict.** The five-contract basket is better than the old three-market desk on
+every measure — more signals, higher win rate available, one genuinely robust rule — but
+at $25,000 it still does not compound out of sample. Do not quote +8.4%/yr; quote
+-0.2%/yr and treat the forward ledger as the only remaining evidence.
+
+---
+
 ## How to read this file
 
 - A positive in-sample number means nothing on its own. It is the cost of admission.
@@ -273,7 +418,8 @@ filter) and it should be tested on its own, on 2010-2020, before anything else.
 ## Tally
 
 Ideas tested: **9** rule families, 3 specific video claims, across **22 markets** — 198
-rule/market combinations, plus ~600 parameter variants within them.
+rule/market combinations, plus ~600 parameter variants within them, plus **9,288
+exit combinations** on the five December contracts (entry 2026-10-26 (g)).
 Survived both directions of time: **24 of 198**.
 Beat 500 random-entry versions in both halves at p<0.05: **3** (NQ fade, YM fade, ZS NR7).
 Affordable at $25,000 with whole contracts: **2**.
@@ -282,3 +428,81 @@ Cleared every gate: **3 statistics, 2 practical**.
 Earlier entries in this file (2010-2020 single-split results) were produced with a bug
 that entered open-based rules a day late; see the 2026-10-26 (d) entry. Their *direction*
 holds, their magnitudes do not. Nothing before that entry should be quoted as a number.
+
+## 2026-10-29 (h) — six bots, 300 readers, and four bugs that changed numbers
+
+**Why this entry exists:** the previous entries measured signals. This one measures
+a *pipeline* — where the signal is scored, read against verified news, planned,
+risk-gated, executed and rendered — and records what broke while building it.
+
+**Built.** `bots.py` (six bots, BOT 5 final / BOT 2 delay-only / BOT 3 no veto),
+`swarm.py` (300 readers over 20 public feeds), `research_engine.py` (spec + the eight
+refusals + improvement loop), `execution.py` (order lifecycle, risk gate, kill
+switch), `montecarlo.py` (10k block bootstrap), `dashboard.py` (static page, CSP).
+`DESK.md` documents all of it.
+
+**Measured.**
+- Swarm, live: 2,595 item checks, 16/20 feeds reachable, 23 fresh + 37 context kept,
+  1,265 stale / 45 duplicate / **5 future-dated** / 5 undated rejected.
+- Research engine: CL `fade_trend_day` 0.5/3.0/2 → +0.548R all history, **+0.336R
+  after 2020, p=0.128, t=0.64 → REJECT**. A profitable-looking rule correctly
+  refused at twelve out-of-sample trades.
+- Execution, 45 sessions: 3 orders, 3 closed, 18 transitions, +1.41R. Three trades
+  prove plumbing, not edge.
+- 10,000 replays, **honest set** (ES fade + CL fade, i.e. the rules that never saw
+  the data they are judged on): mean +0.196R, **74.9%** reach +$1,250 before a fixed
+  −$1,000, 24.8% breach, median 36 trades, 95th-percentile drawdown $1,815.
+- Same file without `--honest`, 41 trades: 98.0%. That is hindsight and the flag
+  exists to name it.
+
+**Corrections to earlier work, none of which changes a published verdict:**
+1. Swarm dedupe was global rather than per market, so a story about both the S&P and
+   the Nasdaq only counted once. Now keyed `market:hash`.
+2. The first Monte Carlo returned 99.8% because it bootstrapped the same trades that
+   selected the parameters. Default is now the holdout window; `--all` restores the
+   hindsight run with a warning.
+3. Execution counted "orders already sent today" across nineteen years, rejecting
+   511 historical trades against a one-day cap. Scoped to recent sessions, per
+   simulated date.
+4. Execution reported 15–106 ticks of "slippage" by comparing the 18:00 Globex open
+   with the 09:30 print. A paper fill deals where it is told; slippage is an
+   assumption (one tick per side, inside every R), not a measurement. Stated, not
+   faked.
+
+**The finding that matters for the prop firm:** one MES win at a 6:1 bracket pays
+~$967. Lucid's 50% consistency rule caps a best day at $625 on a $1,250 target, so
+a single full win voids the pass *even when the target is reached*. Either the
+target must be ≥ 2× the win (~$1,934), or the exit must be partial (~$480–$625) and
+the reduced bracket (~2.5:1) re-backtested. Until then the $1,250 evaluation is
+arithmetically incompatible with this bracket, and the trailing drawdown (18.8%
+pass rate, 114/207 breaches) is the stricter constraint anyway.
+
+## 2026-10-29 (i) — the desk grows to thirteen bots, and gets an audit trail
+
+**Why:** six bots covered one trade. They did not cover the market the trade lives
+in, the hour it is taken, the liquidity it is dealt into, the contract it is quoted
+against, whether the whole desk should be allowed to trade at all, or whether any of
+the bots have been right. Seven more bots and an analytics pass close that gap.
+
+**Added.** `0 regime`, `7 session`, `8 liquidity`, `9 roll`, `10 benchmark`,
+`11 calibration`, `12 governor` in `bots.py`; `trading/analytics.py`; call history in
+`desk/calls.jsonl`; analytics and dashboard sections; workflow step.
+
+**Authority is now explicit and ordered.** BOT 2 delays a session, BOT 5 rejects a
+trade, BOT 9 refuses new risk within three days of a roll, BOT 12 halts every market.
+BOT 6 may not override any of them, and `validate_call()` still fails malformed
+output to SKIP.
+
+**First 13-bot board (2026-10-29).** ES: regime `drift` (50/200 gap +4.3 ATR,
+20-bar slope +0.7 ATR, ATR 44th percentile), opportunity 35 (pullback at the 20 EMA),
+liquidity 97/100, session overnight 13:27Z, roll in 41.4 days, governor `run`,
+risk approve 1 MES at $207, final **WAIT 52**. CL: **WAIT 16**, regime `drift`.
+
+**Analytics, first run.** 0 forward trades, 4 shadow decisions, 5 logged calls — so
+every table prints "no data yet" and says so rather than inventing a win rate. The
+calibration joins calls to outcomes as trades settle; under ten pairs it refuses.
+
+**Method note.** The regime classifier is three measurements the market supplies
+itself — volatility percentile, 50/200 separation in ATRs, 20-day range against the
+60-day — not a fitted model. That keeps it inspectable, and it means a wrong regime
+call can be traced to a number rather than to an opinion.

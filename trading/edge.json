@@ -1,0 +1,2826 @@
+{
+ "split": "2020-01-01",
+ "min_trades": 12,
+ "eligible": 9288,
+ "above_50_win": 2942,
+ "survivors": 1142,
+ "rows_kept": 80,
+ "rows": [
+  {
+   "symbol": "NKD=F",
+   "rule": "continue_trend_day",
+   "params": {
+    "trend": 1.5
+   },
+   "stop": 0.5,
+   "target": 3.0,
+   "hold": 5,
+   "entry": "same_open",
+   "pv": 5.0,
+   "tick": 5.0,
+   "pre2020": {
+    "trades": 13,
+    "win_rate": 30.76923076923077,
+    "net_r": 8.184516438595868,
+    "avg_r": 0.6295781875842975
+   },
+   "post2020": {
+    "trades": 13,
+    "win_rate": 30.76923076923077,
+    "net_r": 13.395449117889703,
+    "avg_r": 1.0304191629145925
+   },
+   "win_rate": 30.76923076923077,
+   "avg_r": 0.8299986752494449,
+   "net_r": 21.57996555648557,
+   "survives": true,
+   "trades": 26,
+   "coin_flip_p": 0.033
+  },
+  {
+   "symbol": "NKD=F",
+   "rule": "continue_trend_day",
+   "params": {
+    "trend": 1.5
+   },
+   "stop": 0.75,
+   "target": 3.0,
+   "hold": 5,
+   "entry": "same_open",
+   "pv": 5.0,
+   "tick": 5.0,
+   "pre2020": {
+    "trades": 13,
+    "win_rate": 46.15384615384615,
+    "net_r": 7.214828134990698,
+    "avg_r": 0.5549867796146691
+   },
+   "post2020": {
+    "trades": 13,
+    "win_rate": 38.46153846153846,
+    "net_r": 10.93029941192647,
+    "avg_r": 0.8407922624558822
+   },
+   "win_rate": 42.30769230769231,
+   "avg_r": 0.6978895210352756,
+   "net_r": 18.145127546917166,
+   "survives": true,
+   "trades": 26
+  },
+  {
+   "symbol": "NKD=F",
+   "rule": "continue_trend_day",
+   "params": {
+    "trend": 1.5
+   },
+   "stop": 1.0,
+   "target": 3.0,
+   "hold": 5,
+   "entry": "same_open",
+   "pv": 5.0,
+   "tick": 5.0,
+   "pre2020": {
+    "trades": 13,
+    "win_rate": 53.84615384615385,
+    "net_r": 5.611152066070607,
+    "avg_r": 0.4316270820054313
+   },
+   "post2020": {
+    "trades": 13,
+    "win_rate": 61.53846153846154,
+    "net_r": 11.196916320955733,
+    "avg_r": 0.8613012554581333
+   },
+   "win_rate": 57.69230769230769,
+   "avg_r": 0.6464641687317823,
+   "net_r": 16.80806838702634,
+   "survives": true,
+   "trades": 26
+  },
+  {
+   "symbol": "ES=F",
+   "rule": "inside_day",
+   "params": {},
+   "stop": 0.5,
+   "target": 1.0,
+   "hold": 5,
+   "entry": "same_open",
+   "pv": 5.0,
+   "tick": 0.25,
+   "pre2020": {
+    "trades": 25,
+    "win_rate": 56.0,
+    "net_r": 14.1423496372412,
+    "avg_r": 0.565693985489648
+   },
+   "post2020": {
+    "trades": 18,
+    "win_rate": 61.111111111111114,
+    "net_r": 12.559006424556728,
+    "avg_r": 0.6977225791420404
+   },
+   "win_rate": 58.13953488372093,
+   "avg_r": 0.6209617688790215,
+   "net_r": 26.701356061797927,
+   "survives": true,
+   "trades": 43,
+   "coin_flip_p": 0.0
+  },
+  {
+   "symbol": "ES=F",
+   "rule": "fade_trend_day",
+   "params": {
+    "trend": 1.2
+   },
+   "stop": 0.5,
+   "target": 3.0,
+   "hold": 10,
+   "entry": "same_open",
+   "pv": 5.0,
+   "tick": 0.25,
+   "pre2020": {
+    "trades": 18,
+    "win_rate": 27.77777777777778,
+    "net_r": 13.970429447079429,
+    "avg_r": 0.7761349692821905
+   },
+   "post2020": {
+    "trades": 22,
+    "win_rate": 22.727272727272727,
+    "net_r": 9.343270913722472,
+    "avg_r": 0.42469413244193055
+   },
+   "win_rate": 25.0,
+   "avg_r": 0.5828425090200475,
+   "net_r": 23.313700360801903,
+   "survives": true,
+   "trades": 40
+  },
+  {
+   "symbol": "ES=F",
+   "rule": "fade_trend_day",
+   "params": {
+    "trend": 1.2
+   },
+   "stop": 0.5,
+   "target": 3.0,
+   "hold": 5,
+   "entry": "same_open",
+   "pv": 5.0,
+   "tick": 0.25,
+   "pre2020": {
+    "trades": 18,
+    "win_rate": 33.333333333333336,
+    "net_r": 11.73357035817233,
+    "avg_r": 0.6518650198984628
+   },
+   "post2020": {
+    "trades": 23,
+    "win_rate": 30.434782608695652,
+    "net_r": 11.382904508978026,
+    "avg_r": 0.49490889169469676
+   },
+   "win_rate": 31.70731707317073,
+   "avg_r": 0.5638164601743989,
+   "net_r": 23.116474867150355,
+   "survives": true,
+   "trades": 41
+  },
+  {
+   "symbol": "ES=F",
+   "rule": "inside_day",
+   "params": {},
+   "stop": 0.5,
+   "target": 1.0,
+   "hold": 10,
+   "entry": "same_open",
+   "pv": 5.0,
+   "tick": 0.25,
+   "pre2020": {
+    "trades": 24,
+    "win_rate": 50.0,
+    "net_r": 9.8306546683823,
+    "avg_r": 0.40961061118259584
+   },
+   "post2020": {
+    "trades": 18,
+    "win_rate": 61.111111111111114,
+    "net_r": 13.37713076596874,
+    "avg_r": 0.7431739314427078
+   },
+   "win_rate": 54.76190476190476,
+   "avg_r": 0.5525663198655009,
+   "net_r": 23.207785434351038,
+   "survives": true,
+   "trades": 42
+  },
+  {
+   "symbol": "CL=F",
+   "rule": "fade_trend_day",
+   "params": {
+    "trend": 1.5
+   },
+   "stop": 0.5,
+   "target": 3.0,
+   "hold": 2,
+   "entry": "same_open",
+   "pv": 100.0,
+   "tick": 0.01,
+   "pre2020": {
+    "trades": 12,
+    "win_rate": 50.0,
+    "net_r": 9.12310348740814,
+    "avg_r": 0.7602586239506782
+   },
+   "post2020": {
+    "trades": 12,
+    "win_rate": 41.666666666666664,
+    "net_r": 4.0368078802898175,
+    "avg_r": 0.33640065669081815
+   },
+   "win_rate": 45.833333333333336,
+   "avg_r": 0.5483296403207482,
+   "net_r": 13.159911367697957,
+   "survives": true,
+   "trades": 24,
+   "coin_flip_p": 0.017
+  },
+  {
+   "symbol": "ES=F",
+   "rule": "inside_day",
+   "params": {},
+   "stop": 0.5,
+   "target": 1.0,
+   "hold": 2,
+   "entry": "same_open",
+   "pv": 5.0,
+   "tick": 0.25,
+   "pre2020": {
+    "trades": 25,
+    "win_rate": 60.0,
+    "net_r": 10.558029294637802,
+    "avg_r": 0.42232117178551204
+   },
+   "post2020": {
+    "trades": 22,
+    "win_rate": 59.09090909090909,
+    "net_r": 14.785460218632595,
+    "avg_r": 0.6720663735742088
+   },
+   "win_rate": 59.57446808510638,
+   "avg_r": 0.5392231811334127,
+   "net_r": 25.3434895132704,
+   "survives": true,
+   "trades": 47
+  },
+  {
+   "symbol": "ES=F",
+   "rule": "inside_day",
+   "params": {},
+   "stop": 0.75,
+   "target": 1.0,
+   "hold": 10,
+   "entry": "same_open",
+   "pv": 5.0,
+   "tick": 0.25,
+   "pre2020": {
+    "trades": 24,
+    "win_rate": 70.83333333333333,
+    "net_r": 13.502149789904468,
+    "avg_r": 0.5625895745793529
+   },
+   "post2020": {
+    "trades": 18,
+    "win_rate": 66.66666666666667,
+    "net_r": 8.91808717731251,
+    "avg_r": 0.49544928762847273
+   },
+   "win_rate": 69.04761904761905,
+   "avg_r": 0.5338151658861185,
+   "net_r": 22.42023696721698,
+   "survives": true,
+   "trades": 42
+  },
+  {
+   "symbol": "CL=F",
+   "rule": "nr_break",
+   "params": {
+    "lookback": 10
+   },
+   "stop": 0.5,
+   "target": 3.0,
+   "hold": 5,
+   "entry": "same_open",
+   "pv": 100.0,
+   "tick": 0.01,
+   "pre2020": {
+    "trades": 15,
+    "win_rate": 33.333333333333336,
+    "net_r": 5.649516946412374,
+    "avg_r": 0.3766344630941582
+   },
+   "post2020": {
+    "trades": 14,
+    "win_rate": 42.857142857142854,
+    "net_r": 9.550976615963853,
+    "avg_r": 0.6822126154259894
+   },
+   "win_rate": 37.93103448275862,
+   "avg_r": 0.5241549504267664,
+   "net_r": 15.200493562376227,
+   "survives": true,
+   "trades": 29
+  },
+  {
+   "symbol": "ES=F",
+   "rule": "inside_day",
+   "params": {},
+   "stop": 0.5,
+   "target": 0.75,
+   "hold": 5,
+   "entry": "same_open",
+   "pv": 5.0,
+   "tick": 0.25,
+   "pre2020": {
+    "trades": 25,
+    "win_rate": 60.0,
+    "net_r": 10.142349637241246,
+    "avg_r": 0.40569398548964986
+   },
+   "post2020": {
+    "trades": 18,
+    "win_rate": 66.66666666666667,
+    "net_r": 11.339006424556715,
+    "avg_r": 0.6299448013642619
+   },
+   "win_rate": 62.7906976744186,
+   "avg_r": 0.499566420041813,
+   "net_r": 21.48135606179796,
+   "survives": true,
+   "trades": 43
+  },
+  {
+   "symbol": "ES=F",
+   "rule": "inside_day",
+   "params": {},
+   "stop": 0.5,
+   "target": 1.0,
+   "hold": 3,
+   "entry": "same_open",
+   "pv": 5.0,
+   "tick": 0.25,
+   "pre2020": {
+    "trades": 25,
+    "win_rate": 56.0,
+    "net_r": 13.062947143630419,
+    "avg_r": 0.5225178857452167
+   },
+   "post2020": {
+    "trades": 21,
+    "win_rate": 52.38095238095238,
+    "net_r": 9.901763407137514,
+    "avg_r": 0.47151254319702446
+   },
+   "win_rate": 54.34782608695652,
+   "avg_r": 0.49923283806017243,
+   "net_r": 22.964710550767933,
+   "survives": true,
+   "trades": 46
+  },
+  {
+   "symbol": "ES=F",
+   "rule": "inside_day",
+   "params": {},
+   "stop": 1.0,
+   "target": 1.0,
+   "hold": 10,
+   "entry": "same_open",
+   "pv": 5.0,
+   "tick": 0.25,
+   "pre2020": {
+    "trades": 24,
+    "win_rate": 83.33333333333333,
+    "net_r": 13.643589086614439,
+    "avg_r": 0.568482878608935
+   },
+   "post2020": {
+    "trades": 18,
+    "win_rate": 72.22222222222223,
+    "net_r": 7.188565382984355,
+    "avg_r": 0.3993647434991308
+   },
+   "win_rate": 78.57142857142857,
+   "avg_r": 0.49600367784759036,
+   "net_r": 20.832154469598795,
+   "survives": true,
+   "trades": 42
+  },
+  {
+   "symbol": "ES=F",
+   "rule": "inside_day",
+   "params": {},
+   "stop": 0.5,
+   "target": 1.5,
+   "hold": 5,
+   "entry": "same_open",
+   "pv": 5.0,
+   "tick": 0.25,
+   "pre2020": {
+    "trades": 25,
+    "win_rate": 44.0,
+    "net_r": 11.513188371622817,
+    "avg_r": 0.4605275348649127
+   },
+   "post2020": {
+    "trades": 18,
+    "win_rate": 50.0,
+    "net_r": 9.66396110226488,
+    "avg_r": 0.5368867279036045
+   },
+   "win_rate": 46.51162790697674,
+   "avg_r": 0.4924918482299464,
+   "net_r": 21.177149473887695,
+   "survives": true,
+   "trades": 43
+  },
+  {
+   "symbol": "CL=F",
+   "rule": "nr_break",
+   "params": {
+    "lookback": 10
+   },
+   "stop": 0.5,
+   "target": 3.0,
+   "hold": 2,
+   "entry": "same_open",
+   "pv": 100.0,
+   "tick": 0.01,
+   "pre2020": {
+    "trades": 15,
+    "win_rate": 53.333333333333336,
+    "net_r": 7.603490966647443,
+    "avg_r": 0.5068993977764962
+   },
+   "post2020": {
+    "trades": 14,
+    "win_rate": 57.142857142857146,
+    "net_r": 6.532614616695804,
+    "avg_r": 0.466615329763986
+   },
+   "win_rate": 55.172413793103445,
+   "avg_r": 0.48745191666700854,
+   "net_r": 14.136105583343248,
+   "survives": true,
+   "trades": 29
+  },
+  {
+   "symbol": "ES=F",
+   "rule": "inside_day",
+   "params": {},
+   "stop": 0.75,
+   "target": 1.5,
+   "hold": 10,
+   "entry": "same_open",
+   "pv": 5.0,
+   "tick": 0.25,
+   "pre2020": {
+    "trades": 24,
+    "win_rate": 54.166666666666664,
+    "net_r": 10.409676671624899,
+    "avg_r": 0.4337365279843708
+   },
+   "post2020": {
+    "trades": 18,
+    "win_rate": 55.55555555555556,
+    "net_r": 9.836142732868073,
+    "avg_r": 0.5464523740482262
+   },
+   "win_rate": 54.76190476190476,
+   "avg_r": 0.48204331915459453,
+   "net_r": 20.24581940449297,
+   "survives": true,
+   "trades": 42
+  },
+  {
+   "symbol": "ES=F",
+   "rule": "inside_day",
+   "params": {},
+   "stop": 0.5,
+   "target": 3.0,
+   "hold": 1,
+   "entry": "same_open",
+   "pv": 5.0,
+   "tick": 0.25,
+   "pre2020": {
+    "trades": 25,
+    "win_rate": 56.0,
+    "net_r": 6.498812369489908,
+    "avg_r": 0.2599524947795963
+   },
+   "post2020": {
+    "trades": 22,
+    "win_rate": 68.18181818181819,
+    "net_r": 16.110404192318768,
+    "avg_r": 0.732291099650853
+   },
+   "win_rate": 61.702127659574465,
+   "avg_r": 0.4810471608895463,
+   "net_r": 22.609216561808676,
+   "survives": true,
+   "trades": 47
+  },
+  {
+   "symbol": "ES=F",
+   "rule": "inside_day",
+   "params": {},
+   "stop": 0.5,
+   "target": 3.0,
+   "hold": 3,
+   "entry": "same_open",
+   "pv": 5.0,
+   "tick": 0.25,
+   "pre2020": {
+    "trades": 25,
+    "win_rate": 48.0,
+    "net_r": 16.17552619968288,
+    "avg_r": 0.6470210479873153
+   },
+   "post2020": {
+    "trades": 21,
+    "win_rate": 38.095238095238095,
+    "net_r": 5.924228435783364,
+    "avg_r": 0.282106115989684
+   },
+   "win_rate": 43.47826086956522,
+   "avg_r": 0.48042944859709236,
+   "net_r": 22.099754635466248,
+   "survives": true,
+   "trades": 46
+  },
+  {
+   "symbol": "CL=F",
+   "rule": "fade_trend_day",
+   "params": {
+    "trend": 1.5
+   },
+   "stop": 0.5,
+   "target": 3.0,
+   "hold": 3,
+   "entry": "same_open",
+   "pv": 100.0,
+   "tick": 0.01,
+   "pre2020": {
+    "trades": 12,
+    "win_rate": 50.0,
+    "net_r": 7.366672956823813,
+    "avg_r": 0.6138894130686511
+   },
+   "post2020": {
+    "trades": 12,
+    "win_rate": 33.333333333333336,
+    "net_r": 4.057532176946564,
+    "avg_r": 0.33812768141221367
+   },
+   "win_rate": 41.666666666666664,
+   "avg_r": 0.47600854724043246,
+   "net_r": 11.424205133770378,
+   "survives": true,
+   "trades": 24
+  },
+  {
+   "symbol": "ES=F",
+   "rule": "inside_day",
+   "params": {},
+   "stop": 0.75,
+   "target": 1.0,
+   "hold": 5,
+   "entry": "same_open",
+   "pv": 5.0,
+   "tick": 0.25,
+   "pre2020": {
+    "trades": 25,
+    "win_rate": 68.0,
+    "net_r": 13.81963094095647,
+    "avg_r": 0.5527852376382588
+   },
+   "post2020": {
+    "trades": 18,
+    "win_rate": 61.111111111111114,
+    "net_r": 6.581590290971488,
+    "avg_r": 0.36564390505397154
+   },
+   "win_rate": 65.11627906976744,
+   "avg_r": 0.47444700539367346,
+   "net_r": 20.40122123192796,
+   "survives": true,
+   "trades": 43
+  },
+  {
+   "symbol": "CL=F",
+   "rule": "fade_trend_day",
+   "params": {
+    "trend": 1.5
+   },
+   "stop": 0.5,
+   "target": 2.0,
+   "hold": 2,
+   "entry": "same_open",
+   "pv": 100.0,
+   "tick": 0.01,
+   "pre2020": {
+    "trades": 12,
+    "win_rate": 50.0,
+    "net_r": 7.123103487408134,
+    "avg_r": 0.5935919572840112
+   },
+   "post2020": {
+    "trades": 12,
+    "win_rate": 41.666666666666664,
+    "net_r": 4.25273126873601,
+    "avg_r": 0.35439427239466753
+   },
+   "win_rate": 45.833333333333336,
+   "avg_r": 0.4739931148393393,
+   "net_r": 11.375834756144144,
+   "survives": true,
+   "trades": 24
+  },
+  {
+   "symbol": "ES=F",
+   "rule": "inside_day",
+   "params": {},
+   "stop": 0.5,
+   "target": 1.5,
+   "hold": 2,
+   "entry": "same_open",
+   "pv": 5.0,
+   "tick": 0.25,
+   "pre2020": {
+    "trades": 25,
+    "win_rate": 56.0,
+    "net_r": 6.273711309190677,
+    "avg_r": 0.2509484523676271
+   },
+   "post2020": {
+    "trades": 22,
+    "win_rate": 54.54545454545455,
+    "net_r": 15.836098573734233,
+    "avg_r": 0.7198226624424652
+   },
+   "win_rate": 55.319148936170215,
+   "avg_r": 0.47042148687074276,
+   "net_r": 22.10980988292491,
+   "survives": true,
+   "trades": 47
+  },
+  {
+   "symbol": "ES=F",
+   "rule": "inside_day",
+   "params": {},
+   "stop": 0.5,
+   "target": 3.0,
+   "hold": 2,
+   "entry": "same_open",
+   "pv": 5.0,
+   "tick": 0.25,
+   "pre2020": {
+    "trades": 25,
+    "win_rate": 56.0,
+    "net_r": 8.708597808593305,
+    "avg_r": 0.3483439123437322
+   },
+   "post2020": {
+    "trades": 22,
+    "win_rate": 54.54545454545455,
+    "net_r": 13.203363013751211,
+    "avg_r": 0.6001528642614187
+   },
+   "win_rate": 55.319148936170215,
+   "avg_r": 0.4662119323903089,
+   "net_r": 21.91196082234452,
+   "survives": true,
+   "trades": 47
+  },
+  {
+   "symbol": "NQ=F",
+   "rule": "close_extreme",
+   "params": {
+    "edge": 0.9,
+    "slow": 200
+   },
+   "stop": 0.5,
+   "target": 3.0,
+   "hold": 10,
+   "entry": "next_open",
+   "pv": 2.0,
+   "tick": 0.25,
+   "pre2020": {
+    "trades": 159,
+    "win_rate": 28.30188679245283,
+    "net_r": 73.24431649699062,
+    "avg_r": 0.4606560785974253
+   },
+   "post2020": {
+    "trades": 114,
+    "win_rate": 28.07017543859649,
+    "net_r": 51.37066893562314,
+    "avg_r": 0.4506199029440626
+   },
+   "win_rate": 28.205128205128204,
+   "avg_r": 0.4564651481048123,
+   "net_r": 124.61498543261376,
+   "survives": true,
+   "trades": 273,
+   "coin_flip_p": 0.0
+  },
+  {
+   "symbol": "ES=F",
+   "rule": "inside_day",
+   "params": {},
+   "stop": 1.0,
+   "target": 1.5,
+   "hold": 10,
+   "entry": "same_open",
+   "pv": 5.0,
+   "tick": 0.25,
+   "pre2020": {
+    "trades": 24,
+    "win_rate": 66.66666666666667,
+    "net_r": 11.283000891598068,
+    "avg_r": 0.4701250371499195
+   },
+   "post2020": {
+    "trades": 18,
+    "win_rate": 61.111111111111114,
+    "net_r": 7.812182158994611,
+    "avg_r": 0.43401011994414507
+   },
+   "win_rate": 64.28571428571429,
+   "avg_r": 0.4546472154903019,
+   "net_r": 19.09518305059268,
+   "survives": true,
+   "trades": 42
+  },
+  {
+   "symbol": "ES=F",
+   "rule": "inside_day",
+   "params": {},
+   "stop": 0.5,
+   "target": 1.5,
+   "hold": 1,
+   "entry": "same_open",
+   "pv": 5.0,
+   "tick": 0.25,
+   "pre2020": {
+    "trades": 25,
+    "win_rate": 56.0,
+    "net_r": 5.832145702823242,
+    "avg_r": 0.23328582811292967
+   },
+   "post2020": {
+    "trades": 22,
+    "win_rate": 68.18181818181819,
+    "net_r": 15.483931779770861,
+    "avg_r": 0.7038150808986755
+   },
+   "win_rate": 61.702127659574465,
+   "avg_r": 0.453533563459449,
+   "net_r": 21.316077482594103,
+   "survives": true,
+   "trades": 47
+  },
+  {
+   "symbol": "ES=F",
+   "rule": "inside_day",
+   "params": {},
+   "stop": 0.5,
+   "target": 1.5,
+   "hold": 3,
+   "entry": "same_open",
+   "pv": 5.0,
+   "tick": 0.25,
+   "pre2020": {
+    "trades": 25,
+    "win_rate": 48.0,
+    "net_r": 11.55506402833864,
+    "avg_r": 0.4622025611335456
+   },
+   "post2020": {
+    "trades": 21,
+    "win_rate": 42.857142857142854,
+    "net_r": 9.212561489799413,
+    "avg_r": 0.4386934042761625
+   },
+   "win_rate": 45.65217391304348,
+   "avg_r": 0.4514701199595229,
+   "net_r": 20.767625518138054,
+   "survives": true,
+   "trades": 46
+  },
+  {
+   "symbol": "NKD=F",
+   "rule": "continue_trend_day",
+   "params": {
+    "trend": 1.5
+   },
+   "stop": 0.5,
+   "target": 2.0,
+   "hold": 5,
+   "entry": "same_open",
+   "pv": 5.0,
+   "tick": 5.0,
+   "pre2020": {
+    "trades": 13,
+    "win_rate": 30.76923076923077,
+    "net_r": 5.143624699399041,
+    "avg_r": 0.3956634384153108
+   },
+   "post2020": {
+    "trades": 13,
+    "win_rate": 30.76923076923077,
+    "net_r": 6.509870670980035,
+    "avg_r": 0.5007592823830797
+   },
+   "win_rate": 30.76923076923077,
+   "avg_r": 0.44821136039919524,
+   "net_r": 11.653495370379076,
+   "survives": true,
+   "trades": 26
+  },
+  {
+   "symbol": "CL=F",
+   "rule": "monday_gap_fade",
+   "params": {
+    "gap": 0.5
+   },
+   "stop": 0.75,
+   "target": 3.0,
+   "hold": 10,
+   "entry": "same_open",
+   "pv": 100.0,
+   "tick": 0.01,
+   "pre2020": {
+    "trades": 12,
+    "win_rate": 41.666666666666664,
+    "net_r": 6.574628984268093,
+    "avg_r": 0.5478857486890077
+   },
+   "post2020": {
+    "trades": 18,
+    "win_rate": 33.333333333333336,
+    "net_r": 6.8606914792872065,
+    "avg_r": 0.381149526627067
+   },
+   "win_rate": 36.666666666666664,
+   "avg_r": 0.4478440154518433,
+   "net_r": 13.4353204635553,
+   "survives": true,
+   "trades": 30
+  },
+  {
+   "symbol": "ES=F",
+   "rule": "inside_day",
+   "params": {},
+   "stop": 0.5,
+   "target": 2.0,
+   "hold": 1,
+   "entry": "same_open",
+   "pv": 5.0,
+   "tick": 0.25,
+   "pre2020": {
+    "trades": 25,
+    "win_rate": 56.0,
+    "net_r": 6.498812369489908,
+    "avg_r": 0.2599524947795963
+   },
+   "post2020": {
+    "trades": 22,
+    "win_rate": 68.18181818181819,
+    "net_r": 14.110404192318756,
+    "avg_r": 0.6413820087417617
+   },
+   "win_rate": 61.702127659574465,
+   "avg_r": 0.43849396940018437,
+   "net_r": 20.609216561808665,
+   "survives": true,
+   "trades": 47
+  },
+  {
+   "symbol": "CL=F",
+   "rule": "monday_gap_fade",
+   "params": {
+    "gap": 0.5
+   },
+   "stop": 0.75,
+   "target": 2.0,
+   "hold": 10,
+   "entry": "same_open",
+   "pv": 100.0,
+   "tick": 0.01,
+   "pre2020": {
+    "trades": 12,
+    "win_rate": 41.666666666666664,
+    "net_r": 2.57462898426809,
+    "avg_r": 0.21455241535567415
+   },
+   "post2020": {
+    "trades": 18,
+    "win_rate": 44.44444444444444,
+    "net_r": 10.451551216007193,
+    "avg_r": 0.5806417342226218
+   },
+   "win_rate": 43.333333333333336,
+   "avg_r": 0.43420600667584275,
+   "net_r": 13.026180200275283,
+   "survives": true,
+   "trades": 30
+  },
+  {
+   "symbol": "ES=F",
+   "rule": "inside_day",
+   "params": {},
+   "stop": 0.5,
+   "target": 0.75,
+   "hold": 2,
+   "entry": "same_open",
+   "pv": 5.0,
+   "tick": 0.25,
+   "pre2020": {
+    "trades": 25,
+    "win_rate": 64.0,
+    "net_r": 9.583576917752145,
+    "avg_r": 0.38334307671008583
+   },
+   "post2020": {
+    "trades": 22,
+    "win_rate": 59.09090909090909,
+    "net_r": 10.688585218632578,
+    "avg_r": 0.4858447826651172
+   },
+   "win_rate": 61.702127659574465,
+   "avg_r": 0.4313225986464834,
+   "net_r": 20.272162136384722,
+   "survives": true,
+   "trades": 47
+  },
+  {
+   "symbol": "NKD=F",
+   "rule": "continue_trend_day",
+   "params": {
+    "trend": 1.5
+   },
+   "stop": 1.5,
+   "target": 3.0,
+   "hold": 5,
+   "entry": "same_open",
+   "pv": 5.0,
+   "tick": 5.0,
+   "pre2020": {
+    "trades": 13,
+    "win_rate": 61.53846153846154,
+    "net_r": 4.362968026835294,
+    "avg_r": 0.33561292514117647
+   },
+   "post2020": {
+    "trades": 13,
+    "win_rate": 69.23076923076923,
+    "net_r": 6.837796192336554,
+    "avg_r": 0.5259843224874272
+   },
+   "win_rate": 65.38461538461539,
+   "avg_r": 0.43079862381430184,
+   "net_r": 11.200764219171848,
+   "survives": true,
+   "trades": 26
+  },
+  {
+   "symbol": "NKD=F",
+   "rule": "continue_trend_day",
+   "params": {
+    "trend": 1.2
+   },
+   "stop": 0.5,
+   "target": 3.0,
+   "hold": 10,
+   "entry": "same_open",
+   "pv": 5.0,
+   "tick": 5.0,
+   "pre2020": {
+    "trades": 30,
+    "win_rate": 23.333333333333332,
+    "net_r": 13.797919538528184,
+    "avg_r": 0.4599306512842728
+   },
+   "post2020": {
+    "trades": 23,
+    "win_rate": 21.73913043478261,
+    "net_r": 8.724082530655721,
+    "avg_r": 0.37930793611546615
+   },
+   "win_rate": 22.641509433962263,
+   "avg_r": 0.42494343526762085,
+   "net_r": 22.522002069183905,
+   "survives": true,
+   "trades": 53
+  },
+  {
+   "symbol": "ES=F",
+   "rule": "fade_trend_day",
+   "params": {
+    "trend": 1.2
+   },
+   "stop": 0.5,
+   "target": 2.0,
+   "hold": 10,
+   "entry": "same_open",
+   "pv": 5.0,
+   "tick": 0.25,
+   "pre2020": {
+    "trades": 18,
+    "win_rate": 33.333333333333336,
+    "net_r": 10.290520252981821,
+    "avg_r": 0.5716955696101012
+   },
+   "post2020": {
+    "trades": 22,
+    "win_rate": 27.272727272727273,
+    "net_r": 6.674836512062319,
+    "avg_r": 0.3034016596391963
+   },
+   "win_rate": 30.0,
+   "avg_r": 0.42413391912610354,
+   "net_r": 16.96535676504414,
+   "survives": true,
+   "trades": 40
+  },
+  {
+   "symbol": "ES=F",
+   "rule": "inside_day",
+   "params": {},
+   "stop": 0.75,
+   "target": 0.75,
+   "hold": 10,
+   "entry": "same_open",
+   "pv": 5.0,
+   "tick": 0.25,
+   "pre2020": {
+    "trades": 24,
+    "win_rate": 75.0,
+    "net_r": 10.168816456571184,
+    "avg_r": 0.423700685690466
+   },
+   "post2020": {
+    "trades": 18,
+    "win_rate": 72.22222222222223,
+    "net_r": 7.627830767056104,
+    "avg_r": 0.42376837594756134
+   },
+   "win_rate": 73.80952380952381,
+   "avg_r": 0.42372969580064973,
+   "net_r": 17.79664722362729,
+   "survives": true,
+   "trades": 42
+  },
+  {
+   "symbol": "ES=F",
+   "rule": "inside_day",
+   "params": {},
+   "stop": 0.5,
+   "target": 0.75,
+   "hold": 10,
+   "entry": "same_open",
+   "pv": 5.0,
+   "tick": 0.25,
+   "pre2020": {
+    "trades": 24,
+    "win_rate": 54.166666666666664,
+    "net_r": 6.330654668382342,
+    "avg_r": 0.26377727784926425
+   },
+   "post2020": {
+    "trades": 18,
+    "win_rate": 66.66666666666667,
+    "net_r": 11.441746150584112,
+    "avg_r": 0.6356525639213396
+   },
+   "win_rate": 59.523809523809526,
+   "avg_r": 0.4231524004515822,
+   "net_r": 17.772400818966453,
+   "survives": true,
+   "trades": 42
+  },
+  {
+   "symbol": "CL=F",
+   "rule": "nr_break",
+   "params": {
+    "lookback": 7
+   },
+   "stop": 0.5,
+   "target": 3.0,
+   "hold": 5,
+   "entry": "same_open",
+   "pv": 100.0,
+   "tick": 0.01,
+   "pre2020": {
+    "trades": 21,
+    "win_rate": 28.571428571428573,
+    "net_r": 1.8499060620071157,
+    "avg_r": 0.0880907648574817
+   },
+   "post2020": {
+    "trades": 19,
+    "win_rate": 42.10526315789474,
+    "net_r": 15.003843904619218,
+    "avg_r": 0.7896759949799589
+   },
+   "win_rate": 35.0,
+   "avg_r": 0.42134374916565837,
+   "net_r": 16.853749966626335,
+   "survives": true,
+   "trades": 40
+  },
+  {
+   "symbol": "ES=F",
+   "rule": "inside_day",
+   "params": {},
+   "stop": 0.75,
+   "target": 0.75,
+   "hold": 5,
+   "entry": "same_open",
+   "pv": 5.0,
+   "tick": 0.25,
+   "pre2020": {
+    "trades": 25,
+    "win_rate": 72.0,
+    "net_r": 10.48629760762319,
+    "avg_r": 0.41945190430492757
+   },
+   "post2020": {
+    "trades": 18,
+    "win_rate": 72.22222222222223,
+    "net_r": 7.559337616371173,
+    "avg_r": 0.4199632009095096
+   },
+   "win_rate": 72.09302325581395,
+   "avg_r": 0.41966593544172937,
+   "net_r": 18.045635223994363,
+   "survives": true,
+   "trades": 43
+  },
+  {
+   "symbol": "ES=F",
+   "rule": "inside_day",
+   "params": {},
+   "stop": 1.5,
+   "target": 0.5,
+   "hold": 10,
+   "entry": "same_open",
+   "pv": 5.0,
+   "tick": 0.25,
+   "pre2020": {
+    "trades": 24,
+    "win_rate": 87.5,
+    "net_r": 3.276884889460802,
+    "avg_r": 0.13653687039420007
+   },
+   "post2020": {
+    "trades": 18,
+    "win_rate": 100.0,
+    "net_r": 5.73590924131213,
+    "avg_r": 0.31866162451734054
+   },
+   "win_rate": 92.85714285714286,
+   "avg_r": 0.21459033644697456,
+   "net_r": 9.012794130772932,
+   "survives": true,
+   "trades": 42
+  },
+  {
+   "symbol": "ES=F",
+   "rule": "inside_day",
+   "params": {},
+   "stop": 1.0,
+   "target": 0.5,
+   "hold": 10,
+   "entry": "same_open",
+   "pv": 5.0,
+   "tick": 0.25,
+   "pre2020": {
+    "trades": 24,
+    "win_rate": 87.5,
+    "net_r": 6.415327334191205,
+    "avg_r": 0.2673053055913002
+   },
+   "post2020": {
+    "trades": 18,
+    "win_rate": 88.88888888888889,
+    "net_r": 5.720873075292075,
+    "avg_r": 0.3178262819606708
+   },
+   "win_rate": 88.0952380952381,
+   "avg_r": 0.28895715260674476,
+   "net_r": 12.13620040948328,
+   "survives": true,
+   "trades": 42
+  },
+  {
+   "symbol": "ES=F",
+   "rule": "inside_day",
+   "params": {},
+   "stop": 1.5,
+   "target": 0.75,
+   "hold": 10,
+   "entry": "same_open",
+   "pv": 5.0,
+   "tick": 0.25,
+   "pre2020": {
+    "trades": 24,
+    "win_rate": 83.33333333333333,
+    "net_r": 5.084408228285639,
+    "avg_r": 0.21185034284523496
+   },
+   "post2020": {
+    "trades": 18,
+    "win_rate": 88.88888888888889,
+    "net_r": 5.337702792161185,
+    "avg_r": 0.2965390440089547
+   },
+   "win_rate": 85.71428571428571,
+   "avg_r": 0.24814550048682915,
+   "net_r": 10.422111020446824,
+   "survives": true,
+   "trades": 42
+  },
+  {
+   "symbol": "ES=F",
+   "rule": "inside_day",
+   "params": {},
+   "stop": 1.0,
+   "target": 0.5,
+   "hold": 5,
+   "entry": "same_open",
+   "pv": 5.0,
+   "tick": 0.25,
+   "pre2020": {
+    "trades": 25,
+    "win_rate": 84.0,
+    "net_r": 6.192884895599909,
+    "avg_r": 0.24771539582399638
+   },
+   "post2020": {
+    "trades": 18,
+    "win_rate": 83.33333333333333,
+    "net_r": 4.840809448568852,
+    "avg_r": 0.26893385825382515
+   },
+   "win_rate": 83.72093023255815,
+   "avg_r": 0.25659754288764564,
+   "net_r": 11.033694344168762,
+   "survives": true,
+   "trades": 43
+  },
+  {
+   "symbol": "ES=F",
+   "rule": "inside_day",
+   "params": {},
+   "stop": 1.5,
+   "target": 0.5,
+   "hold": 5,
+   "entry": "same_open",
+   "pv": 5.0,
+   "tick": 0.25,
+   "pre2020": {
+    "trades": 25,
+    "win_rate": 84.0,
+    "net_r": 3.1285899303999374,
+    "avg_r": 0.1251435972159975
+   },
+   "post2020": {
+    "trades": 18,
+    "win_rate": 83.33333333333333,
+    "net_r": 3.0965301617210885,
+    "avg_r": 0.17202945342894937
+   },
+   "win_rate": 83.72093023255815,
+   "avg_r": 0.14477023470048897,
+   "net_r": 6.225120092121026,
+   "survives": true,
+   "trades": 43
+  },
+  {
+   "symbol": "ES=F",
+   "rule": "inside_day",
+   "params": {},
+   "stop": 0.75,
+   "target": 0.5,
+   "hold": 10,
+   "entry": "same_open",
+   "pv": 5.0,
+   "tick": 0.25,
+   "pre2020": {
+    "trades": 24,
+    "win_rate": 83.33333333333333,
+    "net_r": 7.8871031122548825,
+    "avg_r": 0.32862929634395344
+   },
+   "post2020": {
+    "trades": 18,
+    "win_rate": 83.33333333333333,
+    "net_r": 6.6278307670561025,
+    "avg_r": 0.3682128203920057
+   },
+   "win_rate": 83.33333333333333,
+   "avg_r": 0.3455936637931187,
+   "net_r": 14.514933879310984,
+   "survives": true,
+   "trades": 42
+  },
+  {
+   "symbol": "ES=F",
+   "rule": "inside_day",
+   "params": {},
+   "stop": 1.5,
+   "target": 1.0,
+   "hold": 10,
+   "entry": "same_open",
+   "pv": 5.0,
+   "tick": 0.25,
+   "pre2020": {
+    "trades": 24,
+    "win_rate": 83.33333333333333,
+    "net_r": 7.7623927244096205,
+    "avg_r": 0.3234330301837342
+   },
+   "post2020": {
+    "trades": 18,
+    "win_rate": 83.33333333333333,
+    "net_r": 5.649497663956052,
+    "avg_r": 0.3138609813308918
+   },
+   "win_rate": 83.33333333333333,
+   "avg_r": 0.319330723532516,
+   "net_r": 13.411890388365673,
+   "survives": true,
+   "trades": 42
+  },
+  {
+   "symbol": "CL=F",
+   "rule": "inside_day",
+   "params": {},
+   "stop": 1.5,
+   "target": 0.5,
+   "hold": 10,
+   "entry": "same_open",
+   "pv": 100.0,
+   "tick": 0.01,
+   "pre2020": {
+    "trades": 18,
+    "win_rate": 77.77777777777777,
+    "net_r": 0.3639307905245209,
+    "avg_r": 0.02021837725136227
+   },
+   "post2020": {
+    "trades": 16,
+    "win_rate": 87.5,
+    "net_r": 2.507835554191283,
+    "avg_r": 0.1567397221369552
+   },
+   "win_rate": 82.3529411764706,
+   "avg_r": 0.08446371602105306,
+   "net_r": 2.871766344715804,
+   "survives": true,
+   "trades": 34
+  },
+  {
+   "symbol": "ES=F",
+   "rule": "inside_day",
+   "params": {},
+   "stop": 0.75,
+   "target": 0.5,
+   "hold": 5,
+   "entry": "same_open",
+   "pv": 5.0,
+   "tick": 0.25,
+   "pre2020": {
+    "trades": 25,
+    "win_rate": 80.0,
+    "net_r": 7.5905131941331545,
+    "avg_r": 0.30362052776532616
+   },
+   "post2020": {
+    "trades": 18,
+    "win_rate": 83.33333333333333,
+    "net_r": 6.6278307670561025,
+    "avg_r": 0.3682128203920057
+   },
+   "win_rate": 81.3953488372093,
+   "avg_r": 0.3306591618881223,
+   "net_r": 14.218343961189257,
+   "survives": true,
+   "trades": 43
+  },
+  {
+   "symbol": "ES=F",
+   "rule": "inside_day",
+   "params": {},
+   "stop": 1.0,
+   "target": 0.75,
+   "hold": 10,
+   "entry": "same_open",
+   "pv": 5.0,
+   "tick": 0.25,
+   "pre2020": {
+    "trades": 24,
+    "win_rate": 83.33333333333333,
+    "net_r": 9.626612342428466,
+    "avg_r": 0.4011088476011861
+   },
+   "post2020": {
+    "trades": 18,
+    "win_rate": 77.77777777777777,
+    "net_r": 6.2208730752920545,
+    "avg_r": 0.3456040597384475
+   },
+   "win_rate": 80.95238095238095,
+   "avg_r": 0.3773210813742981,
+   "net_r": 15.84748541772052,
+   "survives": true,
+   "trades": 42
+  },
+  {
+   "symbol": "ES=F",
+   "rule": "inside_day",
+   "params": {},
+   "stop": 1.0,
+   "target": 0.5,
+   "hold": 3,
+   "entry": "same_open",
+   "pv": 5.0,
+   "tick": 0.25,
+   "pre2020": {
+    "trades": 25,
+    "win_rate": 84.0,
+    "net_r": 5.972222297517949,
+    "avg_r": 0.23888889190071796
+   },
+   "post2020": {
+    "trades": 21,
+    "win_rate": 76.19047619047619,
+    "net_r": 3.5541683895399103,
+    "avg_r": 0.16924611378761478
+   },
+   "win_rate": 80.43478260869566,
+   "avg_r": 0.2070954497186491,
+   "net_r": 9.526390687057859,
+   "survives": true,
+   "trades": 46
+  },
+  {
+   "symbol": "ES=F",
+   "rule": "inside_day",
+   "params": {},
+   "stop": 1.5,
+   "target": 0.5,
+   "hold": 3,
+   "entry": "same_open",
+   "pv": 5.0,
+   "tick": 0.25,
+   "pre2020": {
+    "trades": 25,
+    "win_rate": 84.0,
+    "net_r": 3.544397909656563,
+    "avg_r": 0.14177591638626252
+   },
+   "post2020": {
+    "trades": 21,
+    "win_rate": 76.19047619047619,
+    "net_r": 2.094227071883212,
+    "avg_r": 0.09972509866110532
+   },
+   "win_rate": 80.43478260869566,
+   "avg_r": 0.12257880394651685,
+   "net_r": 5.638624981539775,
+   "survives": true,
+   "trades": 46
+  },
+  {
+   "symbol": "ES=F",
+   "rule": "nr_break",
+   "params": {
+    "lookback": 5
+   },
+   "stop": 1.5,
+   "target": 0.5,
+   "hold": 10,
+   "entry": "same_open",
+   "pv": 5.0,
+   "tick": 0.25,
+   "pre2020": {
+    "trades": 47,
+    "win_rate": 76.59574468085107,
+    "net_r": -0.466149007759918,
+    "avg_r": -0.009918063994891873
+   },
+   "post2020": {
+    "trades": 34,
+    "win_rate": 85.29411764705883,
+    "net_r": 4.351703720729909,
+    "avg_r": 0.12799128590382086
+   },
+   "win_rate": 80.24691358024691,
+   "avg_r": 0.04796981127123446,
+   "net_r": 3.885554712969991,
+   "survives": false,
+   "trades": 81
+  },
+  {
+   "symbol": "NQ=F",
+   "rule": "fade_trend_day",
+   "params": {
+    "trend": 1.2
+   },
+   "stop": 1.5,
+   "target": 0.5,
+   "hold": 5,
+   "entry": "same_open",
+   "pv": 2.0,
+   "tick": 0.25,
+   "pre2020": {
+    "trades": 15,
+    "win_rate": 66.66666666666667,
+    "net_r": -1.3672798306991159,
+    "avg_r": -0.09115198871327439
+   },
+   "post2020": {
+    "trades": 25,
+    "win_rate": 88.0,
+    "net_r": 4.236359985337308,
+    "avg_r": 0.16945439941349233
+   },
+   "win_rate": 80.0,
+   "avg_r": 0.0717270038659548,
+   "net_r": 2.8690801546381923,
+   "survives": false,
+   "trades": 40
+  },
+  {
+   "symbol": "NKD=F",
+   "rule": "ema_pullback",
+   "params": {
+    "fast": 20,
+    "slow": 50
+   },
+   "stop": 1.5,
+   "target": 0.5,
+   "hold": 10,
+   "entry": "next_open",
+   "pv": 5.0,
+   "tick": 5.0,
+   "pre2020": {
+    "trades": 144,
+    "win_rate": 79.16666666666667,
+    "net_r": 5.318119492583149,
+    "avg_r": 0.03693138536516075
+   },
+   "post2020": {
+    "trades": 103,
+    "win_rate": 80.58252427184466,
+    "net_r": 8.88652405970033,
+    "avg_r": 0.0862769326184498
+   },
+   "win_rate": 79.75708502024291,
+   "avg_r": 0.057508678349325826,
+   "net_r": 14.204643552283478,
+   "survives": true,
+   "trades": 247
+  },
+  {
+   "symbol": "NQ=F",
+   "rule": "fade_trend_day",
+   "params": {
+    "trend": 1.2
+   },
+   "stop": 1.5,
+   "target": 0.5,
+   "hold": 10,
+   "entry": "same_open",
+   "pv": 2.0,
+   "tick": 0.25,
+   "pre2020": {
+    "trades": 14,
+    "win_rate": 64.28571428571429,
+    "net_r": -1.6986715915639736,
+    "avg_r": -0.1213336851117124
+   },
+   "post2020": {
+    "trades": 24,
+    "win_rate": 87.5,
+    "net_r": 3.9049237508724297,
+    "avg_r": 0.16270515628635124
+   },
+   "win_rate": 78.94736842105263,
+   "avg_r": 0.058059267350222536,
+   "net_r": 2.2062521593084563,
+   "survives": false,
+   "trades": 38
+  },
+  {
+   "symbol": "ES=F",
+   "rule": "monday_gap_fade",
+   "params": {
+    "gap": 0.5
+   },
+   "stop": 1.5,
+   "target": 0.5,
+   "hold": 10,
+   "entry": "same_open",
+   "pv": 5.0,
+   "tick": 0.25,
+   "pre2020": {
+    "trades": 44,
+    "win_rate": 75.0,
+    "net_r": -1.4257263152293338,
+    "avg_r": -0.03240287080066668
+   },
+   "post2020": {
+    "trades": 31,
+    "win_rate": 83.87096774193549,
+    "net_r": 4.017452849909174,
+    "avg_r": 0.12959525322287657
+   },
+   "win_rate": 78.66666666666667,
+   "avg_r": 0.0345563537957312,
+   "net_r": 2.59172653467984,
+   "survives": false,
+   "trades": 75
+  },
+  {
+   "symbol": "ES=F",
+   "rule": "monday_gap_fade",
+   "params": {
+    "gap": 0.3
+   },
+   "stop": 1.5,
+   "target": 0.5,
+   "hold": 10,
+   "entry": "same_open",
+   "pv": 5.0,
+   "tick": 0.25,
+   "pre2020": {
+    "trades": 66,
+    "win_rate": 78.78787878787878,
+    "net_r": 1.1362741454203449,
+    "avg_r": 0.017216274930611286
+   },
+   "post2020": {
+    "trades": 51,
+    "win_rate": 78.43137254901961,
+    "net_r": 2.482060240888365,
+    "avg_r": 0.048667847860556175
+   },
+   "win_rate": 78.63247863247864,
+   "avg_r": 0.030925934925715468,
+   "net_r": 3.61833438630871,
+   "survives": true,
+   "trades": 117
+  },
+  {
+   "symbol": "ES=F",
+   "rule": "inside_day",
+   "params": {},
+   "stop": 1.0,
+   "target": 1.0,
+   "hold": 10,
+   "entry": "same_open",
+   "pv": 5.0,
+   "tick": 0.25,
+   "pre2020": {
+    "trades": 24,
+    "win_rate": 83.33333333333333,
+    "net_r": 13.643589086614439,
+    "avg_r": 0.568482878608935
+   },
+   "post2020": {
+    "trades": 18,
+    "win_rate": 72.22222222222223,
+    "net_r": 7.188565382984355,
+    "avg_r": 0.3993647434991308
+   },
+   "win_rate": 78.57142857142857,
+   "avg_r": 0.49600367784759036,
+   "net_r": 20.832154469598795,
+   "survives": true,
+   "trades": 42
+  },
+  {
+   "symbol": "GC=F",
+   "rule": "ema_pullback",
+   "params": {
+    "fast": 20,
+    "slow": 200
+   },
+   "stop": 1.5,
+   "target": 0.5,
+   "hold": 10,
+   "entry": "next_open",
+   "pv": 10.0,
+   "tick": 0.1,
+   "pre2020": {
+    "trades": 118,
+    "win_rate": 74.57627118644068,
+    "net_r": -2.587413611969304,
+    "avg_r": -0.021927233999739865
+   },
+   "post2020": {
+    "trades": 95,
+    "win_rate": 83.15789473684211,
+    "net_r": 11.029473854577088,
+    "avg_r": 0.11609972478502198
+   },
+   "win_rate": 78.40375586854461,
+   "avg_r": 0.03963408564604594,
+   "net_r": 8.442060242607784,
+   "survives": false,
+   "trades": 213
+  },
+  {
+   "symbol": "NQ=F",
+   "rule": "inside_day",
+   "params": {},
+   "stop": 1.5,
+   "target": 0.5,
+   "hold": 10,
+   "entry": "same_open",
+   "pv": 2.0,
+   "tick": 0.25,
+   "pre2020": {
+    "trades": 21,
+    "win_rate": 80.95238095238095,
+    "net_r": 1.1347169985381154,
+    "avg_r": 0.054034142787529306
+   },
+   "post2020": {
+    "trades": 16,
+    "win_rate": 75.0,
+    "net_r": -0.03023976311057469,
+    "avg_r": -0.0018899851944109182
+   },
+   "win_rate": 78.37837837837837,
+   "avg_r": 0.029850736092636235,
+   "net_r": 1.1044772354275407,
+   "survives": false,
+   "trades": 37
+  },
+  {
+   "symbol": "ES=F",
+   "rule": "nr_break",
+   "params": {
+    "lookback": 7
+   },
+   "stop": 1.5,
+   "target": 0.5,
+   "hold": 10,
+   "entry": "same_open",
+   "pv": 5.0,
+   "tick": 0.25,
+   "pre2020": {
+    "trades": 44,
+    "win_rate": 77.27272727272727,
+    "net_r": -0.045276826932937775,
+    "avg_r": -0.0010290187939304039
+   },
+   "post2020": {
+    "trades": 30,
+    "win_rate": 80.0,
+    "net_r": 1.7171921812974422,
+    "avg_r": 0.05723973937658141
+   },
+   "win_rate": 78.37837837837837,
+   "avg_r": 0.022593450734655466,
+   "net_r": 1.6719153543645044,
+   "survives": false,
+   "trades": 74
+  },
+  {
+   "symbol": "ES=F",
+   "rule": "inside_day",
+   "params": {},
+   "stop": 0.75,
+   "target": 0.5,
+   "hold": 3,
+   "entry": "same_open",
+   "pv": 5.0,
+   "tick": 0.25,
+   "pre2020": {
+    "trades": 25,
+    "win_rate": 80.0,
+    "net_r": 7.556104591982617,
+    "avg_r": 0.30224418367930467
+   },
+   "post2020": {
+    "trades": 21,
+    "win_rate": 76.19047619047619,
+    "net_r": 4.335050129814489,
+    "avg_r": 0.2064309585625947
+   },
+   "win_rate": 78.26086956521739,
+   "avg_r": 0.2585033635173284,
+   "net_r": 11.891154721797106,
+   "survives": true,
+   "trades": 46
+  },
+  {
+   "symbol": "GC=F",
+   "rule": "three_down",
+   "params": {
+    "streak": 3
+   },
+   "stop": 1.5,
+   "target": 0.5,
+   "hold": 10,
+   "entry": "next_open",
+   "pv": 10.0,
+   "tick": 0.1,
+   "pre2020": {
+    "trades": 180,
+    "win_rate": 76.66666666666667,
+    "net_r": 1.0170876344729696,
+    "avg_r": 0.005650486858183164
+   },
+   "post2020": {
+    "trades": 118,
+    "win_rate": 80.50847457627118,
+    "net_r": 8.45837894340637,
+    "avg_r": 0.07168117748649466
+   },
+   "win_rate": 78.18791946308725,
+   "avg_r": 0.0317968677110045,
+   "net_r": 9.47546657787934,
+   "survives": true,
+   "trades": 298
+  },
+  {
+   "symbol": "CL=F",
+   "rule": "inside_day",
+   "params": {},
+   "stop": 1.5,
+   "target": 0.5,
+   "hold": 5,
+   "entry": "same_open",
+   "pv": 100.0,
+   "tick": 0.01,
+   "pre2020": {
+    "trades": 18,
+    "win_rate": 72.22222222222223,
+    "net_r": -0.3754697076793647,
+    "avg_r": -0.020859428204409152
+   },
+   "post2020": {
+    "trades": 18,
+    "win_rate": 83.33333333333333,
+    "net_r": 2.780139581848706,
+    "avg_r": 0.15445219899159476
+   },
+   "win_rate": 77.77777777777777,
+   "avg_r": 0.06679638539359281,
+   "net_r": 2.404669874169341,
+   "survives": false,
+   "trades": 36
+  },
+  {
+   "symbol": "ES=F",
+   "rule": "fade_trend_day",
+   "params": {
+    "trend": 1.2
+   },
+   "stop": 1.5,
+   "target": 0.5,
+   "hold": 10,
+   "entry": "same_open",
+   "pv": 5.0,
+   "tick": 0.25,
+   "pre2020": {
+    "trades": 18,
+    "win_rate": 66.66666666666667,
+    "net_r": -2.248475819812156,
+    "avg_r": -0.12491532332289755
+   },
+   "post2020": {
+    "trades": 22,
+    "win_rate": 86.36363636363636,
+    "net_r": 3.1082493388290384,
+    "avg_r": 0.1412840608558654
+   },
+   "win_rate": 77.5,
+   "avg_r": 0.02149433797542206,
+   "net_r": 0.8597735190168825,
+   "survives": false,
+   "trades": 40
+  },
+  {
+   "symbol": "ES=F",
+   "rule": "open_break",
+   "params": {},
+   "stop": 1.5,
+   "target": 0.5,
+   "hold": 10,
+   "entry": "same_open",
+   "pv": 5.0,
+   "tick": 0.25,
+   "pre2020": {
+    "trades": 92,
+    "win_rate": 72.82608695652173,
+    "net_r": -5.657728949230798,
+    "avg_r": -0.06149705379598693
+   },
+   "post2020": {
+    "trades": 76,
+    "win_rate": 82.89473684210526,
+    "net_r": 6.873117401267532,
+    "avg_r": 0.09043575527983594
+   },
+   "win_rate": 77.38095238095238,
+   "avg_r": 0.007234455071647227,
+   "net_r": 1.2153884520367342,
+   "survives": false,
+   "trades": 168
+  },
+  {
+   "symbol": "GC=F",
+   "rule": "close_extreme",
+   "params": {
+    "edge": 0.9,
+    "slow": 200
+   },
+   "stop": 1.5,
+   "target": 0.5,
+   "hold": 10,
+   "entry": "next_open",
+   "pv": 10.0,
+   "tick": 0.1,
+   "pre2020": {
+    "trades": 176,
+    "win_rate": 76.13636363636364,
+    "net_r": -0.3967786543496058,
+    "avg_r": -0.002254424172440942
+   },
+   "post2020": {
+    "trades": 80,
+    "win_rate": 80.0,
+    "net_r": 4.557749906103823,
+    "avg_r": 0.05697187382629779
+   },
+   "win_rate": 77.34375,
+   "avg_r": 0.016253793952164912,
+   "net_r": 4.1609712517542174,
+   "survives": false,
+   "trades": 256
+  },
+  {
+   "symbol": "NQ=F",
+   "rule": "close_extreme",
+   "params": {
+    "edge": 0.9,
+    "slow": 200
+   },
+   "stop": 1.5,
+   "target": 0.5,
+   "hold": 10,
+   "entry": "next_open",
+   "pv": 2.0,
+   "tick": 0.25,
+   "pre2020": {
+    "trades": 159,
+    "win_rate": 79.24528301886792,
+    "net_r": 5.923008648696828,
+    "avg_r": 0.0372516267213637
+   },
+   "post2020": {
+    "trades": 114,
+    "win_rate": 74.56140350877193,
+    "net_r": 1.3276117741016074,
+    "avg_r": 0.011645717316680767
+   },
+   "win_rate": 77.28937728937728,
+   "avg_r": 0.02655904916775984,
+   "net_r": 7.250620422798436,
+   "survives": true,
+   "trades": 273
+  },
+  {
+   "symbol": "NKD=F",
+   "rule": "ema_pullback",
+   "params": {
+    "fast": 20,
+    "slow": 200
+   },
+   "stop": 1.5,
+   "target": 0.5,
+   "hold": 10,
+   "entry": "next_open",
+   "pv": 5.0,
+   "tick": 5.0,
+   "pre2020": {
+    "trades": 129,
+    "win_rate": 75.1937984496124,
+    "net_r": -2.5527101895257838,
+    "avg_r": -0.019788451081595222
+   },
+   "post2020": {
+    "trades": 96,
+    "win_rate": 79.16666666666667,
+    "net_r": 4.74533267879174,
+    "avg_r": 0.049430548737413954
+   },
+   "win_rate": 76.88888888888889,
+   "avg_r": 0.009744988841182026,
+   "net_r": 2.192622489265956,
+   "survives": false,
+   "trades": 225
+  },
+  {
+   "symbol": "ES=F",
+   "rule": "inside_day",
+   "params": {},
+   "stop": 1.0,
+   "target": 0.75,
+   "hold": 5,
+   "entry": "same_open",
+   "pv": 5.0,
+   "tick": 0.25,
+   "pre2020": {
+    "trades": 25,
+    "win_rate": 80.0,
+    "net_r": 9.557826653993306,
+    "avg_r": 0.38231306615973226
+   },
+   "post2020": {
+    "trades": 18,
+    "win_rate": 72.22222222222223,
+    "net_r": 5.03943958555513,
+    "avg_r": 0.2799688658641739
+   },
+   "win_rate": 76.74418604651163,
+   "avg_r": 0.3394713078964752,
+   "net_r": 14.597266239548436,
+   "survives": true,
+   "trades": 43
+  },
+  {
+   "symbol": "ES=F",
+   "rule": "inside_day",
+   "params": {},
+   "stop": 1.5,
+   "target": 0.75,
+   "hold": 5,
+   "entry": "same_open",
+   "pv": 5.0,
+   "tick": 0.25,
+   "pre2020": {
+    "trades": 25,
+    "win_rate": 80.0,
+    "net_r": 5.371884435995536,
+    "avg_r": 0.21487537743982144
+   },
+   "post2020": {
+    "trades": 18,
+    "win_rate": 72.22222222222223,
+    "net_r": 2.562283586378603,
+    "avg_r": 0.1423490881321446
+   },
+   "win_rate": 76.74418604651163,
+   "avg_r": 0.18451553540404975,
+   "net_r": 7.9341680223741395,
+   "survives": true,
+   "trades": 43
+  },
+  {
+   "symbol": "CL=F",
+   "rule": "monday_gap_fade",
+   "params": {
+    "gap": 0.5
+   },
+   "stop": 1.5,
+   "target": 0.5,
+   "hold": 10,
+   "entry": "same_open",
+   "pv": 100.0,
+   "tick": 0.01,
+   "pre2020": {
+    "trades": 12,
+    "win_rate": 83.33333333333333,
+    "net_r": 1.129521106923632,
+    "avg_r": 0.09412675891030266
+   },
+   "post2020": {
+    "trades": 18,
+    "win_rate": 72.22222222222223,
+    "net_r": -0.012241760429446136,
+    "avg_r": -0.0006800978016358964
+   },
+   "win_rate": 76.66666666666667,
+   "avg_r": 0.037242644883139525,
+   "net_r": 1.1172793464941857,
+   "survives": false,
+   "trades": 30
+  },
+  {
+   "symbol": "ES=F",
+   "rule": "inside_day",
+   "params": {},
+   "stop": 0.75,
+   "target": 0.5,
+   "hold": 2,
+   "entry": "same_open",
+   "pv": 5.0,
+   "tick": 0.25,
+   "pre2020": {
+    "trades": 25,
+    "win_rate": 80.0,
+    "net_r": 6.5204021552241125,
+    "avg_r": 0.2608160862089645
+   },
+   "post2020": {
+    "trades": 22,
+    "win_rate": 72.72727272727273,
+    "net_r": 5.905227985656964,
+    "avg_r": 0.26841945389349836
+   },
+   "win_rate": 76.59574468085107,
+   "avg_r": 0.2643751093804484,
+   "net_r": 12.425630140881076,
+   "survives": true,
+   "trades": 47
+  },
+  {
+   "symbol": "ES=F",
+   "rule": "inside_day",
+   "params": {},
+   "stop": 1.0,
+   "target": 0.5,
+   "hold": 2,
+   "entry": "same_open",
+   "pv": 5.0,
+   "tick": 0.25,
+   "pre2020": {
+    "trades": 25,
+    "win_rate": 80.0,
+    "net_r": 4.615454188344871,
+    "avg_r": 0.18461816753379484
+   },
+   "post2020": {
+    "trades": 22,
+    "win_rate": 72.72727272727273,
+    "net_r": 4.347804821492833,
+    "avg_r": 0.19762749188603787
+   },
+   "win_rate": 76.59574468085107,
+   "avg_r": 0.19070763850718517,
+   "net_r": 8.963259009837703,
+   "survives": true,
+   "trades": 47
+  },
+  {
+   "symbol": "ES=F",
+   "rule": "inside_day",
+   "params": {},
+   "stop": 1.5,
+   "target": 0.5,
+   "hold": 2,
+   "entry": "same_open",
+   "pv": 5.0,
+   "tick": 0.25,
+   "pre2020": {
+    "trades": 25,
+    "win_rate": 80.0,
+    "net_r": 2.689025100318528,
+    "avg_r": 0.10756100401274113
+   },
+   "post2020": {
+    "trades": 22,
+    "win_rate": 72.72727272727273,
+    "net_r": 2.6722667626394485,
+    "avg_r": 0.12146667102906585
+   },
+   "win_rate": 76.59574468085107,
+   "avg_r": 0.11407003963740375,
+   "net_r": 5.361291862957977,
+   "survives": true,
+   "trades": 47
+  },
+  {
+   "symbol": "ES=F",
+   "rule": "three_down",
+   "params": {
+    "streak": 4
+   },
+   "stop": 1.5,
+   "target": 0.5,
+   "hold": 10,
+   "entry": "next_open",
+   "pv": 5.0,
+   "tick": 0.25,
+   "pre2020": {
+    "trades": 131,
+    "win_rate": 74.04580152671755,
+    "net_r": -4.445185363545794,
+    "avg_r": -0.03393271269882285
+   },
+   "post2020": {
+    "trades": 85,
+    "win_rate": 80.0,
+    "net_r": 7.681584778546011,
+    "avg_r": 0.09037158562995307
+   },
+   "win_rate": 76.38888888888889,
+   "avg_r": 0.014983330625001004,
+   "net_r": 3.236399415000217,
+   "survives": false,
+   "trades": 216
+  },
+  {
+   "symbol": "ES=F",
+   "rule": "nr_break",
+   "params": {
+    "lookback": 10
+   },
+   "stop": 1.5,
+   "target": 0.5,
+   "hold": 10,
+   "entry": "same_open",
+   "pv": 5.0,
+   "tick": 0.25,
+   "pre2020": {
+    "trades": 40,
+    "win_rate": 72.5,
+    "net_r": -2.5853685684326293,
+    "avg_r": -0.06463421421081574
+   },
+   "post2020": {
+    "trades": 23,
+    "win_rate": 82.6086956521739,
+    "net_r": 2.1258754984475656,
+    "avg_r": 0.09242936949772025
+   },
+   "win_rate": 76.19047619047619,
+   "avg_r": -0.007293540793413709,
+   "net_r": -0.4594930699850637,
+   "survives": false,
+   "trades": 63
+  },
+  {
+   "symbol": "NQ=F",
+   "rule": "close_extreme",
+   "params": {
+    "edge": 0.8,
+    "slow": 50
+   },
+   "stop": 1.5,
+   "target": 0.5,
+   "hold": 10,
+   "entry": "next_open",
+   "pv": 2.0,
+   "tick": 0.25,
+   "pre2020": {
+    "trades": 227,
+    "win_rate": 75.77092511013215,
+    "net_r": -2.8534360547819952,
+    "avg_r": -0.012570202884502182
+   },
+   "post2020": {
+    "trades": 146,
+    "win_rate": 76.71232876712328,
+    "net_r": 4.742012764554415,
+    "avg_r": 0.03247953948324942
+   },
+   "win_rate": 76.13941018766756,
+   "avg_r": 0.005063208337191475,
+   "net_r": 1.88857670977242,
+   "survives": false,
+   "trades": 373
+  },
+  {
+   "symbol": "GC=F",
+   "rule": "ema_pullback",
+   "params": {
+    "fast": 20,
+    "slow": 50
+   },
+   "stop": 1.5,
+   "target": 0.5,
+   "hold": 10,
+   "entry": "next_open",
+   "pv": 10.0,
+   "tick": 0.1,
+   "pre2020": {
+    "trades": 129,
+    "win_rate": 71.31782945736434,
+    "net_r": -8.510820012161473,
+    "avg_r": -0.06597534893148428
+   },
+   "post2020": {
+    "trades": 98,
+    "win_rate": 81.63265306122449,
+    "net_r": 8.440398758630648,
+    "avg_r": 0.0861265179452107
+   },
+   "win_rate": 75.77092511013215,
+   "avg_r": -0.00031022578647940267,
+   "net_r": -0.0704212535308244,
+   "survives": false,
+   "trades": 227
+  }
+ ],
+ "finalists": [
+  {
+   "symbol": "NQ=F",
+   "rule": "close_extreme",
+   "params": {
+    "edge": 0.9,
+    "slow": 200
+   },
+   "stop": 0.5,
+   "target": 3.0,
+   "hold": 10,
+   "entry": "next_open",
+   "pv": 2.0,
+   "tick": 0.25,
+   "pre2020": {
+    "trades": 159,
+    "win_rate": 28.30188679245283,
+    "net_r": 73.24431649699062,
+    "avg_r": 0.4606560785974253
+   },
+   "post2020": {
+    "trades": 114,
+    "win_rate": 28.07017543859649,
+    "net_r": 51.37066893562314,
+    "avg_r": 0.4506199029440626
+   },
+   "win_rate": 28.205128205128204,
+   "avg_r": 0.4564651481048123,
+   "net_r": 124.61498543261376,
+   "survives": true,
+   "trades": 273,
+   "coin_flip_p": 0.0
+  },
+  {
+   "symbol": "ES=F",
+   "rule": "inside_day",
+   "params": {},
+   "stop": 0.5,
+   "target": 1.0,
+   "hold": 5,
+   "entry": "same_open",
+   "pv": 5.0,
+   "tick": 0.25,
+   "pre2020": {
+    "trades": 25,
+    "win_rate": 56.0,
+    "net_r": 14.1423496372412,
+    "avg_r": 0.565693985489648
+   },
+   "post2020": {
+    "trades": 18,
+    "win_rate": 61.111111111111114,
+    "net_r": 12.559006424556728,
+    "avg_r": 0.6977225791420404
+   },
+   "win_rate": 58.13953488372093,
+   "avg_r": 0.6209617688790215,
+   "net_r": 26.701356061797927,
+   "survives": true,
+   "trades": 43,
+   "coin_flip_p": 0.0
+  },
+  {
+   "symbol": "GC=F",
+   "rule": "close_extreme",
+   "params": {
+    "edge": 0.9,
+    "slow": 200
+   },
+   "stop": 0.5,
+   "target": 3.0,
+   "hold": 10,
+   "entry": "next_open",
+   "pv": 10.0,
+   "tick": 0.1,
+   "pre2020": {
+    "trades": 176,
+    "win_rate": 23.295454545454547,
+    "net_r": 46.61694377807609,
+    "avg_r": 0.2648689987390687
+   },
+   "post2020": {
+    "trades": 80,
+    "win_rate": 23.75,
+    "net_r": 21.162617435395784,
+    "avg_r": 0.2645327179424473
+   },
+   "win_rate": 23.4375,
+   "avg_r": 0.26476391099012453,
+   "net_r": 67.77956121347188,
+   "survives": true,
+   "trades": 256,
+   "coin_flip_p": 0.083
+  },
+  {
+   "symbol": "CL=F",
+   "rule": "fade_trend_day",
+   "params": {
+    "trend": 1.5
+   },
+   "stop": 0.5,
+   "target": 3.0,
+   "hold": 2,
+   "entry": "same_open",
+   "pv": 100.0,
+   "tick": 0.01,
+   "pre2020": {
+    "trades": 12,
+    "win_rate": 50.0,
+    "net_r": 9.12310348740814,
+    "avg_r": 0.7602586239506782
+   },
+   "post2020": {
+    "trades": 12,
+    "win_rate": 41.666666666666664,
+    "net_r": 4.0368078802898175,
+    "avg_r": 0.33640065669081815
+   },
+   "win_rate": 45.833333333333336,
+   "avg_r": 0.5483296403207482,
+   "net_r": 13.159911367697957,
+   "survives": true,
+   "trades": 24,
+   "coin_flip_p": 0.017
+  },
+  {
+   "symbol": "NKD=F",
+   "rule": "continue_trend_day",
+   "params": {
+    "trend": 1.5
+   },
+   "stop": 0.5,
+   "target": 3.0,
+   "hold": 5,
+   "entry": "same_open",
+   "pv": 5.0,
+   "tick": 5.0,
+   "pre2020": {
+    "trades": 13,
+    "win_rate": 30.76923076923077,
+    "net_r": 8.184516438595868,
+    "avg_r": 0.6295781875842975
+   },
+   "post2020": {
+    "trades": 13,
+    "win_rate": 30.76923076923077,
+    "net_r": 13.395449117889703,
+    "avg_r": 1.0304191629145925
+   },
+   "win_rate": 30.76923076923077,
+   "avg_r": 0.8299986752494449,
+   "net_r": 21.57996555648557,
+   "survives": true,
+   "trades": 26,
+   "coin_flip_p": 0.033
+  }
+ ],
+ "selection_test": {
+  "NQ=F": {
+   "by_pre": {
+    "symbol": "NQ=F",
+    "rule": "continue_trend_day",
+    "params": {
+     "trend": 1.2
+    },
+    "stop": 1.0,
+    "target": 2.0,
+    "hold": 10,
+    "entry": "same_open",
+    "pv": 2.0,
+    "tick": 0.25,
+    "pre2020": {
+     "trades": 14,
+     "win_rate": 64.28571428571429,
+     "net_r": 9.848416432074668,
+     "avg_r": 0.7034583165767619
+    },
+    "post2020": {
+     "trades": 24,
+     "win_rate": 29.166666666666668,
+     "net_r": -4.43254107921494,
+     "avg_r": -0.18468921163395582
+    },
+    "win_rate": 42.10526315789474,
+    "avg_r": 0.14252303560157178,
+    "net_r": 5.415875352859728,
+    "survives": false,
+    "trades": 38
+   },
+   "by_post": {
+    "symbol": "NQ=F",
+    "rule": "nr_break",
+    "params": {
+     "lookback": 10
+    },
+    "stop": 0.5,
+    "target": 3.0,
+    "hold": 2,
+    "entry": "same_open",
+    "pv": 2.0,
+    "tick": 0.25,
+    "pre2020": {
+     "trades": 32,
+     "win_rate": 34.375,
+     "net_r": -4.8157434333831315,
+     "avg_r": -0.15049198229322286
+    },
+    "post2020": {
+     "trades": 24,
+     "win_rate": 62.5,
+     "net_r": 13.825446106827304,
+     "avg_r": 0.5760602544511376
+    },
+    "win_rate": 46.42857142857143,
+    "avg_r": 0.1608875477400745,
+    "net_r": 9.009702673444172,
+    "survives": false,
+    "trades": 56
+   },
+   "held_forward": false,
+   "held_backward": false
+  },
+  "ES=F": {
+   "by_pre": {
+    "symbol": "ES=F",
+    "rule": "fade_trend_day",
+    "params": {
+     "trend": 1.2
+    },
+    "stop": 0.5,
+    "target": 3.0,
+    "hold": 10,
+    "entry": "same_open",
+    "pv": 5.0,
+    "tick": 0.25,
+    "pre2020": {
+     "trades": 18,
+     "win_rate": 27.77777777777778,
+     "net_r": 13.970429447079429,
+     "avg_r": 0.7761349692821905
+    },
+    "post2020": {
+     "trades": 22,
+     "win_rate": 22.727272727272727,
+     "net_r": 9.343270913722472,
+     "avg_r": 0.42469413244193055
+    },
+    "win_rate": 25.0,
+    "avg_r": 0.5828425090200475,
+    "net_r": 23.313700360801903,
+    "survives": true,
+    "trades": 40
+   },
+   "by_post": {
+    "symbol": "ES=F",
+    "rule": "inside_day",
+    "params": {},
+    "stop": 0.5,
+    "target": 1.0,
+    "hold": 10,
+    "entry": "same_open",
+    "pv": 5.0,
+    "tick": 0.25,
+    "pre2020": {
+     "trades": 24,
+     "win_rate": 50.0,
+     "net_r": 9.8306546683823,
+     "avg_r": 0.40961061118259584
+    },
+    "post2020": {
+     "trades": 18,
+     "win_rate": 61.111111111111114,
+     "net_r": 13.37713076596874,
+     "avg_r": 0.7431739314427078
+    },
+    "win_rate": 54.76190476190476,
+    "avg_r": 0.5525663198655009,
+    "net_r": 23.207785434351038,
+    "survives": true,
+    "trades": 42
+   },
+   "held_forward": true,
+   "held_backward": true
+  },
+  "GC=F": {
+   "by_pre": {
+    "symbol": "GC=F",
+    "rule": "fade_trend_day",
+    "params": {
+     "trend": 1.2
+    },
+    "stop": 0.5,
+    "target": 3.0,
+    "hold": 10,
+    "entry": "same_open",
+    "pv": 10.0,
+    "tick": 0.1,
+    "pre2020": {
+     "trades": 64,
+     "win_rate": 25.0,
+     "net_r": 20.447705554660363,
+     "avg_r": 0.31949539929156817
+    },
+    "post2020": {
+     "trades": 18,
+     "win_rate": 5.555555555555555,
+     "net_r": -16.605358803595028,
+     "avg_r": -0.9225199335330571
+    },
+    "win_rate": 20.73170731707317,
+    "avg_r": 0.046857887208113846,
+    "net_r": 3.8423467510653353,
+    "survives": false,
+    "trades": 82
+   },
+   "by_post": {
+    "symbol": "GC=F",
+    "rule": "nr_break",
+    "params": {
+     "lookback": 7
+    },
+    "stop": 0.5,
+    "target": 3.0,
+    "hold": 10,
+    "entry": "same_open",
+    "pv": 10.0,
+    "tick": 0.1,
+    "pre2020": {
+     "trades": 154,
+     "win_rate": 20.77922077922078,
+     "net_r": 4.8252086446227995,
+     "avg_r": 0.03133252366638181
+    },
+    "post2020": {
+     "trades": 14,
+     "win_rate": 35.714285714285715,
+     "net_r": 17.096854866443188,
+     "avg_r": 1.2212039190316564
+    },
+    "win_rate": 22.023809523809526,
+    "avg_r": 0.13048847328015467,
+    "net_r": 21.922063511065986,
+    "survives": true,
+    "trades": 168
+   },
+   "held_forward": true,
+   "held_backward": false
+  },
+  "CL=F": {
+   "by_pre": {
+    "symbol": "CL=F",
+    "rule": "fade_trend_day",
+    "params": {
+     "trend": 1.5
+    },
+    "stop": 0.5,
+    "target": 3.0,
+    "hold": 2,
+    "entry": "same_open",
+    "pv": 100.0,
+    "tick": 0.01,
+    "pre2020": {
+     "trades": 12,
+     "win_rate": 50.0,
+     "net_r": 9.12310348740814,
+     "avg_r": 0.7602586239506782
+    },
+    "post2020": {
+     "trades": 12,
+     "win_rate": 41.666666666666664,
+     "net_r": 4.0368078802898175,
+     "avg_r": 0.33640065669081815
+    },
+    "win_rate": 45.833333333333336,
+    "avg_r": 0.5483296403207482,
+    "net_r": 13.159911367697957,
+    "survives": true,
+    "trades": 24,
+    "coin_flip_p": 0.017
+   },
+   "by_post": {
+    "symbol": "CL=F",
+    "rule": "fade_trend_day",
+    "params": {
+     "trend": 1.2
+    },
+    "stop": 0.5,
+    "target": 2.0,
+    "hold": 10,
+    "entry": "same_open",
+    "pv": 100.0,
+    "tick": 0.01,
+    "pre2020": {
+     "trades": 24,
+     "win_rate": 16.666666666666668,
+     "net_r": -7.737528178741881,
+     "avg_r": -0.3223970074475784
+    },
+    "post2020": {
+     "trades": 16,
+     "win_rate": 43.75,
+     "net_r": 15.602650918066676,
+     "avg_r": 0.9751656823791672
+    },
+    "win_rate": 27.5,
+    "avg_r": 0.19662806848311987,
+    "net_r": 7.865122739324795,
+    "survives": false,
+    "trades": 40
+   },
+   "held_forward": false,
+   "held_backward": true
+  },
+  "NKD=F": {
+   "by_pre": {
+    "symbol": "NKD=F",
+    "rule": "continue_trend_day",
+    "params": {
+     "trend": 1.5
+    },
+    "stop": 0.5,
+    "target": 3.0,
+    "hold": 5,
+    "entry": "same_open",
+    "pv": 5.0,
+    "tick": 5.0,
+    "pre2020": {
+     "trades": 13,
+     "win_rate": 30.76923076923077,
+     "net_r": 8.184516438595868,
+     "avg_r": 0.6295781875842975
+    },
+    "post2020": {
+     "trades": 13,
+     "win_rate": 30.76923076923077,
+     "net_r": 13.395449117889703,
+     "avg_r": 1.0304191629145925
+    },
+    "win_rate": 30.76923076923077,
+    "avg_r": 0.8299986752494449,
+    "net_r": 21.57996555648557,
+    "survives": true,
+    "trades": 26,
+    "coin_flip_p": 0.033
+   },
+   "by_post": {
+    "symbol": "NKD=F",
+    "rule": "continue_trend_day",
+    "params": {
+     "trend": 1.5
+    },
+    "stop": 0.5,
+    "target": 3.0,
+    "hold": 5,
+    "entry": "same_open",
+    "pv": 5.0,
+    "tick": 5.0,
+    "pre2020": {
+     "trades": 13,
+     "win_rate": 30.76923076923077,
+     "net_r": 8.184516438595868,
+     "avg_r": 0.6295781875842975
+    },
+    "post2020": {
+     "trades": 13,
+     "win_rate": 30.76923076923077,
+     "net_r": 13.395449117889703,
+     "avg_r": 1.0304191629145925
+    },
+    "win_rate": 30.76923076923077,
+    "avg_r": 0.8299986752494449,
+    "net_r": 21.57996555648557,
+    "survives": true,
+    "trades": 26,
+    "coin_flip_p": 0.033
+   },
+   "held_forward": true,
+   "held_backward": true
+  }
+ },
+ "signal_days_per_week_pct": 64.8,
+ "basket_trades_per_year": 36.8,
+ "oos_account": {
+  "final": 24603.281490985315,
+  "pnl": -396.71850901468497,
+  "max_dd": 1299.0764116287246,
+  "taken": 38,
+  "skipped": 51,
+  "breach": 0,
+  "daily_stop_hits": 0,
+  "min_dd_pct": 5.196305646514898
+ }
+}

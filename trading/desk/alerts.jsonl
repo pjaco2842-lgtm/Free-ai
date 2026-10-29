@@ -1,0 +1,4 @@
+{"at": "2026-10-29T13:24:49Z", "level": "info", "what": "no forward trades yet", "detail": "the forward ledger starts when the desk first runs; this is expected early"}
+{"at": "2026-10-29T13:30:03Z", "level": "info", "what": "fills recorded", "detail": "6 simulated fill(s) in the order log"}
+{"at": "2026-10-29T13:30:03Z", "level": "low", "what": "orders being rejected", "detail": "511 rejections \u2014 the last said: no bot-5 risk approval attached; size is zero; 6 orders already sent today; GC=F is record-only \u2014 it"}
+{"at": "2026-10-29T13:37:38Z", "level": "info", "what": "fills recorded", "detail": "3 simulated fill(s) in the order log"}

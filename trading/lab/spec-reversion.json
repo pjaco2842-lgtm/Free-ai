@@ -1,0 +1,12 @@
+{
+  "name": "trend-day-fade",
+  "market": "CL=F",
+  "rule": "fade_trend_day",
+  "params": {
+    "trend": 1.5
+  },
+  "stop": 0.5,
+  "target": 3.0,
+  "hold": 2,
+  "hypothesis": "a wide-range day that gaps into its own extreme over-extends and pulls back"
+}

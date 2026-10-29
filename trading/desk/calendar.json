@@ -1,0 +1,4 @@
+{
+  "_comment": "Scheduled events the desk cannot derive from a calendar rule. Recurring ones (EIA Wednesday 10:30 ET, NFP first Friday, ISM first business day, month-end, quarterly roll) are computed in bots.py and must NOT be repeated here. Add FOMC, CPI, PCE, OPEC monthly reports and any one-off you care about. An invented date is worse than a missing one: it creates a false blackout and a false sense of safety. Format: {label, at (UTC, YYYY-MM-DDTHH:MM:SSZ), symbols (optional list), impact: high|medium}.",
+  "events": []
+}

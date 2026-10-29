@@ -1,0 +1,63 @@
+{
+ "at": "2026-10-29T13:53:41Z",
+ "counts": {
+  "forward": 0,
+  "shadow": 4,
+  "decisions": 4,
+  "calls": 15,
+  "order_transitions": 18
+ },
+ "overall": {
+  "n": 0,
+  "win": 0.0,
+  "avg": 0.0,
+  "total": 0.0
+ },
+ "by_rule": {},
+ "by_market": {},
+ "by_exit": {},
+ "by_hour": {},
+ "agents": {
+  "edge": {
+   "n": 4,
+   "right_pct": 50,
+   "conclusive": false
+  },
+  "momentum": {
+   "n": 4,
+   "right_pct": 50,
+   "conclusive": false
+  },
+  "odds": {
+   "n": 4,
+   "right_pct": 50,
+   "conclusive": false
+  },
+  "skeptic": {
+   "n": 4,
+   "right_pct": 50,
+   "conclusive": false
+  },
+  "structure": {
+   "n": 4,
+   "right_pct": 100,
+   "conclusive": false
+  },
+  "trend": {
+   "n": 4,
+   "right_pct": 25,
+   "conclusive": false
+  },
+  "volatility": {
+   "n": 4,
+   "right_pct": 50,
+   "conclusive": false
+  }
+ },
+ "calibration": {
+  "n": 0,
+  "note": "0 call/outcome pair(s) \u2014 calibration needs ten. Calls are logged every hour; this fills in as trades settle.",
+  "buckets": []
+ },
+ "sample_note": "nothing below 20 samples is a conclusion \u2014 the sample size is printed next to every row"
+}

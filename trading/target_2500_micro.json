@@ -1,0 +1,61 @@
+{
+  "equity": 2500.0,
+  "risk": 0.02,
+  "haircut": 1.0,
+  "lucid_start_sweep": {
+    "starts": 207,
+    "passes": 0,
+    "breaches": 0,
+    "passed_without_breach_pct": 0.0,
+    "median_days_to_pass": null,
+    "pass_day_p25": null,
+    "pass_day_p75": null,
+    "no_outcome_by_end": 207,
+    "consistency_limit": 0.5,
+    "max_loss": 1000.0,
+    "examples": []
+  },
+  "combined": {
+    "final": 2456.9966029575903,
+    "pnl": -43.00339704240969,
+    "max_dd": 304.71249999999964,
+    "taken": 65,
+    "skipped": 153,
+    "breach": 8,
+    "daily_stop_hits": 0,
+    "min_dd_pct": 12.188499999999985
+  },
+  "solo": {
+    "NQ=F fade_trend_day": {
+      "final": 2890.8792857142853,
+      "pnl": 390.8792857142853,
+      "max_dd": 46.640714285714694,
+      "taken": 2,
+      "skipped": 17,
+      "breach": 0,
+      "daily_stop_hits": 0,
+      "min_dd_pct": 1.8656285714285878
+    },
+    "YM=F fade_trend_day": {
+      "final": 2353.2583970424103,
+      "pnl": -146.74160295758975,
+      "max_dd": 146.74160295758975,
+      "taken": 4,
+      "skipped": 14,
+      "breach": 0,
+      "daily_stop_hits": 0,
+      "min_dd_pct": 5.86966411830359
+    },
+    "ZS=F nr_break": {
+      "final": 2510.2285714285736,
+      "pnl": 10.22857142857356,
+      "max_dd": 304.71249999999964,
+      "taken": 65,
+      "skipped": 116,
+      "breach": 7,
+      "daily_stop_hits": 0,
+      "min_dd_pct": 12.188499999999985
+    }
+  },
+  "months_to_target": []
+}
