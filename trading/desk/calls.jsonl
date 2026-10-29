@@ -13,3 +13,13 @@
 {"at": "2026-10-29T13:53:40Z", "symbol": "NKD=F", "call": "SKIP", "confidence": 41, "setup": "pullback", "regime": "drift", "governor": "run"}
 {"at": "2026-10-29T13:53:41Z", "symbol": "NQ=F", "call": "SKIP", "confidence": 37, "setup": "pullback", "regime": "drift", "governor": "run"}
 {"at": "2026-10-29T13:53:41Z", "symbol": "GC=F", "call": "SKIP", "confidence": 37, "setup": "continuation", "regime": "drift", "governor": "run"}
+{"at": "2026-10-29T14:42:32Z", "symbol": "ES=F", "call": "WAIT", "confidence": 48, "setup": "pullback", "regime": "drift", "governor": "run"}
+{"at": "2026-10-29T14:42:33Z", "symbol": "CL=F", "call": "WAIT", "confidence": 12, "setup": "none", "regime": "drift", "governor": "run"}
+{"at": "2026-10-29T14:42:33Z", "symbol": "NKD=F", "call": "SKIP", "confidence": 41, "setup": "pullback", "regime": "drift", "governor": "run"}
+{"at": "2026-10-29T14:42:34Z", "symbol": "NQ=F", "call": "SKIP", "confidence": 37, "setup": "pullback", "regime": "drift", "governor": "run"}
+{"at": "2026-10-29T14:42:35Z", "symbol": "GC=F", "call": "SKIP", "confidence": 37, "setup": "continuation", "regime": "drift", "governor": "run"}
+{"at": "2026-10-29T16:09:19Z", "symbol": "ES=F", "call": "WAIT", "confidence": 48, "setup": "pullback", "regime": "drift", "governor": "run"}
+{"at": "2026-10-29T16:09:20Z", "symbol": "CL=F", "call": "WAIT", "confidence": 12, "setup": "none", "regime": "drift", "governor": "run"}
+{"at": "2026-10-29T16:09:20Z", "symbol": "NKD=F", "call": "SKIP", "confidence": 39, "setup": "pullback", "regime": "drift", "governor": "run"}
+{"at": "2026-10-29T16:09:21Z", "symbol": "NQ=F", "call": "SKIP", "confidence": 37, "setup": "pullback", "regime": "drift", "governor": "run"}
+{"at": "2026-10-29T16:09:21Z", "symbol": "GC=F", "call": "SKIP", "confidence": 37, "setup": "continuation", "regime": "drift", "governor": "run"}

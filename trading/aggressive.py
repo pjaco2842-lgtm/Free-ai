@@ -232,7 +232,7 @@ def run(bars: list[Bar], S: dict, name: str, p: dict, pv: float, tick: float,
                 out.append({"t": b.t, "market": symbol, "strat": name,
                             "side": "long" if pos["side"] > 0 else "short",
                             "entry": pos["entry"], "exit": px, "why": why,
-                            "bars": i - pos["i"], "usd": net,
+                            "bars": i - pos["i"], "usd": net, "risk_usd": risk,
                             "r": net / risk if risk else 0.0})
                 pos = None
                 last_exit = i
@@ -257,7 +257,9 @@ def stats(trades: list[dict], sessions: int) -> dict:
         eq += u
         peak = max(peak, eq)
         dd = min(dd, eq - peak)
+    risks = [t.get("risk_usd", 0.0) for t in trades]
     return {"trades": len(trades), "per_day": len(trades) / max(sessions, 1),
+            "med_risk": statistics.median(risks),
             "win": 100 * sum(1 for u in usd if u > 0) / len(usd),
             "avg_r": statistics.mean(t["r"] for t in trades),
             "total_r": sum(t["r"] for t in trades),

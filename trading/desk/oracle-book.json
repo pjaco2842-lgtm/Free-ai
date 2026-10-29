@@ -1,0 +1,47 @@
+[
+  {
+    "family": "prevclose_break",
+    "n": null,
+    "stop": 1.0,
+    "exit": "tp2",
+    "gap": "any",
+    "trend": false,
+    "dow": "all",
+    "dir": "both",
+    "symbol": "NQ=F",
+    "test_net": 59873.72,
+    "test_trades": 153,
+    "luck_pct": 100.0,
+    "plateau": 1.0
+  },
+  {
+    "family": "prevclose_break",
+    "n": null,
+    "stop": 1.5,
+    "exit": "tp1",
+    "gap": "any",
+    "trend": false,
+    "dow": "all",
+    "dir": "both",
+    "symbol": "NQ=F",
+    "test_net": 59618.04,
+    "test_trades": 153,
+    "luck_pct": 100.0,
+    "plateau": 1.0
+  },
+  {
+    "family": "prevclose_break",
+    "n": null,
+    "stop": 0.75,
+    "exit": "tp2",
+    "gap": "any",
+    "trend": false,
+    "dow": "all",
+    "dir": "both",
+    "symbol": "NQ=F",
+    "test_net": 59066.1,
+    "test_trades": 153,
+    "luck_pct": 100.0,
+    "plateau": 1.0
+  }
+]

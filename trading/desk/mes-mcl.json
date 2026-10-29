@@ -1,0 +1,443 @@
+{
+  "floor": 2.0,
+  "rows": [
+    {
+      "symbol": "ES=F",
+      "tf": "15m",
+      "strat": "breakout",
+      "params": {
+        "fast": 9,
+        "slow": 21,
+        "trend": 100,
+        "rsi_len": 14,
+        "tlen": 99,
+        "nbars": 10,
+        "lo": 40,
+        "hi": 60,
+        "stop": 0.75,
+        "target": 1.5,
+        "hold": 24,
+        "cool": 6
+      },
+      "test": {
+        "trades": 91,
+        "per_day": 3.033333333333333,
+        "usd": 71.41821428571087,
+        "med_risk": 21.696428571426623,
+        "win": 39.56043956043956,
+        "avg_r": -0.07544596743221266,
+        "dd": -280.311428571427
+      },
+      "test_hours": {
+        "trades": 32,
+        "per_day": 1.0666666666666667,
+        "usd": -72.30642857142217,
+        "med_risk": 34.921875,
+        "win": 34.375,
+        "avg_r": -0.1252992360811267,
+        "dd": -218.82107142856435
+      },
+      "per_session": 2.3806071428570292,
+      "s200": {
+        "contracts": 84.01218176636013,
+        "risk": 1822.7643008235427,
+        "stops": 0.5486172839506404
+      },
+      "s500": {
+        "contracts": 210.03045441590032,
+        "risk": 4556.910752058857,
+        "stops": 0.21944691358025614
+      },
+      "sessions_test": 30
+    },
+    {
+      "symbol": "CL=F",
+      "tf": "15m",
+      "strat": "breakout",
+      "params": {
+        "fast": 9,
+        "slow": 21,
+        "trend": 100,
+        "rsi_len": 14,
+        "tlen": 99,
+        "nbars": 10,
+        "lo": 40,
+        "hi": 60,
+        "stop": 1.0,
+        "target": 3.0,
+        "hold": 48,
+        "cool": 6
+      },
+      "test": {
+        "trades": 66,
+        "per_day": 2.2,
+        "usd": 305.0341658237983,
+        "med_risk": 36.21420179094628,
+        "win": 30.303030303030305,
+        "avg_r": 0.029793176709044474,
+        "dd": -815.7740393938348
+      },
+      "test_hours": {
+        "trades": 28,
+        "per_day": 0.9333333333333333,
+        "usd": 183.13113429478028,
+        "med_risk": 44.499942234584466,
+        "win": 32.142857142857146,
+        "avg_r": 0.18289337209834985,
+        "dd": -536.2998190743605
+      },
+      "per_session": 10.167805527459942,
+      "s200": {
+        "contracts": 19.669927740048227,
+        "risk": 712.3307323914383,
+        "stops": 1.403842280737766
+      },
+      "s500": {
+        "contracts": 49.174819350120565,
+        "risk": 1780.8268309785958,
+        "stops": 0.5615369122951064
+      },
+      "sessions_test": 30
+    },
+    {
+      "symbol": "ES=F",
+      "tf": "5m",
+      "strat": "confluence",
+      "params": {
+        "fast": 5,
+        "slow": 13,
+        "trend": 50,
+        "rsi_len": 14,
+        "tlen": 99,
+        "nbars": 20,
+        "lo": 40,
+        "hi": 60,
+        "stop": 1.5,
+        "target": 3.0,
+        "hold": 48,
+        "cool": 12
+      },
+      "test": {
+        "trades": 86,
+        "per_day": 6.142857142857143,
+        "usd": -849.396071428569,
+        "med_risk": 22.09821428571331,
+        "win": 29.069767441860463,
+        "avg_r": -0.3832137614973127,
+        "dd": -1009.1139285714273
+      },
+      "test_hours": {
+        "trades": 26,
+        "per_day": 1.8571428571428572,
+        "usd": -358.5425000000046,
+        "med_risk": 29.33035714285552,
+        "win": 26.923076923076923,
+        "avg_r": -0.3925921876491273,
+        "dd": -626.7982142857157
+      },
+      "per_session": -60.6711479591835,
+      "s200": {
+        "contracts": null,
+        "risk": null,
+        "stops": null
+      },
+      "s500": {
+        "contracts": null,
+        "risk": null,
+        "stops": null
+      },
+      "sessions_test": 14
+    },
+    {
+      "symbol": "CL=F",
+      "tf": "5m",
+      "strat": "trama_cross",
+      "params": {
+        "fast": 5,
+        "slow": 13,
+        "trend": 100,
+        "rsi_len": 14,
+        "tlen": 34,
+        "nbars": 20,
+        "lo": 40,
+        "hi": 60,
+        "stop": 1.0,
+        "target": 3.0,
+        "hold": 48,
+        "cool": 6
+      },
+      "test": {
+        "trades": 76,
+        "per_day": 5.428571428571429,
+        "usd": -386.05157244000804,
+        "med_risk": 20.142800467355215,
+        "win": 23.68421052631579,
+        "avg_r": -0.30063759203650625,
+        "dd": -495.5797188023143
+      },
+      "test_hours": {
+        "trades": 30,
+        "per_day": 2.142857142857143,
+        "usd": -196.68604997907187,
+        "med_risk": 22.285842895507812,
+        "win": 20.0,
+        "avg_r": -0.3942439152971236,
+        "dd": -220.92603690011038
+      },
+      "per_session": -27.575112317143432,
+      "s200": {
+        "contracts": null,
+        "risk": null,
+        "stops": null
+      },
+      "s500": {
+        "contracts": null,
+        "risk": null,
+        "stops": null
+      },
+      "sessions_test": 14
+    }
+  ],
+  "population": [
+    {
+      "symbol": "ES=F",
+      "tf": "15m",
+      "strat": "trama_cross",
+      "configs": 4,
+      "pct_positive": 75.0,
+      "median_per_session": 10.39763095238096,
+      "median_risk": 25.491071428571104,
+      "median_per_day": 1.7666666666666666
+    },
+    {
+      "symbol": "ES=F",
+      "tf": "5m",
+      "strat": "rsi_pull",
+      "configs": 8,
+      "pct_positive": 62.5,
+      "median_per_session": 4.82093750000016,
+      "median_risk": 16.049107142857792,
+      "median_per_day": 2.821428571428571
+    },
+    {
+      "symbol": "CL=F",
+      "tf": "15m",
+      "strat": "trama_cross",
+      "configs": 4,
+      "pct_positive": 75.0,
+      "median_per_session": 4.689400251842822,
+      "median_risk": 34.33923721313512,
+      "median_per_day": 1.4666666666666666
+    },
+    {
+      "symbol": "CL=F",
+      "tf": "15m",
+      "strat": "rsi_rev",
+      "configs": 2,
+      "pct_positive": 50.0,
+      "median_per_session": -2.1414263254801464,
+      "median_risk": 34.11158152988989,
+      "median_per_day": 1.2166666666666668
+    },
+    {
+      "symbol": "ES=F",
+      "tf": "5m",
+      "strat": "breakout",
+      "configs": 8,
+      "pct_positive": 37.5,
+      "median_per_session": -2.4864668367347735,
+      "median_risk": 15.9375,
+      "median_per_day": 8.285714285714285
+    },
+    {
+      "symbol": "ES=F",
+      "tf": "15m",
+      "strat": "breakout",
+      "configs": 8,
+      "pct_positive": 25.0,
+      "median_per_session": -6.253535714285555,
+      "median_risk": 30.267857142856656,
+      "median_per_day": 2.216666666666667
+    },
+    {
+      "symbol": "CL=F",
+      "tf": "15m",
+      "strat": "mom_align",
+      "configs": 4,
+      "pct_positive": 25.0,
+      "median_per_session": -6.8402456156411375,
+      "median_risk": 33.910710471017325,
+      "median_per_day": 1.55
+    },
+    {
+      "symbol": "CL=F",
+      "tf": "15m",
+      "strat": "rsi_pull",
+      "configs": 4,
+      "pct_positive": 0.0,
+      "median_per_session": -7.802868728637723,
+      "median_risk": 31.92858014787987,
+      "median_per_day": 1.6666666666666665
+    },
+    {
+      "symbol": "ES=F",
+      "tf": "15m",
+      "strat": "mom_align",
+      "configs": 7,
+      "pct_positive": 28.571428571428573,
+      "median_per_session": -9.951738095238381,
+      "median_risk": 26.964285714284415,
+      "median_per_day": 1.5
+    },
+    {
+      "symbol": "CL=F",
+      "tf": "15m",
+      "strat": "breakout",
+      "configs": 8,
+      "pct_positive": 12.5,
+      "median_per_session": -10.26887848191034,
+      "median_risk": 36.303520202637074,
+      "median_per_day": 2.1166666666666667
+    },
+    {
+      "symbol": "ES=F",
+      "tf": "15m",
+      "strat": "rsi_pull",
+      "configs": 4,
+      "pct_positive": 0.0,
+      "median_per_session": -10.842333333333336,
+      "median_risk": 26.25,
+      "median_per_day": 1.4666666666666668
+    },
+    {
+      "symbol": "CL=F",
+      "tf": "15m",
+      "strat": "confluence",
+      "configs": 8,
+      "pct_positive": 0.0,
+      "median_per_session": -11.441148893083867,
+      "median_risk": 31.964315686906986,
+      "median_per_day": 2.1500000000000004
+    },
+    {
+      "symbol": "CL=F",
+      "tf": "5m",
+      "strat": "breakout",
+      "configs": 8,
+      "pct_positive": 12.5,
+      "median_per_session": -13.274214590423052,
+      "median_risk": 19.981997353690062,
+      "median_per_day": 7.392857142857142
+    },
+    {
+      "symbol": "CL=F",
+      "tf": "5m",
+      "strat": "rsi_rev",
+      "configs": 8,
+      "pct_positive": 12.5,
+      "median_per_session": -13.585820936864685,
+      "median_risk": 20.196356092180423,
+      "median_per_day": 2.5357142857142856
+    },
+    {
+      "symbol": "ES=F",
+      "tf": "15m",
+      "strat": "confluence",
+      "configs": 8,
+      "pct_positive": 37.5,
+      "median_per_session": -14.52605357142875,
+      "median_risk": 26.763392857142208,
+      "median_per_day": 2.3333333333333335
+    },
+    {
+      "symbol": "ES=F",
+      "tf": "5m",
+      "strat": "trama_cross",
+      "configs": 8,
+      "pct_positive": 0.0,
+      "median_per_session": -16.870235969387622,
+      "median_risk": 15.89285714285893,
+      "median_per_day": 4.321428571428571
+    },
+    {
+      "symbol": "ES=F",
+      "tf": "5m",
+      "strat": "mom_align",
+      "configs": 8,
+      "pct_positive": 0.0,
+      "median_per_session": -19.019668367347474,
+      "median_risk": 15.0,
+      "median_per_day": 4.0
+    },
+    {
+      "symbol": "CL=F",
+      "tf": "5m",
+      "strat": "confluence",
+      "configs": 8,
+      "pct_positive": 0.0,
+      "median_per_session": -21.96198754369009,
+      "median_risk": 19.196374075753297,
+      "median_per_day": 6.357142857142857
+    },
+    {
+      "symbol": "CL=F",
+      "tf": "5m",
+      "strat": "trama_cross",
+      "configs": 8,
+      "pct_positive": 0.0,
+      "median_per_session": -23.528587504795674,
+      "median_risk": 21.357182094028815,
+      "median_per_day": 4.0
+    },
+    {
+      "symbol": "CL=F",
+      "tf": "5m",
+      "strat": "mom_align",
+      "configs": 8,
+      "pct_positive": 0.0,
+      "median_per_session": -25.524136810302743,
+      "median_risk": 19.303471701486075,
+      "median_per_day": 3.9642857142857144
+    },
+    {
+      "symbol": "ES=F",
+      "tf": "15m",
+      "strat": "rsi_rev",
+      "configs": 3,
+      "pct_positive": 0.0,
+      "median_per_session": -40.69557142857187,
+      "median_risk": 36.42857142857338,
+      "median_per_day": 1.4333333333333333
+    },
+    {
+      "symbol": "ES=F",
+      "tf": "5m",
+      "strat": "rsi_rev",
+      "configs": 8,
+      "pct_positive": 0.0,
+      "median_per_session": -42.40248086734699,
+      "median_risk": 18.058035714285552,
+      "median_per_day": 2.428571428571429
+    },
+    {
+      "symbol": "CL=F",
+      "tf": "5m",
+      "strat": "rsi_pull",
+      "configs": 8,
+      "pct_positive": 0.0,
+      "median_per_session": -45.57898600364235,
+      "median_risk": 17.571503775459973,
+      "median_per_day": 2.9642857142857144
+    },
+    {
+      "symbol": "ES=F",
+      "tf": "5m",
+      "strat": "confluence",
+      "configs": 8,
+      "pct_positive": 0.0,
+      "median_per_session": -55.259209183673505,
+      "median_risk": 14.955357142857792,
+      "median_per_day": 6.785714285714286
+    }
+  ]
+}

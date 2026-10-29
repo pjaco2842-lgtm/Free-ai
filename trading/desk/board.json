@@ -1,10 +1,10 @@
 {
- "at": "2026-10-29T13:53:41Z",
+ "at": "2026-10-29T16:09:22Z",
  "rows": [
   {
    "symbol": "ES=F",
    "as": "MES",
-   "at": "2026-10-29T13:53:39Z",
+   "at": "2026-10-29T16:09:19Z",
    "regime": "drift",
    "governor": "run",
    "classic": false,
@@ -24,13 +24,13 @@
      "note": "price at the 20 EMA inside a rising 50/200 structure, bar closed against the trend",
      "metrics": {
       "range_z": -1.47,
-      "rvol": 0.3,
+      "rvol": 0.67,
       "gap_atr": -0.19,
       "atr_percentile": 42,
       "compression": 0.64,
-      "rsi": 49.0,
+      "rsi": 50.6,
       "trend": 1,
-      "close_pos": 0.23
+      "close_pos": 0.68
      }
     },
     "2_catalyst": {
@@ -44,7 +44,7 @@
      "degraded": true,
      "next_event": {
       "label": "month-end rebalance",
-      "in_min": 1806,
+      "in_min": 1670,
       "impact": "medium"
      },
      "headlines": [
@@ -82,11 +82,11 @@
      "label": "neutral",
      "tone": -0.1,
      "hype": 0,
-     "crowding": 46,
-     "stretch_atr": -0.16,
-     "rsi": 49.0,
+     "crowding": 51,
+     "stretch_atr": 0.04,
+     "rsi": 50.6,
      "basis": "headline lexicon + price crowding (no social feed, no model)",
-     "note": "headline tone -0.10 over 10 verified item(s), hype 0/100, price -0.2 ATR from the 20 EMA, RSI 49"
+     "note": "headline tone -0.10 over 10 verified item(s), hype 0/100, price +0.0 ATR from the 20 EMA, RSI 51"
     },
     "4_levels": {
      "bot": 4,
@@ -95,9 +95,9 @@
      "trend": "up",
      "aligned": true,
      "side": "long",
-     "entry": 7742.0,
-     "stop": 7701.2232,
-     "target": 7823.5536,
+     "entry": 7760.5,
+     "stop": 7719.7232,
+     "target": 7842.0536,
      "risk_pts": 40.7768,
      "reward_pts": 81.5536,
      "rr": 2.0,
@@ -108,11 +108,11 @@
       "prior_day_low": 7750.25,
       "prior_week_high": 7819.5,
       "prior_week_low": 7648.5,
-      "round_number": 7700.0,
-      "ema20": 7755.4499
+      "round_number": 7800.0,
+      "ema20": 7757.2118
      },
      "blockers": [],
-     "note": "up structure; long at 7,742.00 with stop 7,701.22 (40.78 pts) and target 7,823.55 (2.0:1)"
+     "note": "up structure; long at 7,760.50 with stop 7,719.72 (40.78 pts) and target 7,842.05 (2.0:1)"
     },
     "5_risk": {
      "bot": 5,
@@ -129,14 +129,19 @@
        "detail": "one MES stop is $209 against a $250 budget"
       },
       {
+       "check": "drawdown buffer",
+       "ok": true,
+       "detail": "$1,000 of the $1,000 end-of-day buffer is left (4.8 stops); entering needs 2.0 and would leave $791 (3.8 stops)"
+      },
+      {
        "check": "daily stop",
        "ok": true,
-       "detail": "today is $+0, stop at $-500"
+       "detail": "today is $+0, stop at $-400"
       },
       {
        "check": "position cap",
        "ok": true,
-       "detail": "0 of 2 allowed positions open"
+       "detail": "0 of 1 allowed positions open"
       },
       {
        "check": "correlation",
@@ -151,7 +156,7 @@
       {
        "check": "consistency",
        "ok": true,
-       "detail": "a full win sets your best day at $301 against a $625 limit \u2014 this bracket needs a $602 profit target to satisfy a 50% rule, or a partial exit near $150"
+       "detail": "a full win sets your best day at $301 against a $500 limit \u2014 this bracket needs a $602 profit target to satisfy a 40% rule, or a partial exit near $150"
       }
      ],
      "hard_blockers": [],
@@ -159,11 +164,12 @@
       "news feed stale \u2014 sizing kept, confidence will be marked down"
      ],
      "headroom": {
-      "daily_stop": 500.0,
-      "consistency": 324.15
+      "daily_stop": 400.0,
+      "consistency": 199.15,
+      "drawdown_buffer": 1000.0
      },
      "consistency": {
-      "limit": 625.0,
+      "limit": 500.0,
       "projected_best_day": 300.85,
       "min_target_to_comply": 601.69
      },
@@ -176,7 +182,7 @@
      "side": "long",
      "confidence": 48,
      "why": "no setup worth planning (opportunity 37/100)",
-     "falsifier": "a close back through 7,701.22 invalidates it; if month-end rebalance lands against the position before the target, take the stop, not a wider one",
+     "falsifier": "a close back through 7,719.72 invalidates it; if month-end rebalance lands against the position before the target, take the stop, not a wider one",
      "desk": {
       "regime": "drift",
       "governor": "run",
@@ -199,7 +205,7 @@
      ],
      "atr_percentile": 42,
      "separation_atr": 4.26,
-     "slope_atr": 0.72,
+     "slope_atr": 0.73,
      "compression": 0.64,
      "note": "drift: 50/200 gap +4.3 ATR, 20-bar slope +0.7 ATR, 20-day range 64% of the 60-day, ATR 42th pct"
     },
@@ -207,10 +213,10 @@
      "bot": 7,
      "name": "session",
      "where": "US cash hours",
-     "hour_utc": 13.72,
-     "range_atr": 1.07,
+     "hour_utc": 15.98,
+     "range_atr": 0.51,
      "stretched": false,
-     "note": "13:43Z, cash hours; the last 18 hours have travelled 1.1 ATR"
+     "note": "15:59Z, cash hours; the last 18 hours have travelled 0.5 ATR"
     },
     "8_liquidity": {
      "bot": 8,
@@ -225,10 +231,10 @@
      "bot": 9,
      "name": "roll",
      "status": "ok",
-     "days": 41.4,
+     "days": 41.3,
      "when": "2026-12-10",
      "label": "quarterly roll",
-     "note": "quarterly roll in 41.4 days (2026-12-10) \u2014 comfortable"
+     "note": "quarterly roll in 41.3 days (2026-12-10) \u2014 comfortable"
     },
     "10_benchmark": {
      "bot": 10,
@@ -251,6 +257,7 @@
      "drawdown": 0.0,
      "day_pnl": 0.0,
      "streak": 0,
+     "buffer": 1000.0,
      "reasons": [],
      "note": "clear \u2014 $0 drawdown, $+0 today"
     }
@@ -262,7 +269,7 @@
   {
    "symbol": "CL=F",
    "as": "MCL",
-   "at": "2026-10-29T13:53:40Z",
+   "at": "2026-10-29T16:09:20Z",
    "regime": "drift",
    "governor": "run",
    "classic": false,
@@ -275,14 +282,14 @@
      "setups": [],
      "note": "no pattern present",
      "metrics": {
-      "range_z": -1.07,
-      "rvol": 0.38,
+      "range_z": -1.02,
+      "rvol": 0.58,
       "gap_atr": -0.19,
-      "atr_percentile": 41,
+      "atr_percentile": 42,
       "compression": 0.66,
-      "rsi": 55.0,
+      "rsi": 56.5,
       "trend": 1,
-      "close_pos": 0.05
+      "close_pos": 0.42
      }
     },
     "2_catalyst": {
@@ -296,7 +303,7 @@
      "degraded": true,
      "next_event": {
       "label": "EIA petroleum status",
-      "in_min": 8736,
+      "in_min": 8600,
       "impact": "high"
      },
      "headlines": [
@@ -316,11 +323,11 @@
      "label": "neutral",
      "tone": 0.0,
      "hype": 0,
-     "crowding": 62,
-     "stretch_atr": 0.43,
-     "rsi": 55.0,
+     "crowding": 66,
+     "stretch_atr": 0.6,
+     "rsi": 56.5,
      "basis": "headline lexicon + price crowding (no social feed, no model)",
-     "note": "headline tone +0.00 over 1 verified item(s), hype 0/100, price +0.4 ATR from the 20 EMA, RSI 55"
+     "note": "headline tone +0.00 over 1 verified item(s), hype 0/100, price +0.6 ATR from the 20 EMA, RSI 56"
     },
     "4_levels": {
      "bot": 4,
@@ -329,13 +336,13 @@
      "trend": "up",
      "aligned": false,
      "side": "short",
-     "entry": 100.02,
-     "stop": 102.2004,
-     "target": 86.9379,
-     "risk_pts": 2.1804,
-     "reward_pts": 13.0821,
+     "entry": 100.86,
+     "stop": 103.0432,
+     "target": 87.7607,
+     "risk_pts": 2.1832,
+     "reward_pts": 13.0993,
      "rr": 6.0,
-     "atr": 4.3607,
+     "atr": 4.3664,
      "trade_as": "MCL",
      "levels": {
       "prior_day_high": 103.55,
@@ -343,20 +350,20 @@
       "prior_week_high": 103.92,
       "prior_week_low": 97.72,
       "round_number": 100.0,
-      "ema20": 98.1606
+      "ema20": 98.2406
      },
      "blockers": [
       "trend is up, trade is short"
      ],
-     "note": "up structure; short at 100.02 with stop 102.20 (2.18 pts) and target 86.94 (6.0:1)"
+     "note": "up structure; short at 100.86 with stop 103.04 (2.18 pts) and target 87.76 (6.0:1)"
     },
     "5_risk": {
      "bot": 5,
      "name": "risk",
      "action": "approve",
      "contracts": 1,
-     "stop_usd": 222.52,
-     "win_usd": 976.68,
+     "stop_usd": 222.8,
+     "win_usd": 977.97,
      "risk_pct": 0.89,
      "checks": [
       {
@@ -365,14 +372,19 @@
        "detail": "one MCL stop is $223 against a $250 budget"
       },
       {
+       "check": "drawdown buffer",
+       "ok": true,
+       "detail": "$1,000 of the $1,000 end-of-day buffer is left (4.5 stops); entering needs 2.0 and would leave $777 (3.5 stops)"
+      },
+      {
        "check": "daily stop",
        "ok": true,
-       "detail": "today is $+0, stop at $-500"
+       "detail": "today is $+0, stop at $-400"
       },
       {
        "check": "position cap",
        "ok": true,
-       "detail": "0 of 2 allowed positions open"
+       "detail": "0 of 1 allowed positions open"
       },
       {
        "check": "correlation",
@@ -382,12 +394,12 @@
       {
        "check": "volatility",
        "ok": true,
-       "detail": "ATR at the 41th percentile of the last 120 sessions"
+       "detail": "ATR at the 42th percentile of the last 120 sessions"
       },
       {
        "check": "consistency",
        "ok": false,
-       "detail": "a full win sets your best day at $977 against a $625 limit \u2014 this bracket needs a $1,953 profit target to satisfy a 50% rule, or a partial exit near $488"
+       "detail": "a full win sets your best day at $978 against a $500 limit \u2014 this bracket needs a $1,956 profit target to satisfy a 40% rule, or a partial exit near $489"
       },
       {
        "check": "structure",
@@ -397,20 +409,21 @@
      ],
      "hard_blockers": [],
      "soft_flags": [
-      "a full win sets your best day at $977 against a $625 limit \u2014 this bracket needs a $1,953 profit target to satisfy a 50% rule, or a partial exit near $488",
+      "a full win sets your best day at $978 against a $500 limit \u2014 this bracket needs a $1,956 profit target to satisfy a 40% rule, or a partial exit near $489",
       "trend is up, trade is short",
       "news feed stale \u2014 sizing kept, confidence will be marked down"
      ],
      "headroom": {
-      "daily_stop": 500.0,
-      "consistency": -351.68
+      "daily_stop": 400.0,
+      "consistency": -477.97,
+      "drawdown_buffer": 1000.0
      },
      "consistency": {
-      "limit": 625.0,
-      "projected_best_day": 976.68,
-      "min_target_to_comply": 1953.36
+      "limit": 500.0,
+      "projected_best_day": 977.97,
+      "min_target_to_comply": 1955.93
      },
-     "note": "approved 1 contract(s), $223 at risk (0.9% of equity), winning pays $977"
+     "note": "approved 1 contract(s), $223 at risk (0.9% of equity), winning pays $978"
     },
     "6_final": {
      "bot": 6,
@@ -419,7 +432,7 @@
      "side": "short",
      "confidence": 12,
      "why": "no setup worth planning (opportunity 1/100)",
-     "falsifier": "a close back through 102.20 invalidates it; if EIA petroleum status lands against the position before the target, take the stop, not a wider one",
+     "falsifier": "a close back through 103.04 invalidates it; if EIA petroleum status lands against the position before the target, take the stop, not a wider one",
      "desk": {
       "regime": "drift",
       "governor": "run",
@@ -440,27 +453,27 @@
       "pullback",
       "continuation"
      ],
-     "atr_percentile": 41,
+     "atr_percentile": 42,
      "separation_atr": 2.03,
      "slope_atr": 0.95,
      "compression": 0.66,
-     "note": "drift: 50/200 gap +2.0 ATR, 20-bar slope +0.9 ATR, 20-day range 66% of the 60-day, ATR 41th pct"
+     "note": "drift: 50/200 gap +2.0 ATR, 20-bar slope +1.0 ATR, 20-day range 66% of the 60-day, ATR 42th pct"
     },
     "7_session": {
      "bot": 7,
      "name": "session",
      "where": "US cash hours",
-     "hour_utc": 13.72,
-     "range_atr": 0.63,
+     "hour_utc": 15.98,
+     "range_atr": 0.58,
      "stretched": false,
-     "note": "13:43Z, cash hours; the last 18 hours have travelled 0.6 ATR"
+     "note": "15:59Z, cash hours; the last 18 hours have travelled 0.6 ATR"
     },
     "8_liquidity": {
      "bot": 8,
      "name": "liquidity",
-     "score": 81,
+     "score": 82,
      "thin": false,
-     "median_bar_atr": 0.078,
+     "median_bar_atr": 0.079,
      "flat_share": 0.01,
      "note": "median 15m bar is 0.08 ATR of the daily, 1% of bars printed flat"
     },
@@ -468,10 +481,10 @@
      "bot": 9,
      "name": "roll",
      "status": "ok",
-     "days": 41.4,
+     "days": 41.3,
      "when": "2026-12-10",
      "label": "quarterly roll",
-     "note": "quarterly roll in 41.4 days (2026-12-10) \u2014 comfortable"
+     "note": "quarterly roll in 41.3 days (2026-12-10) \u2014 comfortable"
     },
     "10_benchmark": {
      "bot": 10,
@@ -494,6 +507,7 @@
      "drawdown": 0.0,
      "day_pnl": 0.0,
      "streak": 0,
+     "buffer": 1000.0,
      "reasons": [],
      "note": "clear \u2014 $0 drawdown, $+0 today"
     }
@@ -505,7 +519,7 @@
   {
    "symbol": "NKD=F",
    "as": "NKD (no micro)",
-   "at": "2026-10-29T13:53:40Z",
+   "at": "2026-10-29T16:09:20Z",
    "regime": "drift",
    "governor": "run",
    "classic": false,
@@ -513,25 +527,25 @@
     "1_opportunity": {
      "bot": 1,
      "name": "opportunity",
-     "score": 56,
+     "score": 49,
      "setup": "pullback",
      "setups": [
       {
        "name": "pullback",
-       "confidence": 79,
+       "confidence": 67,
        "note": "price at the 20 EMA inside a rising 50/200 structure, bar closed with the trend"
       }
      ],
      "note": "price at the 20 EMA inside a rising 50/200 structure, bar closed with the trend",
      "metrics": {
-      "range_z": -1.1,
-      "rvol": 0.98,
-      "gap_atr": -0.36,
+      "range_z": -0.89,
+      "rvol": 1.18,
+      "gap_atr": -0.35,
       "atr_percentile": 41,
       "compression": 1.0,
-      "rsi": 45.0,
+      "rsi": 46.7,
       "trend": 1,
-      "close_pos": 0.6
+      "close_pos": 0.9
      }
     },
     "2_catalyst": {
@@ -554,11 +568,11 @@
      "label": "neutral",
      "tone": 0.0,
      "hype": 0,
-     "crowding": 37,
-     "stretch_atr": -0.48,
-     "rsi": 45.0,
+     "crowding": 43,
+     "stretch_atr": -0.25,
+     "rsi": 46.7,
      "basis": "headline lexicon + price crowding (no social feed, no model)",
-     "note": "headline tone +0.00 over 0 verified item(s), hype 0/100, price -0.5 ATR from the 20 EMA, RSI 45"
+     "note": "headline tone +0.00 over 0 verified item(s), hype 0/100, price -0.2 ATR from the 20 EMA, RSI 47"
     },
     "4_levels": {
      "bot": 4,
@@ -567,13 +581,13 @@
      "trend": "up",
      "aligned": true,
      "side": "long",
-     "entry": 64570.0,
-     "stop": 63746.6071,
-     "target": 69510.3571,
-     "risk_pts": 823.3929,
-     "reward_pts": 4940.3571,
+     "entry": 64990.0,
+     "stop": 64163.2143,
+     "target": 69950.7143,
+     "risk_pts": 826.7857,
+     "reward_pts": 4960.7143,
      "rr": 6.0,
-     "atr": 1646.7857,
+     "atr": 1653.5714,
      "trade_as": "NKD (no micro)",
      "levels": {
       "prior_day_high": 65520.0,
@@ -581,34 +595,39 @@
       "prior_week_high": 65520.0,
       "prior_week_low": 61680.0,
       "round_number": 65000.0,
-      "ema20": 65360.8204
+      "ema20": 65400.8204
      },
      "blockers": [],
-     "note": "up structure; long at 64,570.00 with stop 63,746.61 (823.39 pts) and target 69,510.36 (6.0:1)"
+     "note": "up structure; long at 64,990.00 with stop 64,163.21 (826.79 pts) and target 69,950.71 (6.0:1)"
     },
     "5_risk": {
      "bot": 5,
      "name": "risk",
      "action": "reject",
      "contracts": 0,
-     "stop_usd": 4169.44,
-     "win_usd": 18473.86,
-     "risk_pct": 16.68,
+     "stop_usd": 4186.41,
+     "win_usd": 18550.2,
+     "risk_pct": 16.75,
      "checks": [
       {
        "check": "budget",
        "ok": false,
-       "detail": "one NKD (no micro) stop is $4,169 against a $250 budget"
+       "detail": "one NKD (no micro) stop is $4,186 against a $250 budget"
+      },
+      {
+       "check": "drawdown buffer",
+       "ok": false,
+       "detail": "$1,000 of the $1,000 end-of-day buffer is left (0.2 stops); entering needs 2.0 and would leave $-3,186 (-0.8 stops)"
       },
       {
        "check": "daily stop",
        "ok": true,
-       "detail": "today is $+0, stop at $-500"
+       "detail": "today is $+0, stop at $-400"
       },
       {
        "check": "position cap",
        "ok": true,
-       "detail": "0 of 2 allowed positions open"
+       "detail": "0 of 1 allowed positions open"
       },
       {
        "check": "correlation",
@@ -623,42 +642,44 @@
       {
        "check": "consistency",
        "ok": false,
-       "detail": "a full win sets your best day at $18,474 against a $625 limit \u2014 this bracket needs a $36,948 profit target to satisfy a 50% rule, or a partial exit near $9,237"
+       "detail": "a full win sets your best day at $18,550 against a $500 limit \u2014 this bracket needs a $37,100 profit target to satisfy a 40% rule, or a partial exit near $9,275"
       }
      ],
      "hard_blockers": [
-      "one NKD (no micro) stop is $4,169 against a $250 budget"
+      "one NKD (no micro) stop is $4,186 against a $250 budget",
+      "$1,000 of the $1,000 end-of-day buffer is left (0.2 stops); entering needs 2.0 and would leave $-3,186 (-0.8 stops)"
      ],
      "soft_flags": [
-      "a full win sets your best day at $18,474 against a $625 limit \u2014 this bracket needs a $36,948 profit target to satisfy a 50% rule, or a partial exit near $9,237",
+      "a full win sets your best day at $18,550 against a $500 limit \u2014 this bracket needs a $37,100 profit target to satisfy a 40% rule, or a partial exit near $9,275",
       "news feed stale \u2014 sizing kept, confidence will be marked down"
      ],
      "headroom": {
-      "daily_stop": 500.0,
-      "consistency": -17848.86
+      "daily_stop": 400.0,
+      "consistency": -18050.2,
+      "drawdown_buffer": 1000.0
      },
      "consistency": {
-      "limit": 625.0,
-      "projected_best_day": 18473.86,
-      "min_target_to_comply": 36947.72
+      "limit": 500.0,
+      "projected_best_day": 18550.2,
+      "min_target_to_comply": 37100.4
      },
-     "note": "rejected: one NKD (no micro) stop is $4,169 against a $250 budget"
+     "note": "rejected: one NKD (no micro) stop is $4,186 against a $250 budget; $1,000 of the $1,000 end-of-day buffer is left (0.2 stops); entering needs 2.0 and would leave $-3,186 (-0.8 stops)"
     },
     "6_final": {
      "bot": 6,
      "name": "final",
      "call": "SKIP",
      "side": "long",
-     "confidence": 41,
-     "why": "rejected: one NKD (no micro) stop is $4,169 against a $250 budget",
-     "falsifier": "a close back through 63,746.61 invalidates it; if the next release lands against the position before the target, take the stop, not a wider one",
+     "confidence": 39,
+     "why": "rejected: one NKD (no micro) stop is $4,186 against a $250 budget; $1,000 of the $1,000 end-of-day buffer is left (0.2 stops); entering needs 2.0 and would leave $-3,186 (-0.8 stops)",
+     "falsifier": "a close back through 64,163.21 invalidates it; if the next release lands against the position before the target, take the stop, not a wider one",
      "desk": {
       "regime": "drift",
       "governor": "run",
       "roll": "ok"
      },
      "inputs": {
-      "opportunity": 56,
+      "opportunity": 49,
       "catalyst": "unknown",
       "sentiment": "neutral",
       "risk": "reject"
@@ -674,25 +695,25 @@
      ],
      "atr_percentile": 41,
      "separation_atr": 2.49,
-     "slope_atr": 0.04,
+     "slope_atr": 0.05,
      "compression": 1.0,
-     "note": "drift: 50/200 gap +2.5 ATR, 20-bar slope +0.0 ATR, 20-day range 100% of the 60-day, ATR 41th pct"
+     "note": "drift: 50/200 gap +2.5 ATR, 20-bar slope +0.1 ATR, 20-day range 100% of the 60-day, ATR 41th pct"
     },
     "7_session": {
      "bot": 7,
      "name": "session",
      "where": "US cash hours",
-     "hour_utc": 13.72,
-     "range_atr": 0.98,
+     "hour_utc": 15.97,
+     "range_atr": 0.73,
      "stretched": false,
-     "note": "13:43Z, cash hours; the last 18 hours have travelled 1.0 ATR"
+     "note": "15:58Z, cash hours; the last 18 hours have travelled 0.7 ATR"
     },
     "8_liquidity": {
      "bot": 8,
      "name": "liquidity",
-     "score": 90,
+     "score": 92,
      "thin": false,
-     "median_bar_atr": 0.09,
+     "median_bar_atr": 0.092,
      "flat_share": 0.01,
      "note": "median 15m bar is 0.09 ATR of the daily, 1% of bars printed flat"
     },
@@ -700,10 +721,10 @@
      "bot": 9,
      "name": "roll",
      "status": "ok",
-     "days": 11.4,
+     "days": 11.3,
      "when": "2026-11-10",
      "label": "monthly roll (approximate)",
-     "note": "monthly roll (approximate) in 11.4 days (2026-11-10) \u2014 comfortable"
+     "note": "monthly roll (approximate) in 11.3 days (2026-11-10) \u2014 comfortable"
     },
     "10_benchmark": {
      "bot": 10,
@@ -726,18 +747,19 @@
      "drawdown": 0.0,
      "day_pnl": 0.0,
      "streak": 0,
+     "buffer": 1000.0,
      "reasons": [],
      "note": "clear \u2014 $0 drawdown, $+0 today"
     }
    },
    "call": "SKIP",
-   "confidence": 41,
-   "why": "rejected: one NKD (no micro) stop is $4,169 against a $250 budget"
+   "confidence": 39,
+   "why": "rejected: one NKD (no micro) stop is $4,186 against a $250 budget; $1,000 of the $1,000 end-of-day buffer is left (0.2 stops); entering needs 2.0 and would leave $-3,186 (-0.8 stops)"
   },
   {
    "symbol": "NQ=F",
    "as": "MNQ",
-   "at": "2026-10-29T13:53:41Z",
+   "at": "2026-10-29T16:09:21Z",
    "regime": "drift",
    "governor": "run",
    "classic": false,
@@ -757,13 +779,13 @@
      "note": "price at the 20 EMA inside a rising 50/200 structure, bar closed against the trend",
      "metrics": {
       "range_z": -0.8,
-      "rvol": 0.43,
+      "rvol": 0.81,
       "gap_atr": -0.31,
       "atr_percentile": 61,
       "compression": 0.92,
-      "rsi": 43.7,
+      "rsi": 45.1,
       "trend": 1,
-      "close_pos": 0.31
+      "close_pos": 0.63
      }
     },
     "2_catalyst": {
@@ -777,7 +799,7 @@
      "degraded": true,
      "next_event": {
       "label": "month-end rebalance",
-      "in_min": 1806,
+      "in_min": 1670,
       "impact": "medium"
      },
      "headlines": [
@@ -803,11 +825,11 @@
      "label": "neutral",
      "tone": 0.0,
      "hype": 0,
-     "crowding": 32,
-     "stretch_atr": -0.73,
-     "rsi": 43.7,
+     "crowding": 36,
+     "stretch_atr": -0.54,
+     "rsi": 45.1,
      "basis": "headline lexicon + price crowding (no social feed, no model)",
-     "note": "headline tone +0.00 over 2 verified item(s), hype 0/100, price -0.7 ATR from the 20 EMA, RSI 44"
+     "note": "headline tone +0.00 over 2 verified item(s), hype 0/100, price -0.5 ATR from the 20 EMA, RSI 45"
     },
     "4_levels": {
      "bot": 4,
@@ -816,9 +838,9 @@
      "trend": "up",
      "aligned": true,
      "side": "long",
-     "entry": 29526.25,
-     "stop": 29228.3036,
-     "target": 31313.9286,
+     "entry": 29648.5,
+     "stop": 29350.5536,
+     "target": 31436.1786,
      "risk_pts": 297.9464,
      "reward_pts": 1787.6786,
      "rr": 6.0,
@@ -830,10 +852,10 @@
       "prior_week_high": 30178.0,
       "prior_week_low": 28987.0,
       "round_number": 30000.0,
-      "ema20": 29958.4735
+      "ema20": 29970.1164
      },
      "blockers": [],
-     "note": "up structure; long at 29,526.25 with stop 29,228.30 (297.95 pts) and target 31,313.93 (6.0:1)"
+     "note": "up structure; long at 29,648.50 with stop 29,350.55 (297.95 pts) and target 31,436.18 (6.0:1)"
     },
     "5_risk": {
      "bot": 5,
@@ -850,14 +872,19 @@
        "detail": "one MNQ stop is $599 against a $250 budget"
       },
       {
+       "check": "drawdown buffer",
+       "ok": false,
+       "detail": "$1,000 of the $1,000 end-of-day buffer is left (1.7 stops); entering needs 2.0 and would leave $401 (0.7 stops)"
+      },
+      {
        "check": "daily stop",
        "ok": true,
-       "detail": "today is $+0, stop at $-500"
+       "detail": "today is $+0, stop at $-400"
       },
       {
        "check": "position cap",
        "ok": true,
-       "detail": "0 of 2 allowed positions open"
+       "detail": "0 of 1 allowed positions open"
       },
       {
        "check": "correlation",
@@ -872,26 +899,28 @@
       {
        "check": "consistency",
        "ok": false,
-       "detail": "a full win sets your best day at $2,678 against a $625 limit \u2014 this bracket needs a $5,356 profit target to satisfy a 50% rule, or a partial exit near $1,339"
+       "detail": "a full win sets your best day at $2,678 against a $500 limit \u2014 this bracket needs a $5,356 profit target to satisfy a 40% rule, or a partial exit near $1,339"
       }
      ],
      "hard_blockers": [
-      "one MNQ stop is $599 against a $250 budget"
+      "one MNQ stop is $599 against a $250 budget",
+      "$1,000 of the $1,000 end-of-day buffer is left (1.7 stops); entering needs 2.0 and would leave $401 (0.7 stops)"
      ],
      "soft_flags": [
-      "a full win sets your best day at $2,678 against a $625 limit \u2014 this bracket needs a $5,356 profit target to satisfy a 50% rule, or a partial exit near $1,339",
+      "a full win sets your best day at $2,678 against a $500 limit \u2014 this bracket needs a $5,356 profit target to satisfy a 40% rule, or a partial exit near $1,339",
       "news feed stale \u2014 sizing kept, confidence will be marked down"
      ],
      "headroom": {
-      "daily_stop": 500.0,
-      "consistency": -2053.04
+      "daily_stop": 400.0,
+      "consistency": -2178.04,
+      "drawdown_buffer": 1000.0
      },
      "consistency": {
-      "limit": 625.0,
+      "limit": 500.0,
       "projected_best_day": 2678.04,
       "min_target_to_comply": 5356.08
      },
-     "note": "rejected: one MNQ stop is $599 against a $250 budget"
+     "note": "rejected: one MNQ stop is $599 against a $250 budget; $1,000 of the $1,000 end-of-day buffer is left (1.7 stops); entering needs 2.0 and would leave $401 (0.7 stops)"
     },
     "6_final": {
      "bot": 6,
@@ -899,8 +928,8 @@
      "call": "SKIP",
      "side": "long",
      "confidence": 37,
-     "why": "rejected: one MNQ stop is $599 against a $250 budget",
-     "falsifier": "a close back through 29,228.30 invalidates it; if month-end rebalance lands against the position before the target, take the stop, not a wider one",
+     "why": "rejected: one MNQ stop is $599 against a $250 budget; $1,000 of the $1,000 end-of-day buffer is left (1.7 stops); entering needs 2.0 and would leave $401 (0.7 stops)",
+     "falsifier": "a close back through 29,350.55 invalidates it; if month-end rebalance lands against the position before the target, take the stop, not a wider one",
      "desk": {
       "regime": "drift",
       "governor": "run",
@@ -922,8 +951,8 @@
       "continuation"
      ],
      "atr_percentile": 61,
-     "separation_atr": 2.77,
-     "slope_atr": 0.34,
+     "separation_atr": 2.78,
+     "slope_atr": 0.35,
      "compression": 0.92,
      "note": "drift: 50/200 gap +2.8 ATR, 20-bar slope +0.3 ATR, 20-day range 92% of the 60-day, ATR 61th pct"
     },
@@ -931,17 +960,17 @@
      "bot": 7,
      "name": "session",
      "where": "US cash hours",
-     "hour_utc": 13.72,
-     "range_atr": 1.3,
+     "hour_utc": 15.98,
+     "range_atr": 0.65,
      "stretched": false,
-     "note": "13:43Z, cash hours; the last 18 hours have travelled 1.3 ATR"
+     "note": "15:59Z, cash hours; the last 18 hours have travelled 0.7 ATR"
     },
     "8_liquidity": {
      "bot": 8,
      "name": "liquidity",
-     "score": 94,
+     "score": 98,
      "thin": false,
-     "median_bar_atr": 0.095,
+     "median_bar_atr": 0.101,
      "flat_share": 0.01,
      "note": "median 15m bar is 0.10 ATR of the daily, 1% of bars printed flat"
     },
@@ -949,10 +978,10 @@
      "bot": 9,
      "name": "roll",
      "status": "ok",
-     "days": 41.4,
+     "days": 41.3,
      "when": "2026-12-10",
      "label": "quarterly roll",
-     "note": "quarterly roll in 41.4 days (2026-12-10) \u2014 comfortable"
+     "note": "quarterly roll in 41.3 days (2026-12-10) \u2014 comfortable"
     },
     "10_benchmark": {
      "bot": 10,
@@ -975,18 +1004,19 @@
      "drawdown": 0.0,
      "day_pnl": 0.0,
      "streak": 0,
+     "buffer": 1000.0,
      "reasons": [],
      "note": "clear \u2014 $0 drawdown, $+0 today"
     }
    },
    "call": "SKIP",
    "confidence": 37,
-   "why": "rejected: one MNQ stop is $599 against a $250 budget"
+   "why": "rejected: one MNQ stop is $599 against a $250 budget; $1,000 of the $1,000 end-of-day buffer is left (1.7 stops); entering needs 2.0 and would leave $401 (0.7 stops)"
   },
   {
    "symbol": "GC=F",
    "as": "MGC",
-   "at": "2026-10-29T13:53:41Z",
+   "at": "2026-10-29T16:09:21Z",
    "regime": "drift",
    "governor": "run",
    "classic": false,
@@ -994,25 +1024,25 @@
     "1_opportunity": {
      "bot": 1,
      "name": "opportunity",
-     "score": 43,
+     "score": 44,
      "setup": "continuation",
      "setups": [
       {
        "name": "continuation",
-       "confidence": 66.0,
+       "confidence": 67.0,
        "note": "trend down, lower highs intact, gap +0.44 ATR"
       }
      ],
      "note": "trend down, lower highs intact, gap +0.44 ATR",
      "metrics": {
       "range_z": -0.6,
-      "rvol": 0.56,
+      "rvol": 0.73,
       "gap_atr": 0.44,
       "atr_percentile": 1,
       "compression": 0.35,
-      "rsi": 36.4,
+      "rsi": 36.2,
       "trend": -1,
-      "close_pos": 0.2
+      "close_pos": 0.15
      }
     },
     "2_catalyst": {
@@ -1039,9 +1069,9 @@
      "label": "neutral",
      "tone": 0.0,
      "hype": 0,
-     "crowding": 14,
-     "stretch_atr": -1.39,
-     "rsi": 36.4,
+     "crowding": 13,
+     "stretch_atr": -1.42,
+     "rsi": 36.2,
      "basis": "headline lexicon + price crowding (no social feed, no model)",
      "note": "headline tone +0.00 over 0 verified item(s), hype 0/100, price -1.4 ATR from the 20 EMA, RSI 36"
     },
@@ -1052,9 +1082,9 @@
      "trend": "down",
      "aligned": true,
      "side": "short",
-     "entry": 4037.8,
-     "stop": 4071.5107,
-     "target": 3835.5359,
+     "entry": 4035.3,
+     "stop": 4069.0107,
+     "target": 3833.0359,
      "risk_pts": 33.7107,
      "reward_pts": 202.2642,
      "rr": 6.0,
@@ -1066,10 +1096,10 @@
       "prior_week_high": 4164.2998,
       "prior_week_low": 3989.1001,
       "round_number": 4000.0,
-      "ema20": 4131.3348
+      "ema20": 4131.0967
      },
      "blockers": [],
-     "note": "down structure; short at 4,037.80 with stop 4,071.51 (33.71 pts) and target 3,835.54 (6.0:1)"
+     "note": "down structure; short at 4,035.30 with stop 4,069.01 (33.71 pts) and target 3,833.04 (6.0:1)"
     },
     "5_risk": {
      "bot": 5,
@@ -1086,14 +1116,19 @@
        "detail": "one MGC stop is $342 against a $250 budget"
       },
       {
+       "check": "drawdown buffer",
+       "ok": true,
+       "detail": "$1,000 of the $1,000 end-of-day buffer is left (2.9 stops); entering needs 2.0 and would leave $658 (1.9 stops)"
+      },
+      {
        "check": "daily stop",
        "ok": true,
-       "detail": "today is $+0, stop at $-500"
+       "detail": "today is $+0, stop at $-400"
       },
       {
        "check": "position cap",
        "ok": true,
-       "detail": "0 of 2 allowed positions open"
+       "detail": "0 of 1 allowed positions open"
       },
       {
        "check": "correlation",
@@ -1108,22 +1143,23 @@
       {
        "check": "consistency",
        "ok": false,
-       "detail": "a full win sets your best day at $1,513 against a $625 limit \u2014 this bracket needs a $3,025 profit target to satisfy a 50% rule, or a partial exit near $756"
+       "detail": "a full win sets your best day at $1,513 against a $500 limit \u2014 this bracket needs a $3,025 profit target to satisfy a 40% rule, or a partial exit near $756"
       }
      ],
      "hard_blockers": [
       "one MGC stop is $342 against a $250 budget"
      ],
      "soft_flags": [
-      "a full win sets your best day at $1,513 against a $625 limit \u2014 this bracket needs a $3,025 profit target to satisfy a 50% rule, or a partial exit near $756",
+      "a full win sets your best day at $1,513 against a $500 limit \u2014 this bracket needs a $3,025 profit target to satisfy a 40% rule, or a partial exit near $756",
       "news feed stale \u2014 sizing kept, confidence will be marked down"
      ],
      "headroom": {
-      "daily_stop": 500.0,
-      "consistency": -887.5
+      "daily_stop": 400.0,
+      "consistency": -1012.5,
+      "drawdown_buffer": 1000.0
      },
      "consistency": {
-      "limit": 625.0,
+      "limit": 500.0,
       "projected_best_day": 1512.5,
       "min_target_to_comply": 3025.0
      },
@@ -1136,14 +1172,14 @@
      "side": "short",
      "confidence": 37,
      "why": "rejected: one MGC stop is $342 against a $250 budget",
-     "falsifier": "a close back through 4,071.51 invalidates it; if Non-farm payrolls lands against the position before the target, take the stop, not a wider one",
+     "falsifier": "a close back through 4,069.01 invalidates it; if Non-farm payrolls lands against the position before the target, take the stop, not a wider one",
      "desk": {
       "regime": "drift",
       "governor": "run",
       "roll": "ok"
      },
      "inputs": {
-      "opportunity": 43,
+      "opportunity": 44,
       "catalyst": "unknown",
       "sentiment": "neutral",
       "risk": "reject"
@@ -1158,7 +1194,7 @@
       "continuation"
      ],
      "atr_percentile": 1,
-     "separation_atr": -1.1,
+     "separation_atr": -1.11,
      "slope_atr": -1.93,
      "compression": 0.35,
      "note": "drift: 50/200 gap -1.1 ATR, 20-bar slope -1.9 ATR, 20-day range 35% of the 60-day, ATR 1th pct"
@@ -1167,28 +1203,28 @@
      "bot": 7,
      "name": "session",
      "where": "US cash hours",
-     "hour_utc": 13.72,
-     "range_atr": 1.04,
+     "hour_utc": 15.98,
+     "range_atr": 0.81,
      "stretched": false,
-     "note": "13:43Z, cash hours; the last 18 hours have travelled 1.0 ATR"
+     "note": "15:59Z, cash hours; the last 18 hours have travelled 0.8 ATR"
     },
     "8_liquidity": {
      "bot": 8,
      "name": "liquidity",
      "score": 98,
      "thin": false,
-     "median_bar_atr": 0.104,
+     "median_bar_atr": 0.108,
      "flat_share": 0.01,
-     "note": "median 15m bar is 0.10 ATR of the daily, 1% of bars printed flat"
+     "note": "median 15m bar is 0.11 ATR of the daily, 1% of bars printed flat"
     },
     "9_roll": {
      "bot": 9,
      "name": "roll",
      "status": "ok",
-     "days": 41.4,
+     "days": 41.3,
      "when": "2026-12-10",
      "label": "quarterly roll",
-     "note": "quarterly roll in 41.4 days (2026-12-10) \u2014 comfortable"
+     "note": "quarterly roll in 41.3 days (2026-12-10) \u2014 comfortable"
     },
     "10_benchmark": {
      "bot": 10,
@@ -1211,6 +1247,7 @@
      "drawdown": 0.0,
      "day_pnl": 0.0,
      "streak": 0,
+     "buffer": 1000.0,
      "reasons": [],
      "note": "clear \u2014 $0 drawdown, $+0 today"
     }

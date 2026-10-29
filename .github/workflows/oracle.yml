@@ -1,0 +1,46 @@
+name: oracle
+
+# The 26,000-test book is a day-trade book: the signal is known at the close, the order
+# rests at a level during the next session, the exit is that session's close. So one run
+# after the futures close is enough to record it — the runner only processes completed
+# bars, so a missed run is caught up on the next one instead of being lost.
+on:
+  schedule:
+    - cron: "35 21 * * 1-5"     # 21:35 UTC, after the 21:00 CME close
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: oracle
+  cancel-in-progress: false
+
+jobs:
+  paper:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install numpy
+        run: python -m pip install --disable-pip-version-check numpy
+
+      - name: Record the book
+        run: python trading/paper_oracle.py
+
+      - name: Commit the record
+        run: |
+          git config user.name "desk-bot"
+          git config user.email "desk-bot@users.noreply.github.com"
+          git add trading/desk/oracle-forward.md trading/desk/oracle-state.json
+          if git diff --cached --quiet; then
+            echo "no change to record"
+          else
+            git commit -m "oracle paper record $(date -u +%Y-%m-%dT%H:%MZ)"
+            git push
+          fi
