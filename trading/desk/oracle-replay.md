@@ -1,6 +1,6 @@
 # Replay — the book over the last 40 sessions
 
-Updated 2026-10-29T20:33Z · started 2026-10-29T20:33:38Z · equity **$+12,159.44** across 71 closed trades
+Updated 2026-10-29T21:15Z · started 2026-10-29T21:15:20Z · equity **$+12,269.44** across 71 closed trades
 
 ## Orders standing for the next close
 
@@ -40,7 +40,7 @@ No levels to show — the book is empty or the next session has not started.
 | 2026-10-26 | NQ=F | nday_break-1 1.0A tp2 both | long | 29,326.00 | 29,437.25 | close | $+219.02 |
 | 2026-10-27 | NQ=F | nday_break-1 1.0A tp2 both | long | 29,572.00 | 29,812.00 | close | $+476.52 |
 | 2026-10-28 | NQ=F | nday_break-1 1.0A tp2 both | long | 29,881.25 | 29,979.50 | close | $+193.02 |
-| 2026-10-29 | NQ=F | nday_break-1 1.0A tp2 both | short | 29,674.25 | 29,273.25 | close | $+798.52 |
+| 2026-10-29 | NQ=F | nday_break-1 1.0A tp2 both | short | 29,674.25 | 29,218.25 | close | $+908.52 |
 | 2026-09-08 | NQ=F | nday_fade-5 0.75A tp1 both | short | 29,704.50 | 29,538.75 | close | $+328.02 |
 | 2026-09-11 | NQ=F | nday_fade-5 0.75A tp1 both | long | 29,043.25 | 29,331.26 | target | $+572.55 |
 | 2026-09-14 | NQ=F | nday_fade-5 0.75A tp1 both | long | 28,997.75 | 29,293.30 | target | $+587.63 |
@@ -84,8 +84,23 @@ No levels to show — the book is empty or the next session has not started.
 
 ## The record
 
-- 71 trades, 43 winners (61%), net **$+12,159.43**
+- 71 trades, 43 winners (61%), net **$+12,269.43**
 - worst drawdown $-1,654 against a $1,000 buffer
+
+**By rule**
+
+| rule | trades | win | net $ | worst DD |
+|---|---|---|---|---|
+| nday_break-1 1.0A tp2 both | 31 | 61% | $+5,098 | $-1,150 |
+| nday_fade-5 0.75A tp1 both | 20 | 60% | $+4,091 | $-1,654 |
+| nday_fade-5 0.5A tp1 both | 20 | 60% | $+3,081 | $-1,615 |
+
+## Evaluation tracker
+
+- net **$+12,269.43** of the **$1,250** target (+982%)
+- **$+13,269.43** of room left before the $1,000 end-of-day buffer is gone
+- 35 sessions traded, best day $+2,485.43, worst day $-1,291.14
+- consistency: best day is **20%** of profit (rule: ≤40%) → pass
 
 | date | market | rule | side | entry | exit | why | $ |
 |---|---|---|---|---|---|---|---|
@@ -117,6 +132,6 @@ No levels to show — the book is empty or the next session has not started.
 
 ## What size would $200 a day take?
 
-- 71 trades over 35 sessions, $+12,159.43 total, $+171.26/trade, median risk $759/contract
-- one contract at this rate: $+347/session
-- $200 a day would need 1 contracts = $437 of risk per stop, against a $1,000 buffer
+- 71 trades over 35 sessions, $+12,269.43 total, $+172.81/trade, median risk $759/contract
+- one contract at this rate: $+351/session
+- $200 a day would need 1 contracts = $433 of risk per stop, against a $1,000 buffer

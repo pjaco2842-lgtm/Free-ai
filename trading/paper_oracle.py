@@ -36,6 +36,7 @@ STATE = DESK / "oracle-state.json"
 FORWARD = DESK / "oracle-forward.md"
 REPLAY_MD = DESK / "oracle-replay.md"
 BUFFER = 1000.0
+TARGET = 1250.0           # evaluation target: +$1,250 before the buffer is gone
 CLOSE_UTC = 21.5          # the futures session closes ~21:00 UTC; treat 21:30 as complete
 KEYS = ("family", "n", "stop", "exit", "gap", "trend", "dow", "dir")
 
@@ -164,8 +165,12 @@ def write(state: dict, rows: list[dict], ledger_today: list[dict], path: Path, t
             dist = "—" if r["dist"] is None else f"{r['dist']:+,.2f}"
             lines.append(f"| {r['date']} | {r['market']} | {r['rule']} | {r['side']} | {lvl} "
                          f"| {dist} | ${r['risk']:,.0f} |")
+        worst = sum(r["risk"] for r in rows)
         lines += ["", "A level is a resting buy/sell stop: if the session trades through it, "
-                      "the trade is taken and the record shows it after the close."]
+                      "the trade is taken and the record shows it after the close.",
+                  "", f"**Worst case next session**: if every standing order fills and every "
+                  f"one stops out, that is **${worst:,.0f}** against the ${BUFFER:,.0f} "
+                  f"buffer. Not hidden."]
     else:
         lines.append("No levels to show — the book is empty or the next session has not started.")
 
@@ -192,6 +197,46 @@ def write(state: dict, rows: list[dict], ledger_today: list[dict], path: Path, t
                   f"- {len(led)} trades, {wins} winners ({100 * wins / len(led):.0f}%), "
                   f"net **${sum(usd):+,.2f}**",
                   f"- worst drawdown ${dd:,.0f} against a ${BUFFER:,.0f} buffer", ""]
+
+        # per rule, so a weak rule can be dropped on evidence instead of by feel
+        lines += ["**By rule**", "", "| rule | trades | win | net $ | worst DD |",
+                  "|---|---|---|---|---|"]
+        rules_seen: dict[str, list[dict]] = {}
+        for t in led:
+            rules_seen.setdefault(t["rule"], []).append(t)
+        for rule, ts in sorted(rules_seen.items(),
+                               key=lambda kv: -sum(x["usd"] for x in kv[1])):
+            u = [x["usd"] for x in ts]
+            e = p = d = 0.0
+            for x in u:
+                e += x
+                p = max(p, e)
+                d = min(d, e - p)
+            lines.append(f"| {rule} | {len(ts)} | "
+                         f"{100 * sum(1 for x in u if x > 0) / len(u):.0f}% "
+                         f"| ${sum(u):+,.0f} | ${d:,.0f} |")
+
+        # the evaluation, in the terms the account actually uses
+        by_day: dict[str, float] = {}
+        for t in led:
+            by_day[t["date"]] = by_day.get(t["date"], 0.0) + t["usd"]
+        net = sum(by_day.values())
+        best = max(by_day.values())
+        share = 100 * best / net if net > 0 else None
+        lines += ["", "## Evaluation tracker", "",
+                  f"- net **${net:+,.2f}** of the **${TARGET:,.0f}** target "
+                  f"({100 * net / TARGET:+.0f}%)"]
+        if BUFFER + net > 0:
+            lines.append(f"- **${BUFFER + net:+,.2f}** of room left before the "
+                         f"${BUFFER:,.0f} end-of-day buffer is gone")
+        else:
+            lines.append("- **the buffer is gone** — this attempt failed")
+        lines.append(f"- {len(by_day)} sessions traded, best day ${best:+,.2f}, "
+                     f"worst day ${min(by_day.values()):+,.2f}")
+        if share is not None:
+            lines.append(f"- consistency: best day is **{share:.0f}%** of profit "
+                         f"(rule: ≤40%) → {'pass' if share <= 40 else '**fail**'}")
+        lines.append("")
         lines += ["| date | market | rule | side | entry | exit | why | $ |",
                   "|---|---|---|---|---|---|---|---|"]
         for t in led[-25:]:
