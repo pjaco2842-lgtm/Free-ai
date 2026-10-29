@@ -23,6 +23,14 @@ on:
   schedule:
     - cron: "7 * * * *"
   workflow_dispatch:
+  # A push is a manual trigger that works even when the phone UI refuses to show
+  # the "Run workflow" button. The bot commits with GITHUB_TOKEN, which does not
+  # trigger workflows, so this cannot loop on itself.
+  push:
+    branches: [main]
+    paths:
+      - "trading/**"
+      - ".github/workflows/desk.yml"
 
 permissions:
   contents: write
