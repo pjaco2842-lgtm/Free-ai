@@ -1,7 +1,7 @@
 [
   {
-    "family": "prevclose_break",
-    "n": null,
+    "family": "nday_break",
+    "n": 1,
     "stop": 1.0,
     "exit": "tp2",
     "gap": "any",
@@ -9,39 +9,39 @@
     "dow": "all",
     "dir": "both",
     "symbol": "NQ=F",
-    "test_net": 59873.72,
-    "test_trades": 153,
-    "luck_pct": 100.0,
-    "plateau": 1.0
+    "test_net": 41450.82,
+    "test_trades": 979,
+    "luck_pct": 96.4,
+    "plateau": 0.75
   },
   {
-    "family": "prevclose_break",
-    "n": null,
-    "stop": 1.5,
+    "family": "nday_fade",
+    "n": 5,
+    "stop": 0.75,
     "exit": "tp1",
     "gap": "any",
     "trend": false,
     "dow": "all",
     "dir": "both",
     "symbol": "NQ=F",
-    "test_net": 59618.04,
-    "test_trades": 153,
+    "test_net": 37650.03,
+    "test_trades": 703,
     "luck_pct": 100.0,
-    "plateau": 1.0
+    "plateau": 0.83
   },
   {
-    "family": "prevclose_break",
-    "n": null,
-    "stop": 0.75,
-    "exit": "tp2",
+    "family": "nday_fade",
+    "n": 5,
+    "stop": 0.5,
+    "exit": "tp1",
     "gap": "any",
     "trend": false,
     "dow": "all",
     "dir": "both",
     "symbol": "NQ=F",
-    "test_net": 59066.1,
-    "test_trades": 153,
+    "test_net": 31389.23,
+    "test_trades": 703,
     "luck_pct": 100.0,
-    "plateau": 1.0
+    "plateau": 0.67
   }
 ]

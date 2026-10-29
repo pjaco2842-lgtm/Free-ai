@@ -217,19 +217,20 @@ def spec_mask(D: dict, spec: dict) -> np.ndarray:
 def leg_pnl(D: dict, leg: dict, stop_k: float, tp_r: float | None,
             pv: float, tick: float) -> tuple[np.ndarray, np.ndarray]:
     o, h, l, c = D["o"], D["h"], D["l"], D["c"]
+    ok_atr = ~np.isnan(D["atr_prev"])      # no stop size, no trade
     cost = 2 * (COMMISSION + tick * pv)
     side = leg["side"]
 
     if leg["mode"] == "open":
-        trig = leg["ok"].copy()
+        trig = leg["ok"] & ok_atr
         fill = o.copy()
     else:
         lvl = leg["level"]
         if leg["trig"] > 0:
-            trig = leg["ok"] & (h >= lvl)
+            trig = leg["ok"] & (h >= lvl) & ok_atr
             fill = np.where(o > lvl, o, lvl)
         else:
-            trig = leg["ok"] & (l <= lvl)
+            trig = leg["ok"] & (l <= lvl) & ok_atr
             fill = np.where(o < lvl, o, lvl)
 
     span = stop_k * D["atr_prev"]
@@ -270,11 +271,28 @@ def spec_bits(D: dict, spec: dict, legs: tuple[dict, dict] | None = None):
     elif spec["dir"] == "short":
         pL, tL = np.zeros(n), np.zeros(n, bool)
 
-    side = np.where(tL, 1, np.where(tS, -1, 0))
-    conflict = tL & tS        # both orders filled: unknowable order, so no trade
-    pnl = np.where(conflict, 0.0, pL + pS)
-    trig = (tL | tS) & ~conflict
-    side = np.where(conflict, 0, side)
+    conflict = tL & tS
+    at_open_L = np.zeros(n, bool)
+    at_open_S = np.zeros(n, bool)
+    if conflict.any():
+        # A session can fill both orders. Which filled first is unknowable from a daily
+        # bar, and taking only the days that ran one way is look-ahead — the first
+        # version did exactly that and produced a 93% win rate on 153 trades, which is
+        # the fingerprint of a rule that trades the days it already knows the answer to.
+        # The one resolution knowable at the entry price is which side the open was
+        # already beyond, so use that, and skip the day when the open says neither.
+        legL, legS = legs
+        if legL["mode"] == "stop":
+            at_open_L = ((D["o"] >= legL["level"]) if legL["trig"] > 0
+                         else (D["o"] <= legL["level"]))
+        if legS["mode"] == "stop":
+            at_open_S = ((D["o"] >= legS["level"]) if legS["trig"] > 0
+                         else (D["o"] <= legS["level"]))
+    sel_long = tL & (~tS | (at_open_L & ~at_open_S))
+    sel_short = tS & (~tL | (at_open_S & ~at_open_L))
+    pnl = np.where(sel_long, pL, 0.0) + np.where(sel_short, pS, 0.0)
+    trig = sel_long | sel_short
+    side = np.where(sel_long, 1, np.where(sel_short, -1, 0))
     return pnl, trig, side
 
 
@@ -297,6 +315,8 @@ def day_trade(D: dict, i: int, spec: dict, legs: tuple[dict, dict],
         return None
     o, h, l, c = (D[k][i] for k in ("o", "h", "l", "c"))
     atr = D["atr_prev"][i]
+    if np.isnan(atr):
+        return None
     p1c, s50 = D["c"][i - 1], D["sma50"][i - 1]
     if spec["gap"] == "with" and not o > p1c:
         return None
@@ -315,7 +335,7 @@ def day_trade(D: dict, i: int, spec: dict, legs: tuple[dict, dict],
         if not bool(leg["ok"][i]):
             continue
         if leg["mode"] == "open":
-            cands.append((side, o))
+            cands.append((side, o, True))
             continue
         lvl = leg["level"][i]
         if np.isnan(lvl):
@@ -323,16 +343,22 @@ def day_trade(D: dict, i: int, spec: dict, legs: tuple[dict, dict],
         if leg["trig"] > 0:
             if h < lvl:
                 continue
-            cands.append((side, max(o, lvl)))
+            cands.append((side, max(o, lvl), o >= lvl))
         else:
             if l > lvl:
                 continue
-            cands.append((side, min(o, lvl)))
+            cands.append((side, min(o, lvl), o <= lvl))
 
-    if not cands or len(cands) > 1:      # both sides filled is ambiguous: no trade
+    if not cands:
         return None
-
-    side, fill = cands[0]
+    if len(cands) == 1:
+        side, fill, _ = cands[0]
+    else:
+        # both orders would fill: keep the side the open was already beyond, else skip
+        at_open = [c for c in cands if c[2]]
+        if len(at_open) != 1:
+            return None
+        side, fill, _ = at_open[0]
     cost = 2 * (COMMISSION + tick * pv)
     span = spec["stop"] * atr
     stop = fill - side * span
@@ -534,12 +560,22 @@ def main() -> None:
               f"{tested_top} on a 95th-percentile luck gate")
 
     book = []
-    for g in gated[:args.top]:
+    seen = set()
+    for g in gated:
+        # nday_break n=1 and nr_break n=1 are the same rule (the prior session's range),
+        # so identical results are the same trade twice, not two strategies. Dedupe them
+        # or the paper book multiplies one position by however many aliases score top.
+        key = (g["symbol"], g["test"]["trades"], round(g["test"]["net"], 2))
+        if key in seen:
+            continue
+        seen.add(key)
         book.append({**g["spec"], "symbol": g["symbol"],
                      "test_net": round(g["test"]["net"], 2),
                      "test_trades": g["test"]["trades"],
                      "luck_pct": round(g["luck"]["pct"], 1),
                      "plateau": round(g["plateau"], 2)})
+        if len(book) >= args.top:
+            break
     unvalidated = False
     if not book:
         unvalidated = True
