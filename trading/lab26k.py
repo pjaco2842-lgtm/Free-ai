@@ -549,6 +549,8 @@ def main() -> None:
     ap.add_argument("--symbols", default="NQ=F")
     ap.add_argument("--risk-cap", type=float, default=250.0,
                     help="per-stop dollars a buffer-safe variant may risk")
+    ap.add_argument("--exclude-family", default="",
+                    help="families kept out of the main book, comma separated")
     ap.add_argument("--runs", type=int, default=500)
     ap.add_argument("--top", type=int, default=3)
     ap.add_argument("--candidates", type=int, default=60,
@@ -600,7 +602,11 @@ def main() -> None:
         print(f"  chance alone would pass about {0.05 * tested_top:.0f} of those "
               f"{tested_top} on a 95th-percentile luck gate")
 
-    book = pick_book(gated, data, args.top)
+    excluded = {f.strip() for f in args.exclude_family.split(",") if f.strip()}
+    book_pool = [g for g in gated if g["spec"]["family"] not in excluded]
+    book = pick_book(book_pool, data, args.top)
+    print(f"  book families: {', '.join(sorted({b['family'] for b in book})) or 'none'}"
+          + (f" (excluded: {', '.join(sorted(excluded))})" if excluded else ""))
 
     # The account this is for has a $1,000 end-of-day buffer, so a "best net" book whose
     # stop is $1,155 a trade has already failed before it starts. This is the same search

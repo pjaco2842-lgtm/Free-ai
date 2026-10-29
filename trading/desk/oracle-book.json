@@ -17,23 +17,6 @@
     "plateau": 0.75
   },
   {
-    "family": "nday_fade",
-    "n": 5,
-    "stop": 0.75,
-    "exit": "tp1",
-    "gap": "any",
-    "trend": false,
-    "dow": "all",
-    "dir": "both",
-    "symbol": "NQ=F",
-    "test_net": 37650.03,
-    "test_trades": 703,
-    "test_win": 55.8,
-    "med_risk": 755.22,
-    "luck_pct": 100.0,
-    "plateau": 0.83
-  },
-  {
     "family": "nr_break",
     "n": 2,
     "stop": 1.0,

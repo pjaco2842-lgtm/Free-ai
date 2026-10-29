@@ -1,6 +1,6 @@
 # The 26,000-strategy test
 
-Generated 2026-10-29T22:16Z · 28,350 configurations per market · one micro contract
+Generated 2026-10-29T22:28Z · 28,350 configurations per market · one micro contract
 
 Train ≤ 2019 · test 2020-2024 · recent 2025 onward.
 
@@ -20,21 +20,21 @@ Fill model: a stop at a derived level fills at the level, or at the open when th
 
 | market | family | n | stop | exit | dir | gap | trend | dow | train $ | test $ | trades | win | luck pct | plateau | 2025+ $ |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| NQ=F | nday_break | 1 | 1.0A | tp2 | both | any | no | all | $+11,023 | $+41,451 | 979 | 56% | 96 | 75% | $+23,047 |
-| NQ=F | nr_break | 1 | 1.0A | tp2 | both | any | no | all | $+11,023 | $+41,451 | 979 | 56% | 95 | 100% | $+23,047 |
+| NQ=F | nday_break | 1 | 1.0A | tp2 | both | any | no | all | $+11,023 | $+41,451 | 979 | 56% | 96 | 75% | $+23,105 |
+| NQ=F | nr_break | 1 | 1.0A | tp2 | both | any | no | all | $+11,023 | $+41,451 | 979 | 56% | 95 | 100% | $+23,105 |
 | NQ=F | nday_fade | 5 | 0.75A | tp1 | both | any | no | all | $+14,499 | $+37,650 | 703 | 56% | 100 | 83% | $+20,752 |
 | NQ=F | nday_fade | 5 | 0.5A | tp1 | both | any | no | all | $+8,134 | $+31,389 | 703 | 58% | 100 | 67% | $+19,045 |
-| NQ=F | nr_break | 2 | 1.0A | tp2 | both | any | no | all | $+13,977 | $+31,247 | 490 | 58% | 100 | 100% | $+23,942 |
-| NQ=F | nday_fade | 1 | 0.75A | tp1 | long | any | no | all | $+11,372 | $+31,093 | 561 | 58% | 100 | 80% | $+14,576 |
-| NQ=F | nr_break | 2 | 1.0A | close | both | any | no | all | $+13,967 | $+29,927 | 490 | 58% | 99 | 100% | $+24,371 |
+| NQ=F | nr_break | 2 | 1.0A | tp2 | both | any | no | all | $+13,977 | $+31,247 | 490 | 58% | 100 | 100% | $+24,001 |
+| NQ=F | nday_fade | 1 | 0.75A | tp1 | long | any | no | all | $+11,372 | $+31,093 | 561 | 58% | 100 | 80% | $+14,518 |
+| NQ=F | nr_break | 2 | 1.0A | close | both | any | no | all | $+13,967 | $+29,927 | 490 | 58% | 99 | 100% | $+24,430 |
 | NQ=F | nday_break | 1 | 1.0A | tp2 | both | with | no | all | $+8,619 | $+29,281 | 530 | 59% | 96 | 75% | $+21,644 |
 | NQ=F | nr_break | 1 | 1.0A | tp2 | both | with | no | all | $+8,619 | $+29,281 | 530 | 59% | 95 | 100% | $+21,644 |
-| NQ=F | nday_fade | 1 | 0.5A | tp1 | both | any | yes | all | $+5,720 | $+28,506 | 554 | 59% | 100 | 80% | $+6,535 |
-| NQ=F | nr_break | 2 | 1.0A | tp1 | both | any | no | all | $+13,732 | $+28,220 | 490 | 58% | 95 | 100% | $+22,196 |
-| NQ=F | nday_fade | 2 | 0.75A | tp1 | long | any | no | all | $+13,328 | $+28,121 | 421 | 58% | 100 | 83% | $+18,238 |
-| NQ=F | nday_fade | 1 | 0.5A | tp1 | long | any | no | all | $+4,662 | $+27,810 | 561 | 59% | 100 | 80% | $+5,465 |
+| NQ=F | nday_fade | 1 | 0.5A | tp1 | both | any | yes | all | $+5,720 | $+28,506 | 554 | 59% | 100 | 80% | $+6,476 |
+| NQ=F | nr_break | 2 | 1.0A | tp1 | both | any | no | all | $+13,732 | $+28,220 | 490 | 58% | 95 | 100% | $+22,254 |
+| NQ=F | nday_fade | 2 | 0.75A | tp1 | long | any | no | all | $+13,328 | $+28,121 | 421 | 58% | 100 | 83% | $+18,180 |
+| NQ=F | nday_fade | 1 | 0.5A | tp1 | long | any | no | all | $+4,662 | $+27,810 | 561 | 59% | 100 | 80% | $+5,407 |
 | NQ=F | nday_fade | 10 | 0.75A | tp1 | both | any | no | all | $+11,207 | $+27,401 | 538 | 55% | 100 | 83% | $+17,642 |
-| NQ=F | nday_fade | 1 | 0.75A | tp1 | both | any | yes | all | $+11,401 | $+26,089 | 554 | 56% | 100 | 80% | $+5,260 |
+| NQ=F | nday_fade | 1 | 0.75A | tp1 | both | any | yes | all | $+11,401 | $+26,089 | 554 | 56% | 100 | 80% | $+5,202 |
 
 ## Buffer-safe challenger — win rate first
 
@@ -109,9 +109,8 @@ All 56,700 configurations, including the losers — otherwise this is just a lis
 
 | market | rule | 2009 | 2010 | 2011 | 2012 | 2013 | 2014 | 2015 | 2016 | 2017 | 2018 | 2019 | 2020 | 2021 | 2022 | 2023 | 2024 | 2025 | 2026 |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| NQ=F | nday_break-1 1.0A tp2 both | $+57 (171) | $-593 (201) | $+1,557 (198) | $+710 (191) | $+48 (192) | $+1,134 (182) | $+1,578 (204) | $-404 (183) | $-515 (191) | $+4,059 (195) | $+3,392 (190) | $-1,747 (196) | $+587 (206) | $+16,929 (192) | $+11,760 (194) | $+13,923 (191) | $+10,904 (187) | $+12,143 (167) |
-| NQ=F | nday_fade-5 0.75A tp1 both | $+1,087 (137) | $+710 (146) | $+1,225 (153) | $+622 (150) | $+967 (140) | $+720 (149) | $+812 (133) | $+2,028 (132) | $+1,543 (148) | $+4,188 (139) | $+597 (127) | $+8,119 (146) | $+9,284 (140) | $+12,159 (141) | $+7,998 (142) | $+88 (134) | $+8,199 (136) | $+12,553 (108) |
-| NQ=F | nr_break-2 1.0A tp2 both | $+485 (85) | $+1 (107) | $+1,794 (99) | $+761 (90) | $+328 (97) | $+1,231 (91) | $+764 (102) | $+38 (87) | $+308 (100) | $+4,339 (101) | $+3,927 (99) | $+290 (104) | $+504 (109) | $+9,575 (83) | $+6,293 (97) | $+14,585 (97) | $+13,468 (97) | $+10,474 (77) |
+| NQ=F | nday_break-1 1.0A tp2 both | $+57 (171) | $-593 (201) | $+1,557 (198) | $+710 (191) | $+48 (192) | $+1,134 (182) | $+1,578 (204) | $-404 (183) | $-515 (191) | $+4,059 (195) | $+3,392 (190) | $-1,747 (196) | $+587 (206) | $+16,929 (192) | $+11,760 (194) | $+13,923 (191) | $+10,904 (187) | $+12,201 (167) |
+| NQ=F | nr_break-2 1.0A tp2 both | $+485 (85) | $+1 (107) | $+1,794 (99) | $+761 (90) | $+328 (97) | $+1,231 (91) | $+764 (102) | $+38 (87) | $+308 (100) | $+4,339 (101) | $+3,927 (99) | $+290 (104) | $+504 (109) | $+9,575 (83) | $+6,293 (97) | $+14,585 (97) | $+13,468 (97) | $+10,533 (77) |
 
 ## Replay check
 
@@ -119,8 +118,7 @@ The vectorised sweep and the scalar replay the paper trader uses must agree.
 
 | market | sweep | scalar replay | match |
 |---|---|---|---|
-| NQ=F | $+75,521 | $+75,521 | yes |
-| NQ=F | $+72,901 | $+72,901 | yes |
-| NQ=F | $+69,166 | $+69,166 | yes |
+| NQ=F | $+75,580 | $+75,580 | yes |
+| NQ=F | $+69,225 | $+69,225 | yes |
 
 3,489 configurations were positive in both halves out of 56,700 tested. With this many trials, some win by chance; the plateau and luck gates exist to throw those out, and the number that survives them is the honest answer to "how many real edges are in here".
