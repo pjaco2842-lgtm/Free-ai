@@ -1,9 +1,21 @@
 {
   "created": "2026-10-29T20:33:39Z",
   "last": {
-    "NQ=F": "2026-10-28"
+    "NQ=F": "2026-10-29"
   },
-  "ledger": [],
-  "equity": 0.0,
+  "ledger": [
+    {
+      "date": "2026-10-29",
+      "market": "NQ=F",
+      "rule": "nday_break-1 1.0A tp2 both",
+      "side": "short",
+      "entry": 29180.0,
+      "exit": 29145.0,
+      "why": "close",
+      "risk": 1154.57,
+      "usd": 66.52
+    }
+  ],
+  "equity": 66.52,
   "halted": false
 }
