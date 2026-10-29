@@ -23,7 +23,9 @@ import argparse
 import json
 import statistics
 import sys
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
+
+import numpy as np
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -95,9 +97,35 @@ def step(sym: str, D: dict, specs: list[dict], state: dict, upto: int) -> list[d
     return fresh
 
 
+PAD_KEYS = ("o", "h", "l", "c", "atr", "atr_prev", "sma20", "sma50", "rng", "body")
+
+
+def pad(D: dict) -> dict:
+    """Add one placeholder session so tomorrow's levels exist before tomorrow's bar does.
+
+    Levels are built from the bars *before* the trade, so a placeholder cannot leak into
+    them: the rolling extremes are recomputed from the real last n bars explicitly.
+    """
+    P = dict(D)
+    for k in PAD_KEYS:
+        P[k] = np.append(D[k], D[k][-1])
+    P["dow"] = np.append(D["dow"], D["dow"][-1])
+    P["years"] = np.append(D["years"], D["years"][-1])
+    P["hiN"] = {n: np.append(v, np.max(D["h"][-n:])) for n, v in D["hiN"].items()}
+    P["loN"] = {n: np.append(v, np.min(D["l"][-n:])) for n, v in D["loN"].items()}
+    nxt = datetime.strptime(D["dates"][-1], "%Y-%m-%d") + timedelta(days=1)
+    while nxt.weekday() >= 5:
+        nxt += timedelta(days=1)
+    P["dates"] = D["dates"] + [nxt.strftime("%Y-%m-%d")]
+    return P
+
+
 def watch(D: dict, specs: list[dict], upto: int) -> list[dict]:
-    """The orders standing for the session in progress (or the next one)."""
-    if upto < 1 or upto >= len(D["dates"]):
+    """The orders standing for the session in progress, or for the next one."""
+    if upto >= len(D["dates"]):
+        D = pad(D)
+        upto = len(D["dates"]) - 1
+    if upto < 1:
         return []
     pv = MARKETS[D["symbol"]][1]
     atr = D["atr"][upto - 1]
@@ -255,6 +283,8 @@ def main() -> None:
     ap.add_argument("--out", default=str(FORWARD), help="report file for that book")
     args = ap.parse_args()
     book_path, state_path, out_path = Path(args.book), Path(args.state), Path(args.out)
+    if args.replay and Path(args.out) == FORWARD:
+        out_path = REPLAY_MD          # a replay must never overwrite the forward record
 
     if not book_path.exists():
         raise SystemExit(f"no {book_path.name} — run trading/lab26k.py first")
