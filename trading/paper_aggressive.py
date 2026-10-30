@@ -19,8 +19,25 @@ Why catch-up instead of a 15-minute cron
 Every run replays only the closed bars it has not seen yet, in order, incrementing
 each open position's bar counter exactly once. So a run every 15 minutes, every hour,
 or once a week produces the *same* trade record — the schedule changes freshness, not
-honesty. That is what makes this a paper record rather than a backtest: from the
-moment the state file is created, no bar can be revisited.
+honesty. That is what makes this a paper record rather than a backtest: a bar that has
+been settled and passed is not traded into, and nothing is picked after the fact.
+
+Which bars count as "closed"
+---------------------------
+The cron fires on the quarter hour, the exact moment the newest 15-minute candle closes,
+when the feed is still writing it — the same half-formed-bar trap the daily book hit. So
+a bar is only tradable once it has been closed for 30 minutes (`SETTLE_SEC`), judged from
+its own timestamp rather than the runner's clock. The cost is always working two bars
+behind. That is free here.
+
+The one bar that can be revisited
+---------------------------------
+The newest recorded bar is compared against the feed on the next run. If its prices moved,
+the desk restores the state from just before that bar and replays it through the same code
+that recorded it, so a trade the revised bar no longer supports is deleted and one it now
+supports appears. That is the only revision this file can catch: anything older is frozen,
+and a bar that vanishes from the feed is left alone rather than guessed at. Corrections are
+shown on the page, before and after, instead of being quietly swapped.
 
     python3 trading/paper_aggressive.py --replay 10   # last 10 sessions, state untouched
     python3 trading/paper_aggressive.py               # one forward step, saves the ledger
@@ -29,9 +46,11 @@ moment the state file is created, no bar can be revisited.
 from __future__ import annotations
 
 import argparse
+import copy
 import json
 import statistics
 import sys
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -51,6 +70,14 @@ RULE_SRC = DESK / "aggressive.json"
 BUFFER = 1000.0                 # the end-of-day drawdown the account dies at
 US_HOURS = list(range(13, 21))  # 13:00-20:00 UTC
 MAX_OPEN = 2
+
+# A bar is only trusted once it has been closed for this long. The cron fires on the
+# quarter hour, which is exactly when the newest bar has just closed and the feed is
+# still writing it — trusting that bar immediately is how a half-formed candle becomes
+# a recorded trade. Being 30 minutes late costs nothing; the record is not a live order.
+SETTLE_SEC = 30 * 60
+TF_SEC = {"1m": 60, "5m": 300, "15m": 900, "1h": 3600}
+KEEP_FIXES = 10                 # how many corrections stay on the page
 
 DEFAULT = {"fast": 9, "slow": 21, "trend": 100, "rsi_len": 14, "tlen": 99,
            "nbars": 20, "lo": 40, "hi": 60, "stop": 1.0, "target": 3.0,
@@ -89,11 +116,83 @@ def rules() -> dict:
 def blank_state() -> dict:
     return {"created": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
             "last": {}, "open": {}, "ledger": [], "equity": 0.0,
-            "max_open": MAX_OPEN, "halted": False}
+            "max_open": MAX_OPEN, "halted": False, "undo": {}, "fixes": []}
 
 
-def step(sym: str, rule: dict, bars: list, state: dict) -> list[dict]:
-    """Advance one market through every closed bar it has not seen. Returns new trades."""
+def fingerprint(b) -> list[float]:
+    """The four prices a trade is decided on, rounded so a feed's float noise is not a revision."""
+    return [round(b.o, 4), round(b.h, 4), round(b.l, 4), round(b.c, 4)]
+
+
+def iso(ts: int) -> str:
+    return datetime.fromtimestamp(ts, tz=timezone.utc).strftime("%Y-%m-%d %H:%M")
+
+
+def complete_len(bars: list, tf: str, now_ts: float | None = None) -> int:
+    """How many bars are finished *and* past the settle window.
+
+    Bars are judged by their own timestamp, never by the runner's clock, so a delayed or
+    early run reads the same history. A bar stamped in the future is not a closed bar and
+    stops the count — that is the phantom-order guard.
+    """
+    if not bars:
+        return 0
+    now_ts = time.time() if now_ts is None else now_ts
+    span, cutoff = TF_SEC[tf], now_ts - SETTLE_SEC
+    n = 0
+    for b in bars:
+        if b.t > now_ts or b.t + span > cutoff:
+            break
+        n += 1
+    return n
+
+
+def remember(state: dict, sym: str, bars: list, i: int) -> None:
+    """Keep the state as it was *before* bar i, so a later revision can undo that bar."""
+    snap = {k: copy.deepcopy(v) for k, v in state.items() if k not in ("undo", "fixes")}
+    state.setdefault("undo", {})[sym] = {
+        "ts": bars[i].t, "prev": bars[i - 1].t if i else 0,
+        "bar": fingerprint(bars[i]), "state": snap}
+
+
+def recheck(sym: str, rule: dict, bars: list, state: dict, upto: int) -> list[dict]:
+    """Did the feed revise the bar this desk acted on last? If so, rewind and replay it.
+
+    Only the newest recorded bar is re-examined, and only once — on the run after the one
+    that recorded it. A revision that arrives later than that is not caught.
+    """
+    u = (state.get("undo") or {}).get(sym)
+    if not u:
+        return []
+    bar = next((b for b in bars if b.t == u["ts"]), None)
+    if bar is None:
+        return []                       # gone from the feed: nothing to compare, leave it alone
+    now_fp = fingerprint(bar)
+    if now_fp == u["bar"]:
+        return []
+
+    before = [t for t in state["ledger"] if t["market"] == sym and t["ts"] >= u["ts"]]
+    before_open = copy.deepcopy(state["open"].get(sym))
+    was_halted = state.get("halted", False)
+
+    state.update(copy.deepcopy(u["state"]))   # back to just before that bar
+    state["last"][sym] = u["prev"]
+    state["undo"] = {k: v for k, v in (state.get("undo") or {}).items() if k != sym}
+    state["halted"] = was_halted or state.get("halted", False)
+
+    step(sym, rule, bars, state, upto)         # same code path that recorded it, so the two cannot drift
+
+    after = [t for t in state["ledger"] if t["market"] == sym and t["ts"] >= u["ts"]]
+    fix = {"market": sym, "bar": u["ts"], "when": iso(u["ts"]),
+           "was": u["bar"], "now": now_fp, "before": before, "after": after,
+           "before_open": before_open, "after_open": copy.deepcopy(state["open"].get(sym))}
+    state.setdefault("fixes", []).append(fix)
+    state["fixes"] = state["fixes"][-KEEP_FIXES:]
+    return [fix]
+
+
+def step(sym: str, rule: dict, bars: list, state: dict, upto: int) -> list[dict]:
+    """Advance one market through every settled bar it has not seen. Returns new trades."""
     p = rule["params"]
     _, pv, tick = MARKETS[sym]
     cost = 2 * (COMMISSION + tick * pv)
@@ -101,12 +200,15 @@ def step(sym: str, rule: dict, bars: list, state: dict) -> list[dict]:
 
     last = state["last"].get(sym, 0)
     start = next((i for i, b in enumerate(bars) if b.t > last), None)
-    if start is None:
+    if start is None or upto < 3:
         return []
 
     fresh: list[dict] = []
-    for i in range(max(start, 2), len(bars)):
+    for i in range(max(start, 2), upto):
         b = bars[i]
+        if i == upto - 1:
+            # the newest bar about to be trusted — keep the state without it
+            remember(state, sym, bars, i)
         pos = state["open"].get(sym)
 
         if pos:
@@ -150,7 +252,8 @@ def step(sym: str, rule: dict, bars: list, state: dict) -> list[dict]:
                     "stop": entry - side * a * p["stop"],
                     "target": entry + side * a * p["target"], "held": 0}
 
-    state["last"][sym] = bars[-1].t
+    if upto >= 3 and bars[upto - 1].t > state["last"].get(sym, 0):
+        state["last"][sym] = bars[upto - 1].t
     return fresh
 
 
@@ -177,6 +280,46 @@ def scale_table(ledger: list[dict]) -> list[str]:
     return lines
 
 
+def px_row(fp: list[float]) -> str:
+    return " / ".join(f"{x:,.2f}" for x in fp)
+
+
+def pos_txt(pos: dict | None) -> str:
+    if not pos:
+        return "flat"
+    return (f"{('long' if pos['side'] > 0 else 'short')} @ {pos['entry']:,.2f}, "
+            f"stop {pos['stop']:,.2f}, target {pos['target']:,.2f}")
+
+
+def corrections_block(state: dict) -> list[str]:
+    """The revisions the desk had to untangle, or nothing at all."""
+    fixes = state.get("fixes") or []
+    if not fixes:
+        return []
+    out = ["## Corrections", "",
+           "The feed revised a bar *after* the desk had already acted on it, so the desk went "
+           "back to just before that bar and replayed it from the bar as it now stands. The "
+           "record below uses the corrected number; the old one stays on this page instead of "
+           "being quietly swapped.", ""]
+    for f in reversed(fixes):
+        out += [f"**{f['when']} UTC · {f['market']}** — bar was {px_row(f['was'])}, "
+                f"now {px_row(f['now'])} (open/high/low/close)", ""]
+        if f["before"] or f["after"]:
+            out += ["| | side | entry | exit | why | held | $ |",
+                    "|---|---|---|---|---|---|---|"]
+            for label, trades in (("before", f["before"]), ("after", f["after"])):
+                for t in trades:
+                    out.append(f"| {label} | {t['side']} | {t['entry']:,.2f} | {t['exit']:,.2f} "
+                               f"| {t['why']} | {t['held']} | ${t['usd']:+,.2f} |")
+        elif f["before_open"] != f["after_open"]:
+            out.append(f"Position: before {pos_txt(f['before_open'])}, "
+                       f"after {pos_txt(f['after_open'])}.")
+        else:
+            out.append("No trade either way — the bar moved, the position did not.")
+        out.append("")
+    return out
+
+
 def write_report(state: dict, rules: dict, bars_by: dict, path: Path, title: str) -> None:
     led = state["ledger"]
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
@@ -187,6 +330,7 @@ def write_report(state: dict, rules: dict, bars_by: dict, path: Path, title: str
              f"started {state['created']} · equity ${state['equity']:+,.2f} "
              f"({len(led)} closed trades)", ""]
 
+    lines += corrections_block(state)
     lines += ["## Right now", ""]
     if state.get("halted"):
         lines.append("**Halted**: equity reached the $1,000 buffer. No new entries.")
@@ -272,6 +416,13 @@ def main() -> None:
         if len(b) < 120:
             raise SystemExit(f"{sym}: only {len(b)} bars, cannot evaluate")
 
+    # Only bars that have closed *and* settled are tradable. Everything below works from
+    # this count, so no run can act on a candle the feed is still writing.
+    upto = {sym: complete_len(bars, rule[sym]["tf"]) for sym, bars in bars_by.items()}
+    for sym, n in upto.items():
+        if n < 3:
+            raise SystemExit(f"{sym}: only {n} settled {rule[sym]['tf']} bars, cannot evaluate")
+
     if args.replay:
         state = blank_state()
         for sym, bars in bars_by.items():
@@ -280,7 +431,7 @@ def main() -> None:
             first = next(i for i, x in enumerate(bars) if day(x.t) in keep)
             state["last"][sym] = bars[first - 1].t if first else 0
         for sym in rule:
-            step(sym, rule[sym], bars_by[sym], state)
+            step(sym, rule[sym], bars_by[sym], state, upto[sym])
         write_report(state, rule, bars_by, REPLAY_MD,
                      f"Paper replay — last {args.replay} sessions")
         led = state["ledger"]
@@ -295,18 +446,23 @@ def main() -> None:
 
     state = json.loads(STATE.read_text()) if STATE.exists() else blank_state()
     if not state["last"]:
-        # first ever run: start from the newest closed bar, so nothing historical is
+        # first ever run: start from the newest settled bar, so nothing historical is
         # ever recorded as forward
         for sym, bars in bars_by.items():
-            state["last"][sym] = bars[-1].t
-        print("  state created — forward record starts with the next closed bar")
+            state["last"][sym] = bars[upto[sym] - 1].t
+        print("  state created — forward record starts with the next settled bar")
     else:
         for sym in rule:
             state.setdefault("last", {}).setdefault(sym, 0)
+        # re-read the newest bar this desk acted on before trusting it again
+        for sym in rule:
+            for f in recheck(sym, rule[sym], bars_by[sym], state, upto[sym]):
+                moved = f"{len(f['before'])} trade(s) → {len(f['after'])}"
+                print(f"  corrected {sym} {f['when']}: bar revised ({moved})")
 
     before = len(state["ledger"])
     for sym in rule:
-        step(sym, rule[sym], bars_by[sym], state)
+        step(sym, rule[sym], bars_by[sym], state, upto[sym])
 
     for t in state["ledger"][before:]:
         print(f"  {t['when']} {t['market']} {t['side']} {t['entry']:,.2f} -> "

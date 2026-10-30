@@ -1,33 +1,32 @@
 # Paper replay — last 10 sessions
 
-Updated 2026-10-29T19:27Z · started 2026-10-29T19:27:58Z · equity $-282.42 (28 closed trades)
+Updated 2026-10-30T15:31Z · started 2026-10-30T15:31:36Z · equity $-179.44 (27 closed trades)
 
 ## Right now
 
 | market | side | opened | entry | stop | target | bars held |
 |---|---|---|---|---|---|---|
-| CL=F | long | 2026-10-29 17:15 | 101.86 | 101.38 | 103.31 | 8 |
+| GC=F | short | 2026-10-30 14:00 | 3,929.00 | 3,939.55 | 3,897.35 | 3 |
 
-**GC=F** 15m breakout: close 4,021.50, RSI 42, TRAMA 4,047.90, ATR 6.29, last signal 4 bars ago
+**GC=F** 15m breakout: close 3,916.50, RSI 22, TRAMA 3,975.46, ATR 13.29, last signal 5 bars ago
 
-**CL=F** 15m breakout: close 102.28, RSI 64, TRAMA 101.44, ATR 0.37, last signal 3 bars ago
+**CL=F** 15m breakout: close 104.22, RSI 56, TRAMA 102.10, ATR 0.43, no signal in the last 60 bars
 
 ## Today (UTC)
 
 | time | market | side | entry | exit | why | $ |
 |---|---|---|---|---|---|---|
-| 2026-10-29 17:00 | GC=F | short | 4,026.90 | 4,036.82 | stop | $-103.69 |
-| 2026-10-29 19:00 | GC=F | short | 4,018.20 | 4,025.79 | stop | $-80.41 |
-| 2026-10-29 14:00 | CL=F | short | 100.79 | 101.17 | stop | $-42.05 |
+| 2026-10-30 13:45 | GC=F | short | 3,954.20 | 3,927.86 | target | $+258.88 |
+| 2026-10-30 01:30 | CL=F | long | 101.86 | 103.31 | target | $+140.16 |
 
-Day total **$-226.15** across 3 trades.
+Day total **$+399.04** across 2 trades.
 
 ## The record so far
 
-- 28 trades, 6 winners (21%), net **$-282.42**
-- $-10.09 per trade, median risk $63
-- worst drawdown $-942, 9 sessions
-- longs 15 ($-397), shorts 13 ($+115)
+- 27 trades, 6 winners (22%), net **$-179.44**
+- $-6.65 per trade, median risk $64
+- worst drawdown $-762, 9 sessions
+- longs 14 ($-335), shorts 13 ($+156)
 
 | when | market | side | entry | exit | why | held | $ |
 |---|---|---|---|---|---|---|---|
@@ -43,8 +42,7 @@ Day total **$-226.15** across 3 trades.
 | 2026-10-28 20:15 | GC=F | long | 4,089.50 | 4,075.19 | stop | 1 | $-147.55 |
 | 2026-10-29 17:00 | GC=F | short | 4,026.90 | 4,036.82 | stop | 3 | $-103.69 |
 | 2026-10-29 19:00 | GC=F | short | 4,018.20 | 4,025.79 | stop | 4 | $-80.41 |
-| 2026-10-19 17:00 | CL=F | long | 98.16 | 99.46 | target | 4 | $+125.38 |
-| 2026-10-19 18:15 | CL=F | long | 99.25 | 98.83 | stop | 4 | $-46.84 |
+| 2026-10-30 13:45 | GC=F | short | 3,954.20 | 3,927.86 | target | 2 | $+258.88 |
 | 2026-10-20 15:00 | CL=F | short | 95.73 | 96.48 | stop | 2 | $-79.12 |
 | 2026-10-23 15:00 | CL=F | long | 102.40 | 101.96 | stop | 5 | $-48.05 |
 | 2026-10-23 16:45 | CL=F | long | 103.14 | 102.61 | stop | 4 | $-57.19 |
@@ -56,15 +54,16 @@ Day total **$-226.15** across 3 trades.
 | 2026-10-28 15:45 | CL=F | long | 102.36 | 103.38 | target | 5 | $+97.09 |
 | 2026-10-28 16:45 | CL=F | long | 103.29 | 102.89 | stop | 3 | $-44.41 |
 | 2026-10-29 14:00 | CL=F | short | 100.79 | 101.17 | stop | 3 | $-42.05 |
+| 2026-10-30 01:30 | CL=F | long | 101.86 | 103.31 | target | 29 | $+140.16 |
 
 ## What size would this take?
 
 | contracts | $/day at the measured rate | one stop, all contracts | buffer needed |
 |---|---|---|---|
-| 1 | $-31 | $63 | $190 |
-| 2 | $-63 | $127 | $381 |
-| 5 | $-157 | $317 | $952 |
-| 10 | $-314 | $635 | $1,904 |
+| 1 | $-20 | $64 | $191 |
+| 2 | $-40 | $127 | $382 |
+| 5 | $-100 | $319 | $956 |
+| 10 | $-199 | $637 | $1,911 |
 
 At this rate no amount of size turns it into $200 a day — it loses money, so more contracts lose faster.
 

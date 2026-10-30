@@ -3,6 +3,12 @@ name: paper
 # The rule only enters 13:00-20:00 UTC, so the job only needs to run then.
 # Every run replays every closed bar since the last one it saw, so a missed or
 # delayed run cannot skip a trade — it just catches up on the next pass.
+#
+# The cron lands on the quarter hour, which is the worst possible moment for this job:
+# the newest 15-minute bar has *just* closed and the feed is still finalising it. So the
+# script refuses any bar less than 30 minutes old (SETTLE_SEC in paper_aggressive.py),
+# which means it is always working two bars behind the clock. Late is free here; a trade
+# recorded off a half-written candle is not.
 on:
   schedule:
     - cron: "*/15 13-20 * * 1-5"
@@ -41,7 +47,14 @@ jobs:
             exit 0
           fi
           git commit -m "paper: $(date -u +%Y-%m-%dT%H:%MZ)"
+          # The nightly `oracle` job commits to this same branch, so a plain push can be
+          # rejected when it lands first. Rebase onto whatever arrived, then retry. Failing
+          # all three attempts fails the step — a ledger that never reached the remote must
+          # not look like a green run.
           for attempt in 1 2 3; do
-            git pull --rebase --autostash origin main && git push && break
-            sleep 5
+            if git push; then exit 0; fi
+            echo "push rejected, rebasing onto the remote (attempt $attempt)"
+            git pull --rebase --no-edit --autostash origin main || exit 1
           done
+          echo "could not push the ledger after 3 attempts" >&2
+          exit 1
