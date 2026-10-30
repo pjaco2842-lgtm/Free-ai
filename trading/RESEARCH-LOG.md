@@ -506,3 +506,40 @@ calibration joins calls to outcomes as trades settle; under ten pairs it refuses
 itself — volatility percentile, 50/200 separation in ATRs, 20-day range against the
 60-day — not a fitted model. That keeps it inspectable, and it means a wrong regime
 call can be traced to a number rather than to an opinion.
+
+## 2026-10-30 (j) — the 15m book is retired, and the account changes hands
+
+**Why:** the intraday book was losing about $6.65 a trade. Re-tested against random
+entries with the identical stop, target, hold limit, session filter, frequency and
+costs, it cannot be told apart from a coin flip — GC at the 32nd percentile of 1000
+random runs (p = 0.68), CL at the 21st (p = 0.79). Two defects sat underneath that:
+`paper_aggressive.step()` never implemented the `cool` parameter, so the desk took 82
+trades on CL where the tested rule takes 63, and GC halted at the $1,000 buffer, so
+its record was truncated as well as off-rule. `retest-intraday.md`, commit `377c1d7`.
+
+**Removed.** `.github/workflows/paper.yml`. The ledger and both pages stay exactly as
+they were; a closed book is not a deleted one.
+
+**Promoted.** `trading/pick_book.py` scores every remaining daily candidate on the
+account's own rules — $25,000, a static $24,000 floor, +$1,250 to pass, 40%
+consistency — from *every* starting trade rather than from one flattering window.
+
+**The result that decided it.** NQ `nr_break-2` 1.0A has the best expectancy on the
+page (+$122 a trade since 2023) and it fails the consistency rule: one stop is now
+$1,054, which is the entire buffer, and one such winner against a $1,250 target is most
+of the profit. It keeps the best day under 40% only **23%** of the time. Halving the
+stop to 0.5A destroys the edge instead of rescuing it (−$34 a trade, 41% win), which is
+the useful proof that stop distance is part of a rule, not a dial on it. Pairing the
+two books fails the same way for the same reason (38% with consistency against 95%
+without).
+
+**Chosen.** ES `nday_fade-5` 0.75A tp1: 90% of starting points since 2023 pass with the
+consistency rule intact, $309 of risk per session (three stops to the floor), 7% of
+attempts breach, median 29 sessions to the target. Book replaced in
+`desk/oracle-book.json`; the forward record starts with the next session because
+2026-10-30 was already most of the way through when the book changed.
+
+**Re-tested on the live path.** `python3 trading/paper_oracle.py --replay 40` on the new
+book: 15 trades, 60% win, **+$1,142.28**, worst drawdown −$637, best day 27% of profit.
+That is 91% of the target in 40 sessions, and unlike the +$4,530 the old book showed on
+the same window, it is not one big day doing the work. `desk/pick-book.md`.

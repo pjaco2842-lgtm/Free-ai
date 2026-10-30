@@ -1,19 +1,21 @@
 [
   {
-    "family": "nr_break",
-    "n": 2,
-    "stop": 1.0,
-    "exit": "tp2",
+    "family": "nday_fade",
+    "n": 5,
+    "stop": 0.75,
+    "exit": "tp1",
     "gap": "any",
     "trend": false,
     "dow": "all",
     "dir": "both",
-    "symbol": "NQ=F",
-    "test_net": 31247.25,
-    "test_trades": 490,
-    "test_win": 57.8,
-    "med_risk": 1006.96,
-    "luck_pct": 99.6,
-    "plateau": 1.0
+    "symbol": "ES=F",
+    "test_net": 23021.0,
+    "test_trades": 711,
+    "test_win": 56.0,
+    "med_risk": 318.0,
+    "luck_pct": 100.0,
+    "plateau": 0.83,
+    "chosen_by": "trading/pick_book.py on 2026-10-30",
+    "why": "replaces NQ nr_break-2 1.0A, which clears the 40% consistency rule only 23% of the time since 2023 because one stop is the whole $1,000 buffer"
   }
 ]

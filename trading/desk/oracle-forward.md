@@ -1,10 +1,17 @@
 # The 26,000-test paper book
 
-Updated 2026-10-30T13:52Z · started 2026-10-29T22:37:15Z · equity **$+0.00** across 0 closed trades
+Updated 2026-10-30T16:22Z · started 2026-10-29T22:37:15Z · equity **$+0.00** across 0 closed trades
 
 ## Orders standing for the next close
 
-No orders standing — either the book is empty, or the rule's gate is off for this session (the prior day was not a narrow-range day). A blank page is the rule working, not the desk being broken.
+| session | market | rule | side | level | distance from last close | risk/contract |
+|---|---|---|---|---|---|---|
+| 2026-10-30 | ES=F | nday_fade-5 0.75A tp1 both | long | 7,648.50 | -105.75 | $312 |
+| 2026-10-30 | ES=F | nday_fade-5 0.75A tp1 both | short | 7,819.50 | +65.25 | $312 |
+
+A level is a resting buy/sell stop: if the session trades through it, the trade is taken and the record shows it after the close.
+
+**Worst case next session**: if every standing order fills and every one stops out, that is **$312** against the $1,000 buffer. Not hidden.
 
 ## Today (UTC)
 

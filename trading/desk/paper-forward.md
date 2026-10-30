@@ -1,4 +1,18 @@
-# Paper forward record
+# Paper forward record — CLOSED
+
+> **Retired 2026-10-30.** The 15-minute GC/CL book is closed. Its workflow
+> (`.github/workflows/paper.yml`) is deleted and no further trades will be recorded here.
+> The record below is kept exactly as it stands — a closed book is not a deleted one, and
+> the losers stay on the page.
+>
+> Why: re-tested against random entries with the identical stop, target, hold limit,
+> session filter, frequency and costs, it cannot be told apart from a coin flip — GC sits
+> at the 32nd percentile of 1000 random runs (p = 0.68), CL at the 21st (p = 0.79). Two
+> defects also turned up: `step()` never implemented the `cool` parameter, so the desk ran
+> 82 trades on CL where the tested rule takes 63, and GC halted at the $1,000 buffer, so
+> its record was truncated as well as off-rule. Full working: `retest-intraday.md`.
+>
+> The account is carried by the daily book in `oracle-forward.md`.
 
 Updated 2026-10-30T15:34Z · started 2026-10-29T19:27:59Z · equity $+368.40 (2 closed trades)
 
