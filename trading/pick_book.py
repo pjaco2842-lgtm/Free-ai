@@ -45,7 +45,8 @@ OUT = HERE / "desk" / "pick-book.md"
 RAW = HERE / "desk" / "pick-book.json"
 
 START = 25_000.0
-FLOOR = 24_000.0          # Lucid Flex 25k: static end-of-day drawdown, not trailing
+FLOOR = 24_000.0          # Lucid Flex 25k: opening floor, $1,000 under the highest close
+LOCKED = 25_100.0         # ...which stops moving here, at balance + $100
 TARGET_EQ = 26_250.0
 CONSISTENCY = 40.0
 
@@ -105,12 +106,22 @@ def by_year(trades: list[dict]) -> list[dict]:
 
 
 def account(trades: list[dict], start_i: int = 0) -> dict:
-    """Walk the evaluation: $25,000, a static $24,000 floor, +$1,250 to pass."""
-    eq = START
+    """Walk the evaluation: $25,000, an end-of-day trailing floor, +$1,250 to pass.
+
+    The floor is not the static $24,000 line this file first assumed. Lucid Flex puts
+    it $1,000 under the highest **closing** balance and stops moving once it reaches
+    $25,100, so an account that has closed at +$600 is protected only to +$400 of
+    profit: a good run buys the right to lose less. Every pass rate here was measured
+    on the static floor before this was checked against the firm's own rule page, and
+    the trailing version is the stricter, correct one.
+    """
+    eq = high = START
     for k in range(start_i, len(trades)):
         eq += trades[k]["usd"]
+        high = max(high, eq)
+        floor = max(FLOOR, min(high - (START - FLOOR), LOCKED))
         n = k - start_i + 1
-        if eq <= FLOOR:
+        if eq <= floor:
             return {"pass": False, "trades": n, "eq": eq, "breach": True}
         if eq >= TARGET_EQ:
             best = max(t["usd"] for t in trades[start_i:k + 1])
@@ -187,6 +198,8 @@ def main() -> None:
     print("  WHICH DAILY BOOK CARRIES THE 25k EVALUATION?")
     print(f"  ${START:,.0f} start · static ${FLOOR:,.0f} end-of-day floor · "
           f"+${TARGET_EQ - START:,.0f} to pass · consistency ≤ {CONSISTENCY:.0f}%")
+    print("  floor trails the highest close by ${:,.0f} and locks at ${:,.0f}".format(
+        START - FLOOR, LOCKED))
     print("=" * 108)
 
     books: dict[str, dict] = {}
@@ -206,11 +219,20 @@ def main() -> None:
 
     # ---- fidelity: does this replay agree with the book that pinned the rule?
     pin = json.loads((HERE / "desk" / "oracle-book.json").read_text())[0]
-    nq = books["NQ break-2 1.0A tp2"]["test"]
-    print(f"\nsanity: oracle-book.json says {pin['test_trades']} trades, "
-          f"${pin['test_net']:+,.0f} in the test window")
-    print(f"        this replay says {nq['n']} trades, ${nq['net']:+,.0f}"
-          f"  → {'agree' if nq['n'] == pin['test_trades'] else 'DIFFERS'}")
+    pinned = next((b for b in books.values()
+                   if b.get("symbol") == pin["symbol"]
+                   and b["spec"]["family"] == pin["family"]
+                   and b["spec"]["n"] == pin["n"]
+                   and b["spec"]["stop"] == pin["stop"]
+                   and b["spec"]["exit"] == pin["exit"]), None)
+    if pinned is None:
+        print("\nsanity: oracle-book.json is not one of the candidates above — cannot check")
+    else:
+        p = pinned["test"]
+        print(f"\nsanity: oracle-book.json says {pin['test_trades']} trades, "
+              f"${pin['test_net']:+,.0f} in the test window for {pinned['name']}")
+        print(f"        this replay says {p['n']} trades, ${p['net']:+,.0f}"
+              f"  → {'agree' if p['n'] == pin['test_trades'] else 'DIFFERS'}")
 
     print("\n" + "-" * 108)
     print(f"  {'book':22}{'n':>5}{'win':>6}{'$/trade':>9}{'net $':>11}{'DD $':>9}"
@@ -276,7 +298,8 @@ def main() -> None:
     lines = [
         "# Which daily book carries the account",
         "",
-        f"Generated {stamp} · ${START:,.0f} start · static ${FLOOR:,.0f} end-of-day floor · "
+        f"Generated {stamp} · ${START:,.0f} start · ${FLOOR:,.0f} opening floor, trailing the "
+        f"highest close and locking at ${LOCKED:,.0f} · "
         f"+${TARGET_EQ - START:,.0f} target · consistency ≤ {CONSISTENCY:.0f}% · one micro contract",
         "",
         "The 15m book is retired. This compares what is left: the current daily rule, the same",
@@ -297,7 +320,7 @@ def main() -> None:
                      f"{r['stops']} | " + ("—" if luck is None else f"{luck:.1f}%") + " |")
 
     lines += ["", "## The account: every starting trade walked forward", "",
-              "`pass%` reaches +$1,250 before the $24,000 floor. `cons%` also satisfies the 40%",
+              "`pass%` reaches +$1,250 before the trailing floor. `cons%` also satisfies the 40%",
               "consistency rule. `breach%` of the attempts that finished hit the floor.", "",
               "| book | starts | pass | pass% | with consistency | breach% | trades → pass | sessions → pass |",
               "|---|---|---|---|---|---|---|---|"]
@@ -376,9 +399,10 @@ def main() -> None:
         "Daily bars cannot see the order of events inside a session: when a stop and a target are",
         "both touched the fill code takes the stop, which is the pessimistic reading and the right",
         "one, but the real sequence could be worse (a gap through the stop) only in ways the open",
-        "already models. Slippage is one tick per side throughout. The floor is treated as static",
-        "end-of-day, which is how Lucid Flex is described; a trailing intraday floor would fail",
-        "more attempts than this shows.",
+        "already models. Slippage is one tick per side throughout. The floor is Lucid Flex's",
+        "end-of-day trail ($1,000 under the highest close, locking at $25,100); a breach is",
+        "scored on the close, so a session that dips through the floor and closes above it is",
+        "treated as survivable, which is the optimistic reading of that rule.",
         "",
         "The passing rate is what the rule did over its whole history, not a forecast. It says the",
         "edge has survived seventeen years and this account's rules; it does not say the next forty",

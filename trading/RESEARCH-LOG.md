@@ -543,3 +543,56 @@ attempts breach, median 29 sessions to the target. Book replaced in
 book: 15 trades, 60% win, **+$1,142.28**, worst drawdown −$637, best day 27% of profit.
 That is 91% of the target in 40 sessions, and unlike the +$4,530 the old book showed on
 the same window, it is not one big day doing the work. `desk/pick-book.md`.
+
+## 2026-10-30 (k) — the floor was wrong, and the desk is a portfolio
+
+**Correction, and it matters.** Lucid Flex does not run a static $24,000 floor. Its own
+drawdown rule page puts the max loss limit $1,000 under the **highest closing balance**
+and stops moving it once it reaches $25,100 — an end-of-day *trail*. Every pass rate in
+entry (j) was measured on the static line, so every one of them was too generous.
+`pick_book.account()` now walks the trailing floor. The same book, measured again:
+ES `nday_fade-5` 0.75A **78%** of starting points since 2023 pass with consistency
+(was 90%), **19%** breach (was 7%), median 26 sessions. The 0.5A variant is now *better*
+on both counts — 80%, 13%, 36 sessions — and only gives up speed. The conclusion
+survives (the ES fade carries the account, NQ `nr_break-2` still cannot clear 40%
+consistency at 23%) but the cushion I claimed for it did not exist.
+
+**The question changed.** "Which rule passes one evaluation" is not the business. The
+business is ten accounts, five of them funded, fees recycled, some accounts dying, and
+payouts taken whenever the rules allow. `trading/portfolio.py` simulates that: real
+63-session windows from 2023 onward, five evaluation slots plus five funded slots, the
+trailing floor, 40% consistency in evaluation only, and the actual payout gate — five
+separate days at $100/$150/$200/$250 profit, a $500 minimum, at most 50% of profit,
+capped at $1,000/$2,000/$2,500/$3,000, 90% to the trader, five payouts per account.
+
+**What decides the money is the account size, not the rule.** A 25K pass is $1,250 of
+profit, so the 50%-of-profit rule caps the first request near $625 and the floor then
+locks at $25,100 with a few hundred dollars of room. At one micro the whole desk returns
+a mean of **+$207** over ninety days, positive in **16%** of windows — the conservative
+setting from entry (j) is the worst line on the page. The same 25K account at two micros
+is worth **+$1,632** (40% positive) for the same $460 of capital.
+
+**The pick.** $50K accounts at four micros: **+$3,632** mean per ninety days on **$815**
+of capital, median −$805, p90 +$17,195, positive in **42%** of quarters, opening ~6
+accounts and passing ~4. Over six months the same line averages **+$8,503** with a
+median of **+$2,403** and 59% of windows in profit. That last pair is the honest shape
+of this: at ninety days the median window has not yet paid back its fees, and at six
+months it has.
+
+**Most money, if that is the only criterion.** $150K at nine micros: **+$14,569** mean
+over six months (median +$4,989), but positive in only **30%** of ninety-day windows and
+a worst tenth of six-month windows at −$2,290, which is the whole fee budget. It is the
+same edge carried bigger, and
+refused here because a desk that loses money in seven quarters out of ten is a desk you
+stop funding before it gets to the good one.
+
+**Three days is not a thing this rule does.** Lucid's three-day minimum needs the whole
+target inside three sessions; **0%** of passes at any size on this page arrive that fast,
+18% arrive within ten sessions at the fastest line, and the median is 30 sessions.
+Bigger size raises the dollars at both ends of the clock, not the speed.
+
+**Not modelled.** Intraday breach (a session that trades through the floor and closes
+above it is scored as survivable), partial fills beyond one tick of slippage, promotions
+that cut fees, and the looser reading of the payout page — it says "50% of your balance"
+in one place and "50% of profit" in its table, and the stricter reading is used
+throughout. `desk/portfolio.md`, `desk/portfolio.json`.
