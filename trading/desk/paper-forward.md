@@ -1,16 +1,16 @@
 # Paper forward record
 
-Updated 2026-10-30T14:45Z · started 2026-10-29T19:27:59Z · equity $+368.40 (2 closed trades)
+Updated 2026-10-30T15:34Z · started 2026-10-29T19:27:59Z · equity $+368.40 (2 closed trades)
 
 ## Right now
 
 | market | side | opened | entry | stop | target | bars held |
 |---|---|---|---|---|---|---|
-| GC=F | short | 2026-10-30 14:00 | 3,929.00 | 3,939.55 | 3,897.35 | 2 |
+| GC=F | short | 2026-10-30 14:00 | 3,929.00 | 3,939.55 | 3,897.35 | 3 |
 
-**GC=F** 15m breakout: close 3,911.10, RSI 11, TRAMA 3,986.44, ATR 12.65, last signal 2 bars ago
+**GC=F** 15m breakout: close 3,920.70, RSI 24, TRAMA 3,975.73, ATR 13.44, last signal 5 bars ago
 
-**CL=F** 15m breakout: close 104.31, RSI 58, TRAMA 102.08, ATR 0.46, no signal in the last 60 bars
+**CL=F** 15m breakout: close 103.86, RSI 47, TRAMA 102.10, ATR 0.45, no signal in the last 60 bars
 
 ## Today (UTC)
 
