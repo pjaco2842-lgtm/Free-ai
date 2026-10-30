@@ -394,6 +394,7 @@ def main() -> None:
     nq = rows["150k NQ 1.0A   2 micros"]
     lad = rows["ladder  ES 0.75A  31%"]
     best_half = rows_half[best["name"]]
+    fast3 = max(r["within_3_pct"] for r in rows.values())
 
     lines = [
         "# Ninety days of the desk",
@@ -493,9 +494,9 @@ def main() -> None:
         "",
         "Three days is the firm's *minimum*, not a schedule. It needs the full target inside",
         "three sessions with no day over 40% of the profit. At every size on this page that",
-        f"essentially never happens — {k25_2['within_3_pct']:.0f}%–{k150_9['within_3_pct']:.0f}% "
-        f"of passes arrive that fast, and only {k25_2['within_10_pct']:.0f}% within ten sessions "
-        f"at the fastest line ({k150_9['within_10_pct']:.0f}% at the slowest), because the "
+        f"essentially never happens — {fast3:.0f}% of passes at best arrive inside three "
+        f"sessions, {k25_2['within_10_pct']:.0f}% within ten at the fastest line "
+        f"({k150_9['within_10_pct']:.0f}% at the slowest), and the "
         f"median pass takes {k25_1['med_sessions_to_pass']:.0f} sessions. Three days is set for",
         "scalpers taking risk that would end this book; a rule that trades half the sessions",
         "cannot finish a month of edge in a week, and trading bigger makes the target *bigger*",

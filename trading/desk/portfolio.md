@@ -1,6 +1,6 @@
 # Ninety days of the desk
 
-Generated 2026-10-30T20:24Z · 63-session windows sampled from 2023-01-01 onward · 800 runs per line · small-bankroll line starts with $350
+Generated 2026-10-30T20:26Z · 63-session windows sampled from 2023-01-01 onward · 800 runs per line · small-bankroll line starts with $350
 
 One account is a puzzle; a portfolio of them is a business, and the business has
 different limits. Lucid allows **ten accounts in total, five of them funded**, so
@@ -106,7 +106,7 @@ funded slots are the thing you cannot buy more of.
 
 Three days is the firm's *minimum*, not a schedule. It needs the full target inside
 three sessions with no day over 40% of the profit. At every size on this page that
-essentially never happens — 0%–0% of passes arrive that fast, and only 18% within ten sessions at the fastest line (5% at the slowest), because the median pass takes 30 sessions. Three days is set for
+essentially never happens — 1% of passes at best arrive inside three sessions, 18% within ten at the fastest line (5% at the slowest), and the median pass takes 30 sessions. Three days is set for
 scalpers taking risk that would end this book; a rule that trades half the sessions
 cannot finish a month of edge in a week, and trading bigger makes the target *bigger*
 faster than it makes the gains bigger.
