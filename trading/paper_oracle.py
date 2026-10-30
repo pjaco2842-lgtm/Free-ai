@@ -82,11 +82,86 @@ def complete_len(D: dict, now: datetime) -> int:
 
 def blank() -> dict:
     return {"created": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-            "last": {}, "ledger": [], "equity": 0.0, "halted": False}
+            "last": {}, "ledger": [], "equity": 0.0, "halted": False, "bars": {}}
+
+
+BAR_KEYS = ("o", "h", "l", "c")
+KEEP_BARS = 5             # how many recorded sessions keep a fingerprint for re-checking
+
+
+def fingerprint(D: dict, i: int) -> list[float]:
+    return [round(float(D[k][i]), 4) for k in BAR_KEYS]
+
+
+def remember(state: dict, sym: str, D: dict, i: int) -> None:
+    """Store the bar we recorded, so a later run can tell whether the feed moved it."""
+    if i < 0 or i >= len(D["dates"]):
+        return
+    bars = state.setdefault("bars", {}).setdefault(sym, {})
+    bars[D["dates"][i]] = fingerprint(D, i)
+    for old in sorted(bars)[:-KEEP_BARS]:
+        bars.pop(old, None)
+
+
+def trade_of(sym: str, D: dict, spec: dict, legs: list[dict], i: int) -> dict | None:
+    """The trade a rule would take in session i, or None. Shared by step and recheck so the
+    two can never disagree about how a trade is written down."""
+    pv, tick = MARKETS[sym][1], MARKETS[sym][2]
+    t = day_trade(D, i, spec, legs, pv, tick)
+    if not t:
+        return None
+    return {"date": D["dates"][i], "market": sym, "rule": label(spec),
+            "side": "long" if t["side"] > 0 else "short",
+            "entry": round(t["entry"], 2), "exit": round(t["exit"], 2),
+            "why": t["why"], "risk": round(t["risk"], 2), "usd": round(t["usd"], 2)}
+
+
+def recheck(sym: str, D: dict, specs: list[dict], state: dict) -> list[dict]:
+    """Re-derive the last recorded session if the feed has revised its bar since.
+
+    A daily bar used to be written once and never looked at again, so a feed that revised a
+    close after the record was made left a wrong trade in the ledger for good — and the
+    desk went on quoting an equity that never happened. Every run now compares the stored
+    bar against the feed and, when the four prices differ, replaces that session's trade
+    with one recomputed from the bar as it now stands.
+
+    Only the most recent recorded session is re-examined: older bars have long stopped
+    moving, and rewriting history is a bigger question than this file should answer alone.
+    """
+    last = state["last"].get(sym)
+    if not last or last not in D["dates"]:
+        return []                       # nothing recorded, or the feed has dropped the bar
+    i = D["dates"].index(last)
+    bars = state.setdefault("bars", {}).setdefault(sym, {})
+    now_fp, was = fingerprint(D, i), bars.get(last)
+    bars[last] = now_fp
+    if was is None or was == now_fp:
+        return []                       # nothing stored to compare, or nothing moved
+
+    before = [t for t in state["ledger"] if t["market"] == sym and t["date"] == last]
+    after = [x for spec in specs for x in [trade_of(sym, D, spec, spec_legs(D, spec), i)] if x]
+    key = lambda t: (t["rule"], t["side"], t["entry"], t["exit"], t["usd"])
+    if sorted(map(key, before)) == sorted(map(key, after)):
+        return []                       # the bar moved, but not enough to change the trade
+
+    out, placed = [], False
+    for t in state["ledger"]:
+        if t["market"] == sym and t["date"] == last:
+            if not placed:
+                out.extend(after)
+                placed = True
+            continue
+        out.append(t)
+    if not placed:
+        out.extend(after)
+    state["ledger"] = out
+    state["equity"] = round(sum(t["usd"] for t in state["ledger"]), 2)
+    state["halted"] = state["halted"] or state["equity"] <= -BUFFER
+    return [{"date": last, "market": sym, "was": before, "now": after,
+             "bar_was": was, "bar_now": now_fp}]
 
 
 def step(sym: str, D: dict, specs: list[dict], state: dict, upto: int) -> list[dict]:
-    pv, tick = MARKETS[sym][1], MARKETS[sym][2]
     start = state["last"].get(sym)
     first = 2
     if start:
@@ -97,21 +172,18 @@ def step(sym: str, D: dict, specs: list[dict], state: dict, upto: int) -> list[d
         for i in range(first, upto):
             if state["halted"]:
                 break
-            t = day_trade(D, i, spec, legs, pv, tick)
-            if not t:
+            trade = trade_of(sym, D, spec, legs, i)
+            if not trade:
                 continue
-            trade = {"date": D["dates"][i], "market": sym, "rule": label(spec),
-                     "side": "long" if t["side"] > 0 else "short",
-                     "entry": round(t["entry"], 2), "exit": round(t["exit"], 2),
-                     "why": t["why"], "risk": round(t["risk"], 2),
-                     "usd": round(t["usd"], 2)}
             state["ledger"].append(trade)
-            state["equity"] = round(state["equity"] + t["usd"], 2)
+            state["equity"] = round(state["equity"] + trade["usd"], 2)
             fresh.append(trade)
             if state["equity"] <= -BUFFER:
                 state["halted"] = True
     if upto > 1:
         state["last"][sym] = D["dates"][upto - 1]
+        for i in range(max(first, 0), upto):
+            remember(state, sym, D, i)
     return fresh
 
 
@@ -192,7 +264,7 @@ def sizing(ledger: list[dict]) -> list[str]:
 
 
 def write(state: dict, rows: list[dict], ledger_today: list[dict], path: Path, title: str,
-          unvalidated: bool) -> None:
+          unvalidated: bool, fixes: list[dict] | None = None) -> None:
     now = datetime.now(timezone.utc)
     led = state["ledger"]
     lines = [f"# {title}", "",
@@ -203,6 +275,29 @@ def write(state: dict, rows: list[dict], ledger_today: list[dict], path: Path, t
                   "gate. Paper only — treat the record as an experiment.", ""]
     if state.get("halted"):
         lines += ["**Halted**: equity reached the $1,000 buffer.", ""]
+
+    if fixes:
+        lines += ["## Corrections", "",
+                  "The feed revised a bar *after* that session was recorded, so the trade "
+                  "built on it was thrown away and rebuilt from the bar as it now stands. "
+                  "The record is not allowed to keep a number the data no longer supports.",
+                  ""]
+        for f in fixes:
+            lines += [f"**{f['date']} · {f['market']}** — bar was "
+                      f"{f['bar_was'][0]:,.2f}/{f['bar_was'][1]:,.2f}/"
+                      f"{f['bar_was'][2]:,.2f}/{f['bar_was'][3]:,.2f}, now "
+                      f"{f['bar_now'][0]:,.2f}/{f['bar_now'][1]:,.2f}/"
+                      f"{f['bar_now'][2]:,.2f}/{f['bar_now'][3]:,.2f} "
+                      "(open/high/low/close)", "",
+                      "| | rule | side | entry | exit | why | $ |",
+                      "|---|---|---|---|---|---|---|"]
+            for tag, ts in (("before", f["was"]), ("after", f["now"])):
+                if not ts:
+                    lines.append(f"| {tag} | — | no trade | — | — | — | — |")
+                for t in ts:
+                    lines.append(f"| {tag} | {t['rule']} | {t['side']} | {t['entry']:,.2f} | "
+                                 f"{t['exit']:,.2f} | {t['why']} | ${t['usd']:+,.2f} |")
+            lines.append("")
 
     lines += ["## Orders standing for the next close", ""]
     if rows:
@@ -342,14 +437,19 @@ def main() -> None:
 
     state = json.loads(state_path.read_text()) if state_path.exists() else blank()
     fresh: list[dict] = []
+    fixes: list[dict] = []
     for sym, D in data.items():
         upto = complete_len(D, now)
         if not state["last"].get(sym):
             # never record history as forward: start after the last completed bar
             state["last"][sym] = D["dates"][upto - 1] if upto else ""
+            remember(state, sym, D, upto - 1)
             print(f"  {sym}: record starts with the next completed session")
             continue
+        fixes += recheck(sym, D, by_sym[sym], state)
         fresh += step(sym, D, by_sym[sym], state, upto)
+    for f in fixes:
+        print(f"  corrected {f['date']} {f['market']}: bar moved, trade rebuilt")
     for t in fresh:
         print(f"  {t['date']} {t['market']} {t['rule']} {t['side']} "
               f"{t['entry']:,.2f}→{t['exit']:,.2f} ({t['why']}) ${t['usd']:+,.2f}")
@@ -357,7 +457,7 @@ def main() -> None:
     rows = [r for sym, D in data.items()
             for r in watch(D, by_sym[sym], complete_len(D, now))]
     state_path.write_text(json.dumps(state, indent=2))
-    write(state, rows, fresh, out_path, "The 26,000-test paper book", unvalidated)
+    write(state, rows, fresh, out_path, "The 26,000-test paper book", unvalidated, fixes)
     print(f"  {len(state['ledger'])} closed trades, equity ${state['equity']:+,.2f}, "
           f"{len(rows)} orders standing")
     print(f"  written to {FORWARD}")
