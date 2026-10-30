@@ -2,11 +2,17 @@ name: oracle
 
 # The 26,000-test book is a day-trade book: the signal is known at the close, the order
 # rests at a level during the next session, the exit is that session's close. So one run
-# after the futures close is enough to record it — the runner only processes completed
-# bars, so a missed run is caught up on the next one instead of being lost.
+# after the futures close is enough to record it — the runner only processes completed,
+# settled bars, so a missed run is caught up on the next one instead of being lost.
+#
+# The cron sits at 22:20Z, not at the 21:00Z close, on purpose. A session is only trusted
+# once 21:30Z has passed *and* the feed has had 30 minutes to finalise the bar; a run
+# inside that window stays on the previous session rather than recording a bar that is
+# still being written. Being 50 minutes late is free — the session chosen no longer
+# depends on the wall clock.
 on:
   schedule:
-    - cron: "35 21 * * 1-5"     # 21:35 UTC, after the 21:00 CME close
+    - cron: "20 22 * * 1-5"     # 22:20 UTC: 80 min after the CME close, 20 min after the roll
   workflow_dispatch:
 
 permissions:
@@ -45,7 +51,16 @@ jobs:
           git add trading/desk/oracle-forward.md trading/desk/oracle-state.json
           if git diff --cached --quiet; then
             echo "no change to record"
-          else
-            git commit -m "oracle paper record $(date -u +%Y-%m-%dT%H:%MZ)"
-            git push
+            exit 0
           fi
+          git commit -m "oracle paper record $(date -u +%Y-%m-%dT%H:%MZ)"
+          # The intraday `paper` job commits to this same branch, so a plain push can be
+          # rejected when it lands first. Rebase onto whatever arrived, then retry: the
+          # record is the only file this job owns, so a rebase cannot clobber it.
+          for attempt in 1 2 3; do
+            if git push; then exit 0; fi
+            echo "push rejected, rebasing onto the remote (attempt $attempt)"
+            git pull --rebase --no-edit origin main || exit 1
+          done
+          echo "could not push the record after 3 attempts" >&2
+          exit 1

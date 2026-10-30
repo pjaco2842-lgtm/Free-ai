@@ -40,6 +40,7 @@ REPLAY_MD = DESK / "oracle-replay.md"
 BUFFER = 1000.0
 TARGET = 1250.0           # evaluation target: +$1,250 before the buffer is gone
 CLOSE_UTC = 21.5          # the futures session closes ~21:00 UTC; treat 21:30 as complete
+SETTLE_MIN = 30           # then let the feed finalise the bar before trusting it
 KEYS = ("family", "n", "stop", "exit", "gap", "trend", "dow", "dir")
 
 
@@ -52,20 +53,31 @@ def spec_of(row: dict) -> dict:
     return {k: row[k] for k in KEYS}
 
 
+def session_end(date: str) -> datetime:
+    """When the session dated `date` stops trading, in UTC.
+
+    A futures session dated D opens at 22:00Z the evening before and closes at 21:00Z on D
+    itself, so its bar can only be trusted from 21:30Z on D.
+    """
+    return datetime.strptime(date, "%Y-%m-%d").replace(tzinfo=timezone.utc) \
+        + timedelta(hours=CLOSE_UTC)
+
+
 def complete_len(D: dict, now: datetime) -> int:
-    """Number of bars that are finished. Today's bar is excluded until the close."""
-    if not D["dates"]:
-        return 0
-    frac = now.hour + now.minute / 60
-    today, last = now.strftime("%Y-%m-%d"), D["dates"][-1]
-    # A futures session dated D runs from 22:00Z the day before to 21:00Z on D. So a bar is
-    # finished only once CLOSE_UTC has passed on D — and a bar dated *after* today is the
-    # session that has just opened. The first version only tested `last == today`, so a run
-    # that landed after 22:00Z took the newly opened session as a finished one and derived
-    # the next set of levels from whatever it had printed in its first few minutes.
-    if last > today or (last == today and frac < CLOSE_UTC):
-        return len(D["dates"]) - 1
-    return len(D["dates"])
+    """How many bars are finished *and* settled. Independent of when the job woke up.
+
+    Each bar is judged against its own session timestamp, never against the run's date.
+    That is the whole point: a job that starts four hours late, or after midnight, or on a
+    Sunday, reads exactly the set of sessions it would have read on time. Two earlier
+    versions compared the run's calendar date to the last bar's date, so the answer
+    depended on when the runner happened to fire. On 30 Oct that took a session which had
+    been open for 37 minutes as a finished one, and derived levels from it.
+
+    The settle window is the second half: at 21:35Z the session is over but the feed may
+    still be revising the bar, and a bar recorded once is never revisited.
+    """
+    cut = now - timedelta(minutes=SETTLE_MIN)
+    return sum(1 for d in D["dates"] if session_end(d) <= cut)
 
 
 def blank() -> dict:
