@@ -34,7 +34,7 @@ BUFFER = 1000.0
 CONSISTENCY = 40.0
 
 RULES = [("nr_break", 2), ("nday_break", 1), ("nday_fade", 5)]
-STOPS = [0.2, 0.25, 0.3, 0.5, 0.75, 1.0, 1.5]
+STOPS = [0.2, 0.25, 0.3, 0.5, 0.75, 1.0, 1.5, 2.0, 2.5]
 EXITS = ["tp1", "tp2"]
 
 
