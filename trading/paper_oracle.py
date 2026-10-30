@@ -57,7 +57,13 @@ def complete_len(D: dict, now: datetime) -> int:
     if not D["dates"]:
         return 0
     frac = now.hour + now.minute / 60
-    if D["dates"][-1] == now.strftime("%Y-%m-%d") and frac < CLOSE_UTC:
+    today, last = now.strftime("%Y-%m-%d"), D["dates"][-1]
+    # A futures session dated D runs from 22:00Z the day before to 21:00Z on D. So a bar is
+    # finished only once CLOSE_UTC has passed on D — and a bar dated *after* today is the
+    # session that has just opened. The first version only tested `last == today`, so a run
+    # that landed after 22:00Z took the newly opened session as a finished one and derived
+    # the next set of levels from whatever it had printed in its first few minutes.
+    if last > today or (last == today and frac < CLOSE_UTC):
         return len(D["dates"]) - 1
     return len(D["dates"])
 
@@ -137,6 +143,8 @@ def watch(D: dict, specs: list[dict], upto: int) -> list[dict]:
                  else ((1,) if spec["dir"] == "long" else (-1,)))
         for side in sides:
             leg = legs[0] if side > 0 else legs[1]
+            if not bool(leg["ok"][upto]):
+                continue          # the rule will not trade this session; post nothing
             row = {"date": D["dates"][upto], "market": D["symbol"], "rule": label(spec),
                    "side": "long" if side > 0 else "short"}
             if leg["mode"] == "open":
@@ -203,7 +211,9 @@ def write(state: dict, rows: list[dict], ledger_today: list[dict], path: Path, t
                   f"one stops out, that is **${worst:,.0f}** against the ${BUFFER:,.0f} "
                   f"buffer. Not hidden."]
     else:
-        lines.append("No levels to show — the book is empty or the next session has not started.")
+        lines.append("No orders standing — either the book is empty, or the rule's gate is "
+                     "off for this session (the prior day was not a narrow-range day). "
+                     "A blank page is the rule working, not the desk being broken.")
 
     lines += ["", "## Today (UTC)", ""]
     if ledger_today:
