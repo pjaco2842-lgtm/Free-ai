@@ -596,3 +596,50 @@ above it is scored as survivable), partial fills beyond one tick of slippage, pr
 that cut fees, and the looser reading of the payout page — it says "50% of your balance"
 in one place and "50% of profit" in its table, and the stricter reading is used
 throughout. `desk/portfolio.md`, `desk/portfolio.json`.
+
+## 2026-10-30 (l) — going back to the trio, and what the good window was worth
+
+**The request.** The 29 October table — narrow-range breakout + prior-day breakout + five-day
+fade, 65 trades, +$13,273 in forty sessions — was the best thing the desk has ever printed,
+and the ask was to go back to it and take the most profit available as fast as possible.
+Rather than argue about it, the trio is now a portfolio line in `portfolio.py`, run over
+every 63- and 126-session window since 2023 like everything else.
+
+**It wins, and not because of that window.** The trio at one micro a rule averages $127.50 a
+session. Its 40-session windows have a **median of +$4,588**, a best of $14,167 and a worst of
+−$4,647, and the window that was traded — $12,598 when rebuilt from the same three rules —
+sits in the **98th percentile**. So the table was a hot tape, not a hot rule: each of the
+three legs is individually in its own 90th percentile over it. It still beats everything else
+tested, because the ES fade's median 40-session window is $602 and the trio's is $4,588. The
+edge is in the ordinary window, which is the only kind you can plan for.
+
+**The money.** At $50K with one micro a rule: mean **+$6,834** per quarter, median **+$4,250**,
+positive in **71%** of quarters, 5.5 payouts — the only line on the page whose median quarter
+is positive. At $150K with two micros a rule: mean **+$8,080** a quarter and **+$34,640** over
+six months with **96%** of six-month windows positive. That is the pick if the question is
+literally "most profit", and it costs $2,290 of fees to staff rather than $815.
+
+**The cost, stated where it cannot be missed.** The trio risks $1,158 in an ordinary session
+and $1,769 if all three legs stop on one day. Against a 25K's $1,000 that is not a book, it is
+a coin flip; the $50K is the smallest account that holds it and even there a three-leg stop is
+88% of the buffer. `desk/account.json` is now a **50K** and `paper_oracle.py` reads the buffer
+and target from it instead of hard-coding a 25K — the old constants would have scored the new
+book against the wrong account. The forward page's own worst-case line, printed rather than
+buried: **$2,159 against a $2,000 buffer** if every standing order fills and stops.
+
+**Desk state.** `desk/oracle-book.json` is the three NQ legs; the ledger is reset with
+`last = {"NQ=F": "2026-10-30"}` so the forward record starts with the next session, as it did
+when the 15m book was retired. The rebuilt 40-session replay is $12,598 against the $13,274
+that was posted — one fewer `nr_break` trade and revised bars — so treat those two figures as
+the same number to within $700, not to the cent.
+
+**Three days.** Still no. 1% of passes at best arrive inside three sessions, 23% within ten,
+and the pick's median pass is 33 sessions. The trio is the fastest book tested and it is not
+fast enough to be a three-day plan.
+
+**Assumptions that carry the six-month numbers.** Payouts are requested at the maximum the
+rules allow the moment an account qualifies; the floor locks at start + $100 after a payout,
+which is what makes a funded account nearly risk-free once it has paid; breaches are scored on
+the close, not on the session's worst moment; windows overlap, so 600 runs are worth far fewer
+than 600 independent trials. If the payout rule is stricter than modelled, the funded half of
+these numbers shrinks and the evaluation half does not.

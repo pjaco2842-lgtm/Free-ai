@@ -88,6 +88,17 @@ BOOKS = {
                                         gap="any", trend=False, dow="all", dir="both")),
     "NQ break-2 1.0A tp2": ("NQ=F", dict(family="nr_break", n=2, stop=1.0, exit="tp2",
                                          gap="any", trend=False, dow="all", dir="both")),
+    "NQ break-1 1.0A tp2": ("NQ=F", dict(family="nday_break", n=1, stop=1.0, exit="tp2",
+                                         gap="any", trend=False, dow="all", dir="both")),
+    "NQ fade-5 0.75A tp1": ("NQ=F", dict(family="nday_fade", n=5, stop=0.75, exit="tp1",
+                                         gap="any", trend=False, dow="all", dir="both")),
+}
+
+# The book that was on the desk on 2026-10-29, run as a portfolio line so it can be
+# judged on every window instead of the one that flattered it: three NQ rules, one
+# micro each, summed per session.
+COMBOS = {
+    "NQ trio": ["NQ break-2 1.0A tp2", "NQ break-1 1.0A tp2", "NQ fade-5 0.75A tp1"],
 }
 
 # (name, book, tier or "ladder", micros or 0 for "size to 31% of the buffer")
@@ -101,6 +112,10 @@ STRATEGIES = [
     ("150k ES 0.75A  9 micros", "ES fade-5 0.75A tp1", "150k", 9),
     ("150k ES 0.50A  7 micros", "ES fade-5 0.5A tp1", "150k", 7),
     ("150k NQ 1.0A   2 micros", "NQ break-2 1.0A tp2", "150k", 2),
+    ("50k  NQ trio 1 micro", "NQ trio", "50k", 1),
+    ("100k NQ trio 1 micro", "NQ trio", "100k", 1),
+    ("150k NQ trio 1 micro", "NQ trio", "150k", 1),
+    ("150k NQ trio 2 micros", "NQ trio", "150k", 2),
     ("ladder  ES 0.75A  31%", "ES fade-5 0.75A tp1", "ladder", 0),
 ]
 
@@ -111,6 +126,16 @@ LADDER_MULT = 8.0         # upgrade when the bankroll holds eight of the next ti
 # ------------------------------------------------------------------ market data
 def book_days(name: str, since: str) -> dict:
     """Per-session P&L of the rule at one micro contract, from `since` onward."""
+    if name in COMBOS:
+        legs = [book_days(leg, since) for leg in COMBOS[name]]
+        dates = sorted({d for leg in legs for d in leg["dates"]})
+        where = [{d: i for i, d in enumerate(leg["dates"])} for leg in legs]
+        pnl, risk = [], []
+        for d in dates:
+            pnl.append(sum(leg["pnl"][w[d]] for leg, w in zip(legs, where) if d in w))
+            risk.append(sum(leg["risk"][w[d]] for leg, w in zip(legs, where) if d in w))
+        return {"pnl": np.array(pnl), "risk": np.array(risk), "dates": dates,
+                "med_risk": statistics.median([r for r in risk if r]) if any(risk) else 0.0}
     sym, spec = BOOKS[name]
     D = prep(sym)
     pv, tick = MARKETS[sym][1], MARKETS[sym][2]
@@ -325,6 +350,15 @@ def table(rows: dict, sessions: int) -> list[str]:
     return out
 
 
+def window_stats(pnl: np.ndarray, w: int) -> dict:
+    """Where a single w-session window sits against every other one in the sample."""
+    sums = np.convolve(pnl, np.ones(w), "valid")
+    last = float(pnl[-w:].sum())
+    return {"w": w, "median": float(np.median(sums)), "best": float(sums.max()),
+            "worst": float(sums.min()), "last": last,
+            "pct": float(100.0 * (sums < last).mean())}
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--runs", type=int, default=400)
@@ -334,7 +368,7 @@ def main() -> None:
     args = ap.parse_args()
     rng = np.random.default_rng(11)
 
-    books = {name: book_days(name, args.since) for name in BOOKS}
+    books = {name: book_days(name, args.since) for name in [*BOOKS, *COMBOS]}
 
     print("=" * 118)
     print("  NINETY DAYS OF THE DESK — five evaluations, five funded slots, 90/10 payouts")
@@ -395,6 +429,11 @@ def main() -> None:
     lad = rows["ladder  ES 0.75A  31%"]
     best_half = rows_half[best["name"]]
     fast3 = max(r["within_3_pct"] for r in rows.values())
+    fast10 = max(r["within_10_pct"] for r in rows.values())
+    trio50 = rows["50k  NQ trio 1 micro"]
+    trio150 = rows_half["150k NQ trio 2 micros"]
+    trio150_q = rows["150k NQ trio 2 micros"]
+    win = window_stats(books["NQ trio"]["pnl"], 40)
 
     lines = [
         "# Ninety days of the desk",
@@ -441,20 +480,21 @@ def main() -> None:
         "40% of their evaluations and finish a quarter in profit at least 40% of the time —",
         "a desk you would keep funding, not a lottery ticket that happens to have a good mean.",
         "",
-        "Both big-account lines fail that second test, and it is worth saying exactly what is",
-        f"being refused: the $150K at nine micros averages ${rows_half['150k ES 0.75A  9 micros']['mean']:,.0f}",
-        "over six months — the most money on the page — while losing money in "
-        f"{100 - k150_9['positive_pct']:.0f}% of ninety-day windows, and its worst tenth of",
-        f"six-month windows ends down ${abs(rows_half['150k ES 0.75A  9 micros']['p10']):,.0f}. That is",
-        "the trade the brief asks for and the one worth thinking twice about: the same edge,",
-        "carried bigger, and three times as likely to have you funding accounts out of your own",
-        "pocket for a quarter before it pays anything back.",
+        f"The caveat is the entry price, not the odds. The same book at $50K and one micro a rule",
+        f"averages ${rows_half['50k  NQ trio 1 micro']['mean']:,.0f} over six months — about half — on "
+        f"${rows['50k  NQ trio 1 micro']['capital']:,.0f} of capital",
+        f"instead of ${best['capital']:,.0f}, and puts {100 * rows['50k  NQ trio 1 micro']['risk_frac']:.0f}% of a $2,000 buffer at",
+        "risk in an ordinary session instead of 51% of $4,500. If $2,290 is not sitting there,",
+        "that line is the same edge a quarter of the size, and the ordering does not change: the",
+        "trio beats every single-rule line in the table at both horizons.",
         "",
-        "Read the mean and the median together, because they disagree and the disagreement is",
-        "the whole story. The median window pays back **less than the fees** — you spend the",
-        "quarter passing evaluations that have not yet converted into cash — while a minority",
-        "of windows pay many multiples. That is a business with a long lead time, not a",
-        "steady drip, and it is why a ninety-day judgement flatters nothing.",
+        "Read the mean and the median together, because they disagree, and which one you",
+        "believe decides whether this is a business or a lottery ticket. On every single-rule",
+        "line the median quarter pays back **less than the fees** — the quarter is spent passing",
+        "evaluations that have not converted into cash yet — while a minority of windows pay",
+        "many multiples. On the trio the median quarter is positive, which is the whole reason",
+        "it is the pick: it is the only book here that is expected to pay in an ordinary tape",
+        "and not only in a good one.",
         "",
         "## Six months, the same lines",
         "",
@@ -463,6 +503,30 @@ def main() -> None:
         "make money\", this is the table that answers it, and the answers change sign.",
         "",
     ] + table(rows_half, 2 * SESSIONS) + [
+        "",
+        "## The book that was on the desk on 29 October",
+        "",
+        "Three NQ rules at one micro each — the narrow-range breakout, the prior-day breakout",
+        "and the five-day fade. Its replay over the last 40 sessions made $12,598, and that",
+        "number is real but it is not what the book does. Over every 40-session window since",
+        f"2023 the same book has a median of ${win['median']:,.0f}, a best of ${win['best']:,.0f} and a worst of",
+        f"${win['worst']:,.0f}, and the window that was traded sits in the {win['pct']:.0f}th percentile of them.",
+        "",
+        "Which is the argument for keeping it anyway, and why it is the desk's book again: the",
+        f"median window is **positive** — ${win['median']:,.0f} per 40 sessions at one micro a rule — where",
+        "the ES fade's median 40-session window is only $602. It was a lucky tape rather than a",
+        "lucky rule (each of the three legs is in its own 90th percentile over that window), but",
+        "the book earns its keep in an ordinary tape too, and that is what the table measures.",
+        "",
+        f"At $50K with one micro a rule it passes {trio50['pass_pct']:.0f}% of its evaluations, ends a quarter",
+        f"with {trio50['mean_funded_end']:.1f} funded and takes {trio50['mean_payouts']:.1f} payouts, for a mean of",
+        f"${trio50['mean']:,.0f}, a median of ${trio50['median']:,.0f} and {trio50['positive_pct']:.0f}% of quarters in profit — the",
+        "best median on the page: the trio's lines are the only ones whose median quarter is",
+        "positive at all. It is 58% of the buffer at risk in an ordinary session and 88% if all",
+        "three legs stop on the same day, which is why it belongs on a $50K and not on the $25K",
+        "it was being scored against — at $1,158 of median risk a 25K's $1,000 allowance is gone",
+        "before the first good week arrives — and why the pick above runs it on a $150K, where",
+        "the same book at two micros a rule still has a $4,500 allowance to be wrong inside.",
         "",
         "## Why size, not count, decides the money",
         "",
@@ -495,9 +559,8 @@ def main() -> None:
         "Three days is the firm's *minimum*, not a schedule. It needs the full target inside",
         "three sessions with no day over 40% of the profit. At every size on this page that",
         f"essentially never happens — {fast3:.0f}% of passes at best arrive inside three "
-        f"sessions, {k25_2['within_10_pct']:.0f}% within ten at the fastest line "
-        f"({k150_9['within_10_pct']:.0f}% at the slowest), and the "
-        f"median pass takes {k25_1['med_sessions_to_pass']:.0f} sessions. Three days is set for",
+        f"sessions and {fast10:.0f}% within ten, and the pick's median pass takes "
+        f"{best['med_sessions_to_pass']:.0f} sessions. Three days is set for",
         "scalpers taking risk that would end this book; a rule that trades half the sessions",
         "cannot finish a month of edge in a week, and trading bigger makes the target *bigger*",
         "faster than it makes the gains bigger.",
@@ -519,15 +582,20 @@ def main() -> None:
         "accounts. Payouts are requested the instant they qualify, which no trader does",
         "perfectly. Breaches are scored on the closing balance, not the session's worst moment.",
         "Slippage is one tick per side and commissions are real, but a fast market fills worse.",
+        "The three legs are summed as one P&L. In a single account two of them can be on",
+        "opposite sides in the same session, which most brokers read as a hedge rather than as",
+        "two positions; net exposure is what is modelled, and net exposure is what such an",
+        "account would be judged on.",
         "Fees are list prices; a 30%-off checkout improves every line, most of all the 25K one.",
         "Lucid's payout page says \"50% of your account balance\" in one place and \"50% of",
         "profit\" in its table; this models the stricter reading, so a payout cannot be taken",
         "until profit is at least twice the request.",
         "",
-        f"`NQ break-2` at $150K ({100 * nq['risk_frac']:.0f}% of the buffer per stop) appears as",
-        f"a control: mean ${nq['mean']:,.0f}, positive in {nq['positive_pct']:.0f}% of windows.",
-        "Its edge is real and its best days are too large a share of a small pass threshold,",
-        "which is exactly why it was retired from the single-account book.",
+        f"`NQ break-2` on its own at $150K and two micros ({100 * nq['risk_frac']:.0f}% of the buffer a",
+        f"stop) appears as a control: mean ${nq['mean']:,.0f}, positive in {nq['positive_pct']:.0f}% of windows.",
+        "The rule with the best expectancy on the page cannot carry a desk by itself, because",
+        "its best days are too large a share of a small pass threshold; inside the trio the other",
+        "two rules supply the ordinary days that dilute them.",
         "",
         f"Best odds on the page, if profit is not the only thing that matters: {surest['name']},",
         f"positive in {surest['positive_pct']:.0f}% of windows with a mean of "

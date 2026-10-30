@@ -34,11 +34,25 @@ from lab26k import BOOK, day_trade, prep, spec_legs  # noqa: E402
 from scalp import MARKETS  # noqa: E402
 
 DESK = Path(__file__).resolve().parent / "desk"
+ACCOUNT = DESK / "account.json"
 STATE = DESK / "oracle-state.json"
 FORWARD = DESK / "oracle-forward.md"
 REPLAY_MD = DESK / "oracle-replay.md"
-BUFFER = 1000.0
-TARGET = 1250.0           # evaluation target: +$1,250 before the buffer is gone
+def account_rules() -> tuple[float, float]:
+    """The buffer and the target come from the desk's account file, not from a constant.
+
+    The book changed size on 2026-10-30 (a 25K cannot hold three NQ legs whose median
+    session is $1,158 of risk against a $1,000 allowance), and a runner that hard-codes
+    $1,000/$1,250 would have scored a 50K account against a 25K's rules.
+    """
+    try:
+        a = json.loads(ACCOUNT.read_text())
+        return float(a["max_loss"]), float(a["profit_target"])
+    except Exception:
+        return 1000.0, 1250.0
+
+
+BUFFER, TARGET = account_rules()   # max loss, then the profit target that ends the eval
 CLOSE_UTC = 21.5          # the futures session closes ~21:00 UTC; treat 21:30 as complete
 SETTLE_MIN = 30           # then let the feed finalise the bar before trusting it
 KEYS = ("family", "n", "stop", "exit", "gap", "trend", "dow", "dir")
