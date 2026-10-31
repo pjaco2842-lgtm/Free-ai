@@ -40,7 +40,10 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # Safety pause: the separate historical paper desk has not been validated either.
+  # This also stops its board, analytics and automatic commits until reviewed.
   cycle:
+    if: ${{ false }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:

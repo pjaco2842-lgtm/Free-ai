@@ -1,5 +1,7 @@
 [
   {
+    "unvalidated": true,
+    "audit_status": "WITHDRAWN: legacy fill ordering and account results are unreliable; no standing order.",
     "family": "nday_fade",
     "n": 1,
     "stop": 1.0,

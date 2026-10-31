@@ -59,10 +59,10 @@ TARGET = float(ACCOUNT["profit_target"])
 MAX_LOSS = float(ACCOUNT["max_loss"])
 CONSISTENCY = float(ACCOUNT["consistency"]["rule"])
 BUFFER_STOPS = float(ACCOUNT["desk"]["buffer_guard_stops"])
-HALT_AT = float(ACCOUNT["desk"]["governor_halt_fraction"])
-CAUTION_AT = float(ACCOUNT["desk"]["governor_caution_fraction"])
+HALT_AT = ACCOUNT["desk"]["governor_halt_fraction"]
+CAUTION_AT = ACCOUNT["desk"]["governor_caution_fraction"]
 MAX_OPEN = int(ACCOUNT["desk"]["max_open"])
-DAILY_STOP = float(ACCOUNT["desk"]["daily_stop"])   # self-imposed; the firm has no DLL
+DAILY_STOP = ACCOUNT["desk"]["daily_stop"]  # Optional self-imposed stop, not the firm's DLL.
 MIN_OPPORTUNITY = 45     # below this there is no setup worth planning
 
 SETUP_NAMES = ("breakout", "pullback", "momentum", "continuation", "reversal")
@@ -456,8 +456,9 @@ def bot5_risk(symbol, plan: dict, state: dict | None, news: dict | None,
           f"({stops:.1f} stops); entering needs {BUFFER_STOPS:.1f} and would leave "
           f"${room_after:,.0f} ({room_after / max(stop_usd, 1e-9):.1f} stops)")
     day_pnl = float(state.get("day_pnl", 0.0))
-    check("daily stop", day_pnl > -DAILY_STOP,
-          f"today is ${day_pnl:+,.0f}, stop at ${-DAILY_STOP:,.0f}")
+    if DAILY_STOP is not None:
+        check("daily stop", day_pnl > -float(DAILY_STOP),
+              f"today is ${day_pnl:+,.0f}, stop at ${-float(DAILY_STOP):,.0f}")
     check("position cap", len(open_positions) < MAX_OPEN,
           f"{len(open_positions)} of {MAX_OPEN} allowed positions open")
     same_bet = []
@@ -516,7 +517,7 @@ def bot5_risk(symbol, plan: dict, state: dict | None, news: dict | None,
         "stop_usd": round(stop_usd, 2), "win_usd": round(win_usd, 2),
         "risk_pct": round(100 * stop_usd / EQUITY, 2),
         "checks": checks, "hard_blockers": hard, "soft_flags": soft,
-        "headroom": {"daily_stop": round(DAILY_STOP + day_pnl, 2),
+        "headroom": {"daily_stop": round(float(DAILY_STOP) + day_pnl, 2) if DAILY_STOP is not None else None,
                      "consistency": round(limit - win_usd, 2),
                      "drawdown_buffer": round(room_buffer, 2)},
         "consistency": {"limit": round(limit, 2),
@@ -809,13 +810,15 @@ def bot12_governor(state: dict | None, history: list[dict] | None,
     if (DESK / "KILL").exists():
         hard.append("kill switch engaged")
     buffer = buffer_now(state)
-    halt_at, caution_at = MAX_LOSS * HALT_AT, MAX_LOSS * CAUTION_AT
-    if buffer <= halt_at:
-        hard.append(f"${buffer:,.0f} of the ${MAX_LOSS:,.0f} drawdown buffer left "
-                    f"— inside the ${halt_at:,.0f} circuit breaker")
-    elif buffer <= caution_at:
+    halt_at = MAX_LOSS * float(HALT_AT) if HALT_AT is not None else None
+    caution_at = MAX_LOSS * float(CAUTION_AT) if CAUTION_AT is not None else None
+    if state.get("equity") is None or state.get("peak_eod") is None:
+        hard.append("end-of-day high-water mark or equity is unknown")
+    elif buffer <= 0 or (halt_at is not None and buffer <= halt_at):
+        hard.append(f"${buffer:,.0f} of the ${MAX_LOSS:,.0f} drawdown buffer left")
+    elif caution_at is not None and buffer <= caution_at:
         soft.append(f"${buffer:,.0f} of the ${MAX_LOSS:,.0f} drawdown buffer left")
-    if day <= -DAILY_STOP:
+    if DAILY_STOP is not None and day <= -float(DAILY_STOP):
         hard.append(f"daily loss ${day:,.0f}")
     if losses >= 4:
         soft.append(f"{losses} consecutive losses")

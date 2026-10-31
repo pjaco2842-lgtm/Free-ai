@@ -1,5 +1,8 @@
 # The board — 2026-10-29T16:09:22Z
 
+> **PAUSED / historical:** Signals and risk assumptions are unvalidated. Do not
+> treat these calls as current instructions. See `trading/RESEARCH-LOG.md` (o).
+
 | market | call | conf | regime | setup | risk | roll |
 |---|---|---|---|---|---|---|
 | ES=F | **WAIT** | 48 | drift | pullback | approve | 41.3d |

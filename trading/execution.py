@@ -61,7 +61,7 @@ KILL = DESK / "KILL"
 # one position at a time is what a $1,000 end-of-day buffer can actually survive.
 EQUITY = float(ACCOUNT["start_balance"])
 RISK = float(ACCOUNT["desk"]["risk_per_trade_pct"]) / 100.0
-DAILY_STOP = float(ACCOUNT["desk"]["daily_stop"])
+DAILY_STOP = ACCOUNT["desk"]["daily_stop"]  # Optional self-imposed stop, not the firm's DLL.
 MAX_OPEN = int(ACCOUNT["desk"]["max_open"])
 MAX_SPREAD_TICKS = 3      # a paper fill this wide is not a fill, it is a hope
 MAX_DAILY_ORDERS = 6
@@ -138,7 +138,7 @@ def validate(order: dict, state: dict | None = None, kill: bool | None = None,
             fails.append("stop is not above entry on a short")
     if len(state.get("open_positions", [])) >= MAX_OPEN:
         fails.append(f"{MAX_OPEN} positions already open")
-    if float(state.get("day_pnl", 0.0)) <= -DAILY_STOP:
+    if DAILY_STOP is not None and float(state.get("day_pnl", 0.0)) <= -float(DAILY_STOP):
         fails.append(f"daily stop reached (${state.get('day_pnl', 0):,.0f})")
     if todays_orders >= MAX_DAILY_ORDERS:
         fails.append(f"{MAX_DAILY_ORDERS} orders already sent today")
@@ -178,6 +178,10 @@ def replay(verbose: bool = True, sessions: int = 3) -> dict:
     since 2009 and counted them against a single day's order cap, so it rejected
     five hundred trades for a limit that only applies to one day.
     """
+    raise SystemExit(
+        "Execution replay paused: session boundaries, fills and account logic are "
+        "unvalidated. Existing order records have not been changed."
+    )
     if KILL.exists():
         if verbose:
             print(f"  KILL switch present ({KILL}) — nothing submitted")

@@ -1,5 +1,11 @@
 # The wide sweep
 
+> **RETRACTED AS VALIDATION — audit 2026-10-31:** This historical report uses
+> entry/exit ordering and random-fill assumptions that can produce impossible or
+> biased results; account timing and consistency calculations are also incorrect.
+> Its selection, pass rates, survivor claims and comparisons are not reliable.
+> See `trading/RESEARCH-LOG.md` (audit) and `trading/desk/audit-search.md`.
+
 Generated 2026-10-31T04:50Z · **57,456 configurations per market · 287,280 in total** · one micro contract · five markets
 
 Markets: ES=F (MES, $5/pt), NQ=F (MNQ, $2/pt), GC=F (MGC, $10/pt), CL=F (MCL, $100/pt), NKD=F (NKD, $5/pt). Data 2009 → today, daily bars from Yahoo.

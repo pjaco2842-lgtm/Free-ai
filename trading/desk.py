@@ -317,7 +317,7 @@ def agent_skeptic(symbol, cfg, bars, atr, emas, side, ctx) -> dict:
     """The only job is to say no. A veto stops the trade."""
     reasons: list[str] = []
     state = ctx["state"]
-    if state.get("day_pnl", 0.0) <= -DAILY_STOP:
+    if DAILY_STOP is not None and state.get("day_pnl", 0.0) <= -float(DAILY_STOP):
         reasons.append(f"daily stop already hit (${state['day_pnl']:,.0f})")
     if ctx["open_risk"] >= MAX_OPEN:
         reasons.append(f"{ctx['open_risk']} positions already open")
@@ -511,6 +511,11 @@ def save_state(state: dict) -> None:
 
 # ------------------------------------------------------------------- cycle
 def cycle(write: bool = True, verbose: bool = True, shadow_days: int = 0) -> dict:
+    raise SystemExit(
+        "Paper desk paused: legacy fill ordering, session boundaries and account "
+        "tracking have not been validated. Existing records have not been changed. "
+        "See trading/RESEARCH-LOG.md (audit)."
+    )
     DESK.mkdir(parents=True, exist_ok=True)
     shadow = shadow_days > 0
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
@@ -801,8 +806,9 @@ def status() -> None:
     print("=" * 88)
     print(f"  DESK STATUS   {now_iso()}")
     print("=" * 88)
+    stop = f"${-float(DAILY_STOP):,.0f}" if DAILY_STOP is not None else "not configured"
     print(f"  equity ${state['equity']:,.0f}   realised ${state['realised']:+,.0f}"
-          f"   today ${state['day_pnl']:+,.0f} (stop at ${-DAILY_STOP:,.0f})")
+          f"   today ${state['day_pnl']:+,.0f} (self-imposed stop: {stop})")
     print(f"  cycles run {state.get('cycles', 0)}   first run {state.get('created')}")
     print(f"  open positions: {len(state.get('open_positions', []))}")
     for p in state.get("open_positions", []):
@@ -819,12 +825,11 @@ def status() -> None:
 
 
 def board_cmd(as_json: bool = False, classic: bool = False) -> None:
-    """Today's six-bot board for all five markets, written for the dashboard.
-
-    Separate from `--cycle` on purpose: a cycle answers "was the committee right
-    about a finished trade", which needs history. The board answers "what would
-    the desk do right now", which is the only thing a live hour can answer.
-    """
+    """Today's six-bot board for all five markets, written for the dashboard."""
+    raise SystemExit(
+        "Paper desk board paused: its signals and risk assumptions are unvalidated. "
+        "See trading/RESEARCH-LOG.md (audit)."
+    )
     if classic:
         os.environ["DESK_CLASSIC"] = "1"
     rows = bots_live()

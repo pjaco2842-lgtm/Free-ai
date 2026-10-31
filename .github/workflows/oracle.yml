@@ -23,7 +23,10 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # Safety pause: preserve history and schedule, but do not run the unvalidated engine.
+  # Re-enable only after the fill model, account rules and strategy are validated.
   paper:
+    if: ${{ false }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:

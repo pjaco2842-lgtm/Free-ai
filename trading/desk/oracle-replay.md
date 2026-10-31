@@ -1,3 +1,5 @@
+> **RETRACTED — audit 2026-10-31:** This historical replay uses an untrustworthy daily-bar fill model and is not evidence of paper earnings. See `trading/RESEARCH-LOG.md` and `trading/desk/audit-search.md`.
+
 # Replay — the book over the last 40 sessions
 
 Updated 2026-10-31T04:51Z · started 2026-10-31T04:51:09Z · equity **$+538.94** across 10 closed trades

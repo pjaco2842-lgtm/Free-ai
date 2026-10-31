@@ -141,8 +141,9 @@ def model_pred(X: np.ndarray, y: np.ndarray, years: np.ndarray) -> np.ndarray:
     """
     pred = np.full(len(y), np.nan)
     for yy in sorted(set(years.tolist())):
-        tr = (years < yy) & ~np.isnan(y)
-        cur = (years == yy) & ~np.isnan(X).any(1)
+        valid_features = np.isfinite(X).all(axis=1)
+        tr = (years < yy) & np.isfinite(y) & valid_features
+        cur = (years == yy) & valid_features
         if tr.sum() < 300 or not cur.any():
             continue
         mu, sd = X[tr].mean(0), X[tr].std(0) + 1e-9
@@ -677,6 +678,11 @@ def parity_check() -> str:
 
 # ------------------------------------------------------------------ main
 def main() -> None:
+    raise SystemExit(
+        "Legacy sweep disabled: daily-bar exit ordering and random-fill benchmark "
+        "are invalid for selection, and this command overwrites the paper book. "
+        "See trading/RESEARCH-LOG.md (audit) and trading/audit_search.py."
+    )
     ap = argparse.ArgumentParser()
     ap.add_argument("--markets", default="ES=F,NQ=F,GC=F,CL=F,NKD=F")
     ap.add_argument("--top", type=int, default=120, help="candidates per market through the gates")

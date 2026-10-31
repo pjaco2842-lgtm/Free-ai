@@ -1,8 +1,9 @@
 # Start here — paper trading the five December contracts
 
-> **Out of date in places.** The current state of the desk, the live book, every settled
-> research question and the honesty conventions are in **`trading/HANDOFF-DESK.md`**
-> (written 2026-10-31). Read that first; this page is the 26 October starting point.
+> **HISTORICAL / PAUSED — 2026-10-31 audit:** The paper desks are paused; no
+> strategy or standing order is validated. The instructions and results below are
+> historical, not a current recommendation. Read `trading/HANDOFF-DESK.md` and
+> `trading/RESEARCH-LOG.md` entry (o) first.
 
 You do not need the Mac for this. A browser is enough, and a phone works for
 placing the orders. Read the numbers in section 1 first, because they change

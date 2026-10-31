@@ -5,12 +5,10 @@ Why this exists
 ---------------
 Every rail used to be a constant: a $500 daily stop, an $800 drawdown breaker, a
 50% consistency cap. Those were guesses about somebody else's rulebook. LucidFlex
-is not "2% a day": it is a $1,000 end-of-day trailing drawdown, no daily loss
-limit, and a 40% consistency test on the evaluation. A rail stricter than the
-firm's rule throws away edge; a rail looser than it throws away the account.
-
-So the rails are read from desk/account.json, and what the bots enforce is what
-the firm actually enforces.
+has a $1,000 end-of-day trailing drawdown and standard 40% consistency test for
+25K evaluation accounts; a daily loss limit and 50% consistency are optional.
+The user's purchased customizations and intraday breach semantics are unconfirmed.
+The legacy desk is paused; these helpers are not a complete account simulator.
 
 The one thing a config cannot fix
 ---------------------------------
@@ -25,13 +23,14 @@ account, not a setting to tune away.
 from __future__ import annotations
 
 import json
+import math
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 PATH = HERE / "desk" / "account.json"
 
-# Kept identical to desk/account.json so a missing or broken file degrades to the
-# same rules instead of to no rules at all.
+# Historical defaults for helpers only. Actual account customizations require
+# verification; a missing/broken profile is not evidence of the purchased rules.
 DEFAULTS: dict = {
     "firm": "Lucid Trading",
     "product": "LucidFlex",
@@ -40,7 +39,7 @@ DEFAULTS: dict = {
     "profit_target": 1250,
     "max_loss": 1000,
     "drawdown": {"type": "end_of_day_trailing", "amount": 1000,
-                 "lock_at_start_balance": True},
+                 "lock_at_start_balance": False, "locked_floor": 25100},
     "daily_loss_limit": None,
     "stop_loss_required": False,
     "consistency": {"rule": 0.40, "add_on": 0.50, "applies_to": "evaluation only"},
@@ -71,25 +70,37 @@ ACCOUNT = load()
 def floor_for(peak_eod: float) -> float:
     """The balance that ends the account, given the end-of-day high-water mark.
 
-    Trailing means the floor follows the high-water balance up. It stops at the
-    starting balance, which is the conservative assumption: if the firm trails
-    further than that, this understates the room left rather than overstating it.
+    For the configured 25K evaluation, the floor follows closing balances up to
+    the published $25,100 locked floor. Payout-triggered locking is not modeled.
     """
     start = float(ACCOUNT["start_balance"])
     amount = float(ACCOUNT["max_loss"])
     floor = float(peak_eod) - amount
-    if ACCOUNT["drawdown"].get("lock_at_start_balance", True):
+    locked = ACCOUNT["drawdown"].get("locked_floor")
+    if locked is not None:
+        floor = min(floor, float(locked))
+    elif ACCOUNT["drawdown"].get("lock_at_start_balance", True):
         floor = min(floor, start)
     return max(floor, start - amount)
 
 
 def buffer_now(state: dict) -> float:
-    """Dollars between the current balance and the level that ends the account."""
+    """Room against the previous closing high; fail closed if it is unknown.
+
+    Intraday equity is not an EOD high and must not be used to advance the floor.
+    This does not decide whether a firm's intraday breach rule applies.
+    """
     state = state or {}
-    start = float(ACCOUNT["start_balance"])
-    equity = float(state.get("equity", start))
-    peak = float(state.get("peak_equity", max(equity, start)))
-    return max(equity - floor_for(max(peak, equity)), 0.0)
+    if state.get("equity") is None or state.get("peak_eod") is None:
+        return 0.0
+    try:
+        equity = float(state["equity"])
+        peak = float(state["peak_eod"])
+    except (TypeError, ValueError):
+        return 0.0
+    if not math.isfinite(equity) or not math.isfinite(peak) or peak < float(ACCOUNT["start_balance"]):
+        return 0.0
+    return max(equity - floor_for(peak), 0.0)
 
 
 def stops_left(state: dict, stop_usd: float) -> float:

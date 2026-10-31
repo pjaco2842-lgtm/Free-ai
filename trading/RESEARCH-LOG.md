@@ -769,3 +769,139 @@ drift. Three sessions is a lottery with a $1,000 ticket, and no honest sweep mak
 otherwise.
 
 **Count.** Configurations tested this phase: 287,280. Strategies traded forward: 1.
+
+## 2026-10-31 (o) — independent audit and 30,000 open-entry candidates
+
+**Scope and correction.** This is a focused audit of the current wide sweep, paper
+runner, account walk, input sources and major claims, not a line-by-line validation
+of every older script. Historic claims in entries (m), (n), the generated wide-sweep
+reports, earlier backtests sharing these mechanisms, and the handoff are not proof.
+Retain them as a historical record. Their numeric results need independent
+recomputation before use. In particular the 77.7% / 80.4% win rates, 84% consistent
+pass, 14-session median, +$538.94 replay, and claimed 289 versus 30 chance comparison
+must not be relied on. The 0/204 figure cannot establish that a 3-day pass is impossible.
+
+**Concrete findings.**
+1. `mine26k.day_trade` / `leg_pnl` evaluate session-wide highs/lows against a target
+   after a level entry without knowing if the high/low preceded entry. The claimed
+   long buy stop at a prior low is actually modeled as a downward-touch long entry:
+   a standard buy stop below market is not that instruction. Test
+   `test_legacy_claims_target_even_if_target_precedes_dip_entry` constructs a
+   possible price path proving the discrepancy. Even stop-first ties do not fix it.
+2. `luck_test` draws a fill using the completed session's range and applies the whole
+   session to it, including extremes from before that hypothetical fill. It conditions
+   on realized trade days and side. Its reported 100th percentile and the 5%/30
+   chance calculation are not a valid multiple-testing-corrected null; choices are
+   correlated, preselected on test data, and the null is not exchangeable.
+3. The sweep ranks candidates on 2020–2024 outcomes before its other gates; that
+   period and 2025+ were repeatedly inspected. They are not untouched holdouts. Only
+   the first 120 per market were evaluated by expensive gates; 289 is not a census
+   of all candidates. The list of top 60 does not prove all 289 share a family.
+4. The original `model_pred` filtered NaN labels, not NaN features, before regression.
+   A training matrix with missing features could propagate NaNs into predictions;
+   reported failure of the ridge model does not establish that learning models fail.
+   The training mask has since been fixed and tested; the old sweep remains invalid.
+5. `walk` counts days with trades, not all trading sessions; stops at the first target
+   even if consistency fails instead of continuing; updates its trailing high on
+   individual legs, not after the session; and lacks intraday equity-floor checks.
+   `rolling` uses overlapping starts, mixes unfinished starts into pass denominators,
+   and uses a different denominator for breach. Percentages are not independent
+   probabilities. `paper_oracle` stops only at initial loss and its displayed room
+   ignores a trailing floor. Its settlement cutoff is fixed UTC and not verified for
+   DST/holidays. The repository contains a scheduled GitHub Actions workflow for the
+   paper runner, but its current enabled status and execution are not established
+   from the repository files.
+6. The data are Yahoo continuous `=F` proxies, not actual December 2026 contract
+   histories or guaranteed tradable prices; sessions, rolls, market liquidity, open
+   fills, historical micro availability and fees need verification. The previous
+   one-size $1.24 per side assumption is not Lucid's published product-specific
+   commission. Spreads, gaps, queue, partial fills and intraday margin/breaches need
+   additional treatment. One-tick slippage is an assumption, not a guarantee.
+
+**Action.** Preserved the forward state: 0 trades and $0.00; did not overwrite or
+invent fills. Withdrew the stale November 2 order, paused `paper_oracle.py` and the
+book-overwriting legacy `mine26k.py` command. No new candidate installed because no
+valid improvement was demonstrated. Both pause intentionally without modifying state.
+The pause takes effect in this workspace only until committed and pushed; the
+remote may still run the old workflow. Workflow existence does not guarantee a run.
+
+**New research.** `audit_search.py` / `desk/audit-search.md`: 30,000 configurations
+(6,000 per ES, NQ, GC, CL, NKD) based on 12 prior-bar patterns × five thresholds ×
+two comparisons × two sides × five stops × five exits. These are configurations,
+not all independent or necessarily distinct strategies. Choose one rule per market
+on 2009–2019 only; evaluate the fixed choices on the reused 2020–2024 and 2025+ data.
+Bracket outcomes use open entries, stop-first ties, product-specific published
+commissions and tick rounding; random-side 500-run Monte Carlo uses the same selected
+pre-open days, stops and costs. No multiple-testing claim. Input hashes and full
+results are in the report; the exact data snapshots were not retained, so later
+Yahoo revisions can prevent reproduction of the hashes. This is exploratory, not
+untouched out-of-sample validation, and does not implement a tradeable open execution.
+The five frozen test-period random-side p-values are ES .475, NQ .202, GC .611,
+CL .645, NKD .226; none beat 5%. Three of five have negative 2020–2024 average
+returns. No candidate is validated or installed. The close-only account walk is
+sensitivity only, with unfinished and overlapping starts visible; it does not model
+intraday breach or price gaps and is not a reliable pass probability.
+
+**Rules check.** Lucid's official 25K Flex page lists $1,250 target, $1,000 max loss,
+40% standard consistency (50% paid add-on), 2 minis or 20 micros. Its drawdown page
+states lock at $25,100 once the initial trail balance $26,100 is exceeded. It says
+reaching the max loss limit breaches, but whether unrealized intraday equity triggers
+it is not clear from the official text reviewed: confirm in writing with Lucid.
+DLL can be customized; do not assume it is off for this user's account. Source:
+https://support.lucidtrading.com/en/articles/12945790-lucidflex-evaluation-account
+https://support.lucidtrading.com/en/articles/12945815-lucidflex-drawdown
+https://support.lucidtrading.com/en/articles/12945805-lucidflex-consistency-percentage
+https://support.lucidtrading.com/en/articles/16226050-lucidflex-customization
+https://support.lucidtrading.com/en/articles/11508978-approved-products-and-commissions
+
+**Tests.** `python3 -m unittest discover -s trading -p test_audit_search.py -v` tests
+stop priority, pre-open feature causality, session counting, consistency continuation,
+previous-close trailing floor, and a counterexample to the old fill model. Compile
+checks on affected Python files; intentional command guards verified separately.
+The first ad hoc trailing-floor fixture incorrectly expected a $650 loss after a
+$600 gain to breach a $1,000 trail; corrected to a $1,050 loss and reran the test.
+A genuinely new final holdout, executable specific-contract intraday data, reliable
+account and risk logic, and a new forward paper ledger remain necessary before
+promoting a strategy. No promise of profitability or three-session success.
+
+## 2026-10-31 (p) — safety pause, rule corrections and outstanding blockers
+
+Both `.github/workflows/oracle.yml` and the distinct hourly `desk.yml` contain a
+job-level `if: ${{ false }}` pause. The latter also stops its board, analytics,
+dashboard and automated commits. Scheduled events may still appear as skipped;
+this is not a GitHub account-level disable and does not cancel already-running jobs.
+Neither workflow nor a guard can retroactively cancel real broker orders; this
+repository does not establish whether any external order was ever submitted.
+Direct `paper_oracle` stepping/watch, desk cycle/board and execution replay now
+refuse to run; the original forward/oracle and order ledgers were not rewritten.
+Other legacy scripts and reports have not all been audited; do not treat them as
+validated or run them to make trade decisions. The old book is marked unvalidated.
+
+The official $25,100 locked floor is reflected in `account.py` and account.json;
+`buffer_now` refuses to infer the prior EOD high from today's equity or an
+intraday peak, returning zero if either balance or closing high-water is missing.
+Existing state does not contain `peak_eod` and has not been silently backfilled.
+A $25,100 lock on a 25K profile is not a generalized rule for other accounts.
+Account-specific DLL and intraday unrealized-loss breach remain unconfirmed.
+The old bot/desk/execution modules incorrectly tried to convert null optional
+rails to floats; they now handle absent settings without inventing a DLL or daily
+stop. These changes alone do not validate their risk engines. Fixed the
+walk-forward ridge's missing/non-finite feature mask; this is not a finding of an
+edge and does not rehabilitate the old strategy sweep.
+
+Data-source research: Databento documents exchange-wide CME/NYMEX/COMEX futures
+history and dated-contract symbology, including 1-minute bars, at
+https://databento.com/docs/datasets/glbx-mdp3 and
+https://databento.com/docs/conventions/symbology. Confirm individual NKD coverage,
+license and exact costs before acquiring data. An actual December 2026 contract
+cannot have a 17-year tradable history; historical studies need older expiry
+contracts and an explicitly defined, point-in-time roll process. No vendor was
+integrated, no account created and no data purchased. The available Yahoo daily
+proxies are insufficient to validate the earlier intraday level-entry strategy.
+
+The simulator is **not repaired or re-enabled**: reliable dated-contract intraday
+history, gap and ambiguous-bar treatment, session boundaries, actual firm-specific
+rules and truly independent validation remain prerequisites. Fixing all historic
+research or guaranteeing a profitable three-day strategy cannot be asserted. Keep
+paper-only and preserve the plan to consider a $2,000 cushion or 50K only after
+the 25K has banked its cushion.

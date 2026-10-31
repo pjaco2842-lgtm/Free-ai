@@ -1,11 +1,24 @@
 # Handoff — the trading desk, everything learned so far
 
+> **AUDIT WARNING — 2026-10-31:** The old sweep, paper fill engine, account walks,
+> and many claims below are **unreliable**, not proven strategies. Daily-bar highs
+> and lows can occur before entry; the advertised buy stop below market is not a
+> standard buy-stop order; the luck test uses completed-bar information; and account
+> simulations miscount sessions and mishandle consistency. Both paper workflows,
+> the paper runner, and the legacy sweep are paused where this revision is installed.
+> The $0 forward ledger remains intact. The November 2 order is withdrawn, not standing. Read the audit in `trading/RESEARCH-LOG.md` and
+> `trading/desk/audit-search.md` before using any historical report. The 80% win,
+> 84% pass, 14-session and replay claims are retracted; do not infer impossibility
+> of three-day passage from the flawed tests. A scheduled workflow exists, but its
+> status is unverified; the pause only applies where these changes are present.
+> Prior reports are historical records, not current instructions.
+
 **Last updated: 2026-10-31.** This file is the memory of the desk. If a chat dies, a new
 one reads this and nothing else is lost. Read it before touching anything in `trading/`.
 
-If you are a new agent picking this up, the short version is at the bottom ("Paste this
-into the next chat"). The long version is everything above it, and all of it is numbers
-that were measured, not remembered.
+The sections below are preserved historical claims, **not current instructions or
+validated results**. Use the warning above and research-log entry (o) instead; the
+old bottom-of-file prompt is superseded.
 
 ---
 
@@ -197,9 +210,10 @@ in `oracle-forward.md` with the worst case against the $1,000 buffer.
 
 ## 8. Paste this into the next chat
 
-> Read `trading/HANDOFF-DESK.md` first — it holds the account rules, the live book, every
-> settled research question and the honesty conventions. Then read
-> `trading/RESEARCH-LOG.md` entry (n) and `trading/desk/mine26k.md`. The desk trades one
-> ES rule (prior-day-low stop, gap-with, long only, 1.0 ATR, 0.5R) on a 25K LucidFlex
-> evaluation, paper only, until 13 November 2026. Do not re-run the settled questions in
-> section 4; do not add a live broker.
+> Read `trading/RESEARCH-LOG.md` entry (o) first. The paper desks are paused and no
+> strategy or order is approved. The legacy fills and pass rates are unreliable; do
+> not present replays as earnings. Preserve both forward records. Confirm the 25K
+> account's customized rules with Lucid, and validate causal fills and session
+> boundaries with suitable data before considering a strategy. Paper only; do not
+> add a live broker without a separate explicit request. Keep the $2,000 cushion
+> or 50K idea for consideration after the 25K has banked its cushion.

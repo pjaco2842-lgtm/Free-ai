@@ -186,6 +186,7 @@ def recheck(sym: str, D: dict, specs: list[dict], state: dict) -> list[dict]:
 
 
 def step(sym: str, D: dict, specs: list[dict], state: dict, upto: int) -> list[dict]:
+    raise SystemExit("Paper runner paused: unvalidated fills and account handling; state unchanged.")
     start = state["last"].get(sym)
     first = 2
     if start:
@@ -236,6 +237,7 @@ def pad(D: dict) -> dict:
 
 def watch(D: dict, specs: list[dict], upto: int) -> list[dict]:
     """The orders standing for the session in progress, or for the next one."""
+    raise SystemExit("Paper orders withdrawn: the legacy strategy is unvalidated.")
     if upto >= len(D["dates"]):
         D = pad(D)
         upto = len(D["dates"]) - 1
@@ -431,6 +433,11 @@ def main() -> None:
     ap.add_argument("--state", default=str(STATE), help="ledger file for that book")
     ap.add_argument("--out", default=str(FORWARD), help="report file for that book")
     args = ap.parse_args()
+    raise SystemExit(
+        "Paper runner paused: the legacy daily-bar fill model can count exits before "
+        "entry, and its account-floor handling is not reliable. Existing state has not "
+        "been changed. See trading/RESEARCH-LOG.md (audit)."
+    )
     book_path, state_path, out_path = Path(args.book), Path(args.state), Path(args.out)
     if args.replay and Path(args.out) == FORWARD:
         out_path = REPLAY_MD          # a replay must never overwrite the forward record

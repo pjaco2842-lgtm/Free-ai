@@ -1,16 +1,17 @@
 # The wide-sweep paper book
 
+> **WITHDRAWN — audit 2026-10-31:** The previously displayed order is not standing. Automatic
+> paper processing is paused because daily-bar fills can count a target before
+> entry and the account tracker is not reliable. The $0 / 0-trade ledger remains
+> unchanged; this report is historical, not instructions to trade. See
+> `trading/RESEARCH-LOG.md` and `trading/desk/audit-search.md`.
+
 Updated 2026-10-31T04:51Z · started 2026-10-31T04:51:09Z · equity **$+0.00** across 0 closed trades
 
-## Orders standing for the next close
+## Orders
 
-| session | market | rule | side | level | distance from last close | risk/contract |
-|---|---|---|---|---|---|---|
-| 2026-11-02 | ES=F | nday_fade-1 1.0A tp05 gap with long | long | 7,558.25 | -55.75 | $471 |
-
-A level is a resting buy/sell stop: if the session trades through it, the trade is taken and the record shows it after the close.
-
-**Worst case next session**: if every standing order fills and every one stops out, that is **$471** against the $1,000 buffer. Not hidden.
+**None.** The previously displayed November 2 ES order was withdrawn in the audit.
+The original historical report remains available in the repository's git history.
 
 ## Today (UTC)
 

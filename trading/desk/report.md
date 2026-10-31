@@ -1,5 +1,9 @@
 # The desk — forward record
 
+> **PAUSED — audit 2026-10-31:** Historical shadow results and forward fill
+> assumptions have not been validated. Do not use this report as trade instructions
+> or evidence of profit. See `trading/RESEARCH-LOG.md` (o).
+
 Updated 2026-10-29T12:35:34Z · equity $25,000 · 0 forward signals · 4 shadow signals
 
 ## Forward record

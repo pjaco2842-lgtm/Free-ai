@@ -1,4 +1,5 @@
 {
+  "audit_status": "RETRACTED AS VALIDATION: fill ordering, null comparison, selection and account simulation are unreliable; see trading/RESEARCH-LOG.md (o).",
   "generated": "2026-10-31T04:50Z",
   "space_per_market": 57456,
   "configs": 287280,
