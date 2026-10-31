@@ -1,14 +1,14 @@
 {
-  "_source": "Lucid Trading \u2014 LucidFlex evaluation, 50K. Rules read 2026-10-29; confirm on your dashboard after any firm update.",
+  "_source": "Lucid Trading \u2014 LucidFlex evaluation, 25K. Rules read 2026-10-29; confirm on your dashboard after any firm update.",
   "firm": "Lucid Trading",
   "product": "LucidFlex",
   "phase": "evaluation",
-  "start_balance": 50000,
-  "profit_target": 3000,
-  "max_loss": 2000,
+  "start_balance": 25000,
+  "profit_target": 1250,
+  "max_loss": 1000,
   "drawdown": {
     "type": "end_of_day_trailing",
-    "amount": 2000,
+    "amount": 1000,
     "basis": "end-of-day balance high-water mark \u2014 intraday excursions do not count",
     "lock_at_start_balance": true
   },
@@ -21,13 +21,18 @@
     "formula": "largest single day profit / account profit must be at or below the limit"
   },
   "desk": {
-    "book": "three NQ daily rules, one micro each: nr_break-2 1.0A tp2, nday_break-1 1.0A tp2, nday_fade-5 0.75A tp1",
-    "risk_per_trade_pct": 1.3,
-    "max_open": 3,
+    "book": "two ES daily rules, one micro each: nday_fade-5 0.5A tp1 + nr_break-2 1.0A tp1",
+    "risk_per_trade_pct": 1.6,
+    "max_open": 2,
     "daily_stop": null,
-    "buffer_guard_stops": 1.7,
+    "buffer_guard_stops": 2.4,
     "governor_halt_fraction": null,
     "governor_caution_fraction": null,
-    "why": "One leg stops out for about $645 on today's NQ, which is 1.3% of a $50K. The three rules can all stop on the same session, and that day is $1,769 \u2014 88% of the $2,000 buffer \u2014 so the buffer holds a median session (1,158) 1.7 times over and a three-leg losing day not quite once. That is the price of the profit: the trio's median 40-session window is +$4,588 at one micro, and the worst is -$4,647. A 25K at the same size carried a $1,158 median session against a $1,000 allowance and died; the 50K is the smallest account that can hold this book."
+    "why": "Chosen by atr_grid.py, which walked $25,000 through every rule x stop x exit x market from every starting trade. This pair passes 88% of attempts with the 40% consistency rule intact and breaches the floor in 7%; a median session risks $405, both legs stopping costs about $618, so the $1,000 buffer holds two bad sessions. It is ES on purpose: one micro of NQ at a 1.0 ATR stop risks $1,054, which is the whole buffer in a single trade, and every NQ line on a 25K fails the consistency rule because one good day is more than 40% of the $1,250 target."
+  },
+  "plan": {
+    "now": "25K, paper only, until 2026-11-13",
+    "next": "when the 25K account has banked its cushion, either buy a 50K or fund the same 25K to +$2,000 of cushion before adding risk",
+    "why": "50K is the smallest LucidFlex account that holds the wider-stop books (2.0-2.5 ATR) and the NQ lines at two micros; on a 25K those stops are one trade away from a breach, so they win more often and pass less often."
   }
 }

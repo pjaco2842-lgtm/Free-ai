@@ -1,6 +1,6 @@
 # Replay — the book over the last 40 sessions
 
-Updated 2026-10-30T20:51Z · started 2026-10-30T20:51:38Z · equity **$+12,597.68** across 65 closed trades
+Updated 2026-10-31T04:18Z · started 2026-10-31T04:18:57Z · equity **$+1,149.08** across 34 closed trades
 
 ## Orders standing for the next close
 
@@ -10,122 +10,90 @@ No orders standing — either the book is empty, or the rule's gate is off for t
 
 | date | market | rule | side | entry | exit | why | $ |
 |---|---|---|---|---|---|---|---|
-| 2026-09-10 | NQ=F | nr_break-2 1.0A tp2 both | short | 29,333.00 | 29,135.25 | close | $+392.02 |
-| 2026-09-14 | NQ=F | nr_break-2 1.0A tp2 both | short | 28,997.75 | 29,152.25 | close | $-312.48 |
-| 2026-09-21 | NQ=F | nr_break-2 1.0A tp2 both | long | 29,938.00 | 30,742.64 | target | $+1,605.81 |
-| 2026-09-28 | NQ=F | nr_break-2 1.0A tp2 both | short | 30,679.00 | 30,566.25 | close | $+222.02 |
-| 2026-09-30 | NQ=F | nr_break-2 1.0A tp2 both | long | 30,725.50 | 30,698.75 | close | $-56.98 |
-| 2026-10-05 | NQ=F | nr_break-2 1.0A tp2 both | long | 31,282.50 | 31,317.75 | close | $+67.02 |
-| 2026-10-06 | NQ=F | nr_break-2 1.0A tp2 both | long | 31,371.00 | 31,483.25 | close | $+221.02 |
-| 2026-10-07 | NQ=F | nr_break-2 1.0A tp2 both | short | 31,309.25 | 31,402.25 | close | $-189.48 |
-| 2026-10-14 | NQ=F | nr_break-2 1.0A tp2 both | short | 30,591.25 | 30,182.75 | close | $+813.52 |
-| 2026-10-21 | NQ=F | nr_break-2 1.0A tp2 both | long | 29,925.00 | 30,007.00 | close | $+160.52 |
-| 2026-10-22 | NQ=F | nr_break-2 1.0A tp2 both | short | 29,727.50 | 29,142.00 | close | $+1,167.52 |
-| 2026-10-26 | NQ=F | nr_break-2 1.0A tp2 both | long | 29,326.00 | 29,437.25 | close | $+219.02 |
-| 2026-10-29 | NQ=F | nr_break-2 1.0A tp2 both | short | 29,674.25 | 29,562.00 | close | $+221.02 |
-| 2026-09-04 | NQ=F | nday_break-1 1.0A tp2 both | long | 29,584.25 | 29,565.25 | close | $-41.48 |
-| 2026-09-09 | NQ=F | nday_break-1 1.0A tp2 both | short | 29,424.75 | 29,448.75 | close | $-51.48 |
-| 2026-09-10 | NQ=F | nday_break-1 1.0A tp2 both | short | 29,333.00 | 29,135.25 | close | $+392.02 |
-| 2026-09-11 | NQ=F | nday_break-1 1.0A tp2 both | short | 29,043.25 | 29,427.27 | stop | $-771.52 |
-| 2026-09-14 | NQ=F | nday_break-1 1.0A tp2 both | short | 28,997.75 | 29,152.25 | close | $-312.48 |
-| 2026-09-17 | NQ=F | nday_break-1 1.0A tp2 both | long | 29,252.25 | 29,446.75 | close | $+385.52 |
-| 2026-09-18 | NQ=F | nday_break-1 1.0A tp2 both | long | 29,498.25 | 29,613.68 | close | $+227.38 |
-| 2026-09-21 | NQ=F | nday_break-1 1.0A tp2 both | long | 29,938.00 | 30,742.64 | target | $+1,605.81 |
-| 2026-09-22 | NQ=F | nday_break-1 1.0A tp2 both | long | 30,862.75 | 31,028.50 | close | $+328.02 |
-| 2026-09-24 | NQ=F | nday_break-1 1.0A tp2 both | short | 30,642.75 | 30,766.75 | close | $-251.48 |
-| 2026-09-25 | NQ=F | nday_break-1 1.0A tp2 both | long | 30,827.50 | 30,889.25 | close | $+120.02 |
-| 2026-09-28 | NQ=F | nday_break-1 1.0A tp2 both | short | 30,679.00 | 30,566.25 | close | $+222.02 |
-| 2026-09-30 | NQ=F | nday_break-1 1.0A tp2 both | long | 30,725.50 | 30,698.75 | close | $-56.98 |
-| 2026-10-01 | NQ=F | nday_break-1 1.0A tp2 both | long | 30,906.00 | 30,760.50 | close | $-294.48 |
-| 2026-10-02 | NQ=F | nday_break-1 1.0A tp2 both | long | 31,151.50 | 31,061.75 | close | $-182.98 |
-| 2026-10-05 | NQ=F | nday_break-1 1.0A tp2 both | long | 31,282.50 | 31,317.75 | close | $+67.02 |
-| 2026-10-06 | NQ=F | nday_break-1 1.0A tp2 both | long | 31,371.00 | 31,483.25 | close | $+221.02 |
-| 2026-10-07 | NQ=F | nday_break-1 1.0A tp2 both | short | 31,309.25 | 31,402.25 | close | $-189.48 |
-| 2026-10-08 | NQ=F | nday_break-1 1.0A tp2 both | short | 31,143.00 | 30,969.50 | close | $+343.52 |
-| 2026-10-13 | NQ=F | nday_break-1 1.0A tp2 both | short | 30,844.25 | 30,791.50 | close | $+102.02 |
-| 2026-10-14 | NQ=F | nday_break-1 1.0A tp2 both | short | 30,591.25 | 30,182.75 | close | $+813.52 |
-| 2026-10-15 | NQ=F | nday_break-1 1.0A tp2 both | short | 30,078.00 | 30,143.75 | close | $-134.98 |
-| 2026-10-19 | NQ=F | nday_break-1 1.0A tp2 both | short | 29,227.00 | 29,732.82 | stop | $-1,015.12 |
-| 2026-10-21 | NQ=F | nday_break-1 1.0A tp2 both | long | 29,925.00 | 30,007.00 | close | $+160.52 |
-| 2026-10-22 | NQ=F | nday_break-1 1.0A tp2 both | short | 29,727.50 | 29,142.00 | close | $+1,167.52 |
-| 2026-10-23 | NQ=F | nday_break-1 1.0A tp2 both | short | 29,033.00 | 29,117.75 | close | $-172.98 |
-| 2026-10-26 | NQ=F | nday_break-1 1.0A tp2 both | long | 29,326.00 | 29,437.25 | close | $+219.02 |
-| 2026-10-27 | NQ=F | nday_break-1 1.0A tp2 both | long | 29,572.00 | 29,812.00 | close | $+476.52 |
-| 2026-10-28 | NQ=F | nday_break-1 1.0A tp2 both | long | 29,881.25 | 29,979.50 | close | $+193.02 |
-| 2026-10-29 | NQ=F | nday_break-1 1.0A tp2 both | short | 29,674.25 | 29,562.00 | close | $+221.02 |
-| 2026-10-30 | NQ=F | nday_break-1 1.0A tp2 both | short | 29,111.00 | 28,551.75 | close | $+1,115.02 |
-| 2026-09-08 | NQ=F | nday_fade-5 0.75A tp1 both | short | 29,704.50 | 29,538.75 | close | $+328.02 |
-| 2026-09-11 | NQ=F | nday_fade-5 0.75A tp1 both | long | 29,043.25 | 29,331.26 | target | $+572.55 |
-| 2026-09-14 | NQ=F | nday_fade-5 0.75A tp1 both | long | 28,997.75 | 29,293.30 | target | $+587.63 |
-| 2026-09-16 | NQ=F | nday_fade-5 0.75A tp1 both | long | 28,816.25 | 29,106.96 | target | $+577.93 |
-| 2026-09-18 | NQ=F | nday_fade-5 0.75A tp1 both | short | 29,500.25 | 29,613.68 | close | $-230.34 |
-| 2026-09-21 | NQ=F | nday_fade-5 0.75A tp1 both | short | 29,938.00 | 30,239.74 | stop | $-606.96 |
-| 2026-09-22 | NQ=F | nday_fade-5 0.75A tp1 both | short | 30,862.75 | 31,028.50 | close | $-334.98 |
-| 2026-09-23 | NQ=F | nday_fade-5 0.75A tp1 both | short | 31,065.50 | 30,720.76 | target | $+685.99 |
-| 2026-10-01 | NQ=F | nday_fade-5 0.75A tp1 both | short | 30,999.50 | 30,633.13 | target | $+729.25 |
-| 2026-10-02 | NQ=F | nday_fade-5 0.75A tp1 both | short | 31,151.50 | 30,776.43 | target | $+746.66 |
-| 2026-10-05 | NQ=F | nday_fade-5 0.75A tp1 both | short | 31,282.50 | 31,317.75 | close | $-73.98 |
-| 2026-10-06 | NQ=F | nday_fade-5 0.75A tp1 both | short | 31,371.00 | 31,483.25 | close | $-227.98 |
-| 2026-10-13 | NQ=F | nday_fade-5 0.75A tp1 both | long | 30,792.00 | 30,791.50 | close | $-4.48 |
-| 2026-10-14 | NQ=F | nday_fade-5 0.75A tp1 both | long | 30,591.25 | 30,265.56 | stop | $-654.86 |
-| 2026-10-15 | NQ=F | nday_fade-5 0.75A tp1 both | long | 30,078.00 | 29,733.24 | stop | $-693.00 |
-| 2026-10-16 | NQ=F | nday_fade-5 0.75A tp1 both | long | 29,622.50 | 29,980.85 | target | $+713.23 |
-| 2026-10-19 | NQ=F | nday_fade-5 0.75A tp1 both | long | 29,227.00 | 29,606.37 | target | $+755.25 |
-| 2026-10-22 | NQ=F | nday_fade-5 0.75A tp1 both | long | 29,226.00 | 29,623.46 | target | $+791.44 |
-| 2026-10-23 | NQ=F | nday_fade-5 0.75A tp1 both | long | 29,033.00 | 29,117.75 | close | $+166.02 |
-| 2026-10-28 | NQ=F | nday_fade-5 0.75A tp1 both | short | 30,113.00 | 29,979.50 | close | $+263.52 |
-| 2026-10-30 | NQ=F | nday_fade-5 0.75A tp1 both | long | 28,987.00 | 28,524.30 | stop | $-928.87 |
+| 2026-09-10 | ES=F | nday_fade-5 0.5A tp1 both | long | 7,618.50 | 7,586.20 | stop | $-166.50 |
+| 2026-09-15 | ES=F | nday_fade-5 0.5A tp1 both | long | 7,585.50 | 7,619.45 | target | $+164.75 |
+| 2026-09-16 | ES=F | nday_fade-5 0.5A tp1 both | long | 7,576.75 | 7,542.71 | stop | $-175.20 |
+| 2026-09-21 | ES=F | nday_fade-5 0.5A tp1 both | short | 7,722.00 | 7,759.44 | stop | $-192.17 |
+| 2026-09-22 | ES=F | nday_fade-5 0.5A tp1 both | short | 7,847.25 | 7,831.75 | close | $+72.52 |
+| 2026-09-30 | ES=F | nday_fade-5 0.5A tp1 both | long | 7,707.25 | 7,748.47 | target | $+201.12 |
+| 2026-10-01 | ES=F | nday_fade-5 0.5A tp1 both | long | 7,705.50 | 7,746.57 | target | $+200.36 |
+| 2026-10-05 | ES=F | nday_fade-5 0.5A tp1 both | short | 7,810.25 | 7,768.22 | target | $+205.18 |
+| 2026-10-06 | ES=F | nday_fade-5 0.5A tp1 both | short | 7,847.50 | 7,890.63 | stop | $-220.63 |
+| 2026-10-14 | ES=F | nday_fade-5 0.5A tp1 both | long | 7,783.00 | 7,748.56 | stop | $-177.17 |
+| 2026-10-15 | ES=F | nday_fade-5 0.5A tp1 both | long | 7,741.00 | 7,777.67 | target | $+178.37 |
+| 2026-10-16 | ES=F | nday_fade-5 0.5A tp1 both | long | 7,717.25 | 7,679.93 | stop | $-191.59 |
+| 2026-10-23 | ES=F | nday_fade-5 0.5A tp1 both | long | 7,676.00 | 7,659.75 | close | $-86.23 |
+| 2026-10-28 | ES=F | nday_fade-5 0.5A tp1 both | short | 7,812.25 | 7,771.14 | target | $+200.56 |
+| 2026-10-30 | ES=F | nday_fade-5 0.5A tp1 both | long | 7,648.50 | 7,606.91 | stop | $-212.93 |
+| 2026-09-08 | ES=F | nr_break-2 1.0A tp1 both | short | 7,711.75 | 7,680.50 | close | $+151.27 |
+| 2026-09-15 | ES=F | nr_break-2 1.0A tp1 both | short | 7,593.75 | 7,589.25 | close | $+17.52 |
+| 2026-09-16 | ES=F | nr_break-2 1.0A tp1 both | short | 7,576.75 | 7,556.50 | close | $+96.27 |
+| 2026-09-18 | ES=F | nr_break-2 1.0A tp1 both | long | 7,654.50 | 7,657.35 | close | $+9.27 |
+| 2026-09-21 | ES=F | nr_break-2 1.0A tp1 both | long | 7,722.00 | 7,796.88 | target | $+369.39 |
+| 2026-09-23 | ES=F | nr_break-2 1.0A tp1 both | short | 7,810.50 | 7,772.50 | close | $+185.02 |
+| 2026-09-25 | ES=F | nr_break-2 1.0A tp1 both | long | 7,783.50 | 7,803.75 | close | $+96.27 |
+| 2026-09-28 | ES=F | nr_break-2 1.0A tp1 both | short | 7,748.50 | 7,746.75 | close | $+3.77 |
+| 2026-10-05 | ES=F | nr_break-2 1.0A tp1 both | long | 7,810.25 | 7,826.25 | close | $+75.02 |
+| 2026-10-07 | ES=F | nr_break-2 1.0A tp1 both | short | 7,829.00 | 7,852.75 | close | $-123.73 |
+| 2026-10-12 | ES=F | nr_break-2 1.0A tp1 both | long | 7,873.00 | 7,858.00 | close | $-79.98 |
+| 2026-10-13 | ES=F | nr_break-2 1.0A tp1 both | short | 7,846.25 | 7,855.75 | close | $-52.48 |
+| 2026-10-20 | ES=F | nr_break-2 1.0A tp1 both | long | 7,773.25 | 7,755.25 | close | $-94.98 |
+| 2026-10-21 | ES=F | nr_break-2 1.0A tp1 both | long | 7,791.50 | 7,800.25 | close | $+38.77 |
+| 2026-10-22 | ES=F | nr_break-2 1.0A tp1 both | short | 7,751.00 | 7,704.50 | close | $+227.52 |
+| 2026-10-26 | ES=F | nr_break-2 1.0A tp1 both | long | 7,714.25 | 7,714.50 | close | $-3.73 |
+| 2026-10-28 | ES=F | nr_break-2 1.0A tp1 both | long | 7,772.75 | 7,783.25 | close | $+47.52 |
+| 2026-10-29 | ES=F | nr_break-2 1.0A tp1 both | short | 7,750.25 | 7,754.25 | close | $-24.98 |
+| 2026-10-30 | ES=F | nr_break-2 1.0A tp1 both | short | 7,709.25 | 7,626.07 | target | $+410.91 |
 
 ## The record
 
-- 65 trades, 41 winners (63%), net **$+12,597.68**
-- worst drawdown $-1,654 against a $2,000 buffer
+- 34 trades, 20 winners (59%), net **$+1,149.08**
+- worst drawdown $-510 against a $1,000 buffer
 
 **By rule**
 
 | rule | trades | win | net $ | worst DD |
 |---|---|---|---|---|
-| nday_break-1 1.0A tp2 both | 31 | 61% | $+4,905 | $-1,150 |
-| nr_break-2 1.0A tp2 both | 13 | 77% | $+4,531 | $-312 |
-| nday_fade-5 0.75A tp1 both | 21 | 57% | $+3,162 | $-1,654 |
+| nr_break-2 1.0A tp1 both | 19 | 68% | $+1,349 | $-351 |
+| nday_fade-5 0.5A tp1 both | 15 | 47% | $-200 | $-510 |
 
 ## Evaluation tracker
 
-- net **$+12,597.68** of the **$3,000** target (+420%)
-- **$+14,597.68** of room left before the $2,000 end-of-day buffer is gone
-- 35 sessions traded, best day $+3,126.48, worst day $-827.98
-- consistency: best day is **25%** of profit (rule: ≤40%) → pass
+- net **$+1,149.08** of the **$1,250** target (+92%)
+- **$+2,149.08** of room left before the $1,000 end-of-day buffer is gone
+- 28 sessions traded, best day $+280.20, worst day $-220.63
+- consistency: best day is **24%** of profit (rule: ≤40%) → pass
 
 | date | market | rule | side | entry | exit | why | $ |
 |---|---|---|---|---|---|---|---|
-| 2026-10-27 | NQ=F | nday_break-1 1.0A tp2 both | long | 29,572.00 | 29,812.00 | close | $+476.52 |
-| 2026-10-28 | NQ=F | nday_break-1 1.0A tp2 both | long | 29,881.25 | 29,979.50 | close | $+193.02 |
-| 2026-10-29 | NQ=F | nday_break-1 1.0A tp2 both | short | 29,674.25 | 29,562.00 | close | $+221.02 |
-| 2026-10-30 | NQ=F | nday_break-1 1.0A tp2 both | short | 29,111.00 | 28,551.75 | close | $+1,115.02 |
-| 2026-09-08 | NQ=F | nday_fade-5 0.75A tp1 both | short | 29,704.50 | 29,538.75 | close | $+328.02 |
-| 2026-09-11 | NQ=F | nday_fade-5 0.75A tp1 both | long | 29,043.25 | 29,331.26 | target | $+572.55 |
-| 2026-09-14 | NQ=F | nday_fade-5 0.75A tp1 both | long | 28,997.75 | 29,293.30 | target | $+587.63 |
-| 2026-09-16 | NQ=F | nday_fade-5 0.75A tp1 both | long | 28,816.25 | 29,106.96 | target | $+577.93 |
-| 2026-09-18 | NQ=F | nday_fade-5 0.75A tp1 both | short | 29,500.25 | 29,613.68 | close | $-230.34 |
-| 2026-09-21 | NQ=F | nday_fade-5 0.75A tp1 both | short | 29,938.00 | 30,239.74 | stop | $-606.96 |
-| 2026-09-22 | NQ=F | nday_fade-5 0.75A tp1 both | short | 30,862.75 | 31,028.50 | close | $-334.98 |
-| 2026-09-23 | NQ=F | nday_fade-5 0.75A tp1 both | short | 31,065.50 | 30,720.76 | target | $+685.99 |
-| 2026-10-01 | NQ=F | nday_fade-5 0.75A tp1 both | short | 30,999.50 | 30,633.13 | target | $+729.25 |
-| 2026-10-02 | NQ=F | nday_fade-5 0.75A tp1 both | short | 31,151.50 | 30,776.43 | target | $+746.66 |
-| 2026-10-05 | NQ=F | nday_fade-5 0.75A tp1 both | short | 31,282.50 | 31,317.75 | close | $-73.98 |
-| 2026-10-06 | NQ=F | nday_fade-5 0.75A tp1 both | short | 31,371.00 | 31,483.25 | close | $-227.98 |
-| 2026-10-13 | NQ=F | nday_fade-5 0.75A tp1 both | long | 30,792.00 | 30,791.50 | close | $-4.48 |
-| 2026-10-14 | NQ=F | nday_fade-5 0.75A tp1 both | long | 30,591.25 | 30,265.56 | stop | $-654.86 |
-| 2026-10-15 | NQ=F | nday_fade-5 0.75A tp1 both | long | 30,078.00 | 29,733.24 | stop | $-693.00 |
-| 2026-10-16 | NQ=F | nday_fade-5 0.75A tp1 both | long | 29,622.50 | 29,980.85 | target | $+713.23 |
-| 2026-10-19 | NQ=F | nday_fade-5 0.75A tp1 both | long | 29,227.00 | 29,606.37 | target | $+755.25 |
-| 2026-10-22 | NQ=F | nday_fade-5 0.75A tp1 both | long | 29,226.00 | 29,623.46 | target | $+791.44 |
-| 2026-10-23 | NQ=F | nday_fade-5 0.75A tp1 both | long | 29,033.00 | 29,117.75 | close | $+166.02 |
-| 2026-10-28 | NQ=F | nday_fade-5 0.75A tp1 both | short | 30,113.00 | 29,979.50 | close | $+263.52 |
-| 2026-10-30 | NQ=F | nday_fade-5 0.75A tp1 both | long | 28,987.00 | 28,524.30 | stop | $-928.87 |
+| 2026-10-14 | ES=F | nday_fade-5 0.5A tp1 both | long | 7,783.00 | 7,748.56 | stop | $-177.17 |
+| 2026-10-15 | ES=F | nday_fade-5 0.5A tp1 both | long | 7,741.00 | 7,777.67 | target | $+178.37 |
+| 2026-10-16 | ES=F | nday_fade-5 0.5A tp1 both | long | 7,717.25 | 7,679.93 | stop | $-191.59 |
+| 2026-10-23 | ES=F | nday_fade-5 0.5A tp1 both | long | 7,676.00 | 7,659.75 | close | $-86.23 |
+| 2026-10-28 | ES=F | nday_fade-5 0.5A tp1 both | short | 7,812.25 | 7,771.14 | target | $+200.56 |
+| 2026-10-30 | ES=F | nday_fade-5 0.5A tp1 both | long | 7,648.50 | 7,606.91 | stop | $-212.93 |
+| 2026-09-08 | ES=F | nr_break-2 1.0A tp1 both | short | 7,711.75 | 7,680.50 | close | $+151.27 |
+| 2026-09-15 | ES=F | nr_break-2 1.0A tp1 both | short | 7,593.75 | 7,589.25 | close | $+17.52 |
+| 2026-09-16 | ES=F | nr_break-2 1.0A tp1 both | short | 7,576.75 | 7,556.50 | close | $+96.27 |
+| 2026-09-18 | ES=F | nr_break-2 1.0A tp1 both | long | 7,654.50 | 7,657.35 | close | $+9.27 |
+| 2026-09-21 | ES=F | nr_break-2 1.0A tp1 both | long | 7,722.00 | 7,796.88 | target | $+369.39 |
+| 2026-09-23 | ES=F | nr_break-2 1.0A tp1 both | short | 7,810.50 | 7,772.50 | close | $+185.02 |
+| 2026-09-25 | ES=F | nr_break-2 1.0A tp1 both | long | 7,783.50 | 7,803.75 | close | $+96.27 |
+| 2026-09-28 | ES=F | nr_break-2 1.0A tp1 both | short | 7,748.50 | 7,746.75 | close | $+3.77 |
+| 2026-10-05 | ES=F | nr_break-2 1.0A tp1 both | long | 7,810.25 | 7,826.25 | close | $+75.02 |
+| 2026-10-07 | ES=F | nr_break-2 1.0A tp1 both | short | 7,829.00 | 7,852.75 | close | $-123.73 |
+| 2026-10-12 | ES=F | nr_break-2 1.0A tp1 both | long | 7,873.00 | 7,858.00 | close | $-79.98 |
+| 2026-10-13 | ES=F | nr_break-2 1.0A tp1 both | short | 7,846.25 | 7,855.75 | close | $-52.48 |
+| 2026-10-20 | ES=F | nr_break-2 1.0A tp1 both | long | 7,773.25 | 7,755.25 | close | $-94.98 |
+| 2026-10-21 | ES=F | nr_break-2 1.0A tp1 both | long | 7,791.50 | 7,800.25 | close | $+38.77 |
+| 2026-10-22 | ES=F | nr_break-2 1.0A tp1 both | short | 7,751.00 | 7,704.50 | close | $+227.52 |
+| 2026-10-26 | ES=F | nr_break-2 1.0A tp1 both | long | 7,714.25 | 7,714.50 | close | $-3.73 |
+| 2026-10-28 | ES=F | nr_break-2 1.0A tp1 both | long | 7,772.75 | 7,783.25 | close | $+47.52 |
+| 2026-10-29 | ES=F | nr_break-2 1.0A tp1 both | short | 7,750.25 | 7,754.25 | close | $-24.98 |
+| 2026-10-30 | ES=F | nr_break-2 1.0A tp1 both | short | 7,709.25 | 7,626.07 | target | $+410.91 |
 
 ## What size would $200 a day take?
 
-- 65 trades over 35 sessions, $+12,597.68 total, $+193.81/trade, median risk $884/contract
-- one contract at this rate: $+360/session
-- $200 a day would need 1 contracts = $491 of risk per stop, against a $2,000 buffer
+- 34 trades over 28 sessions, $+1,149.08 total, $+33.80/trade, median risk $340/contract
+- one contract at this rate: $+41/session
+- $200 a day would need 5 contracts = $1,657 of risk per stop, against a $1,000 buffer

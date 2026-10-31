@@ -643,3 +643,52 @@ which is what makes a funded account nearly risk-free once it has paid; breaches
 the close, not on the session's worst moment; windows overlap, so 600 runs are worth far fewer
 than 600 independent trials. If the payout rule is stricter than modelled, the funded half of
 these numbers shrinks and the evaluation half does not.
+
+## 2026-10-31 (m) — the 25K answer is ES, and the Oracle rule is dead
+
+**The ask.** Back to a 25K for now, paper only until 13 November, and find the rule set with
+the highest chance of passing — `prevclose_break` ("Oracle"), 2.0 and 2.5 ATR stops, `nr_break-2`,
+two-rule and three-rule books, whoever wins. Explicitly: drawdown is not the constraint, pass
+rate is, and an account that blows after banking cushion is acceptable.
+
+**The grid.** `atr_grid.py` — 144 lines, four rules × six stops (0.5 to 2.5 ATR) × three exits ×
+ES and NQ at one micro, trade record from 2023. Each line is then walked through the actual
+evaluation — $25,000, +$1,250 target, $1,000 end-of-day trailing floor locking at $25,100, 40%
+consistency — from *every* starting trade, and books of two and three rules are built from the
+lines that survive, with overlapping trade shapes excluded.
+
+**The stop question, answered.** Win rate does rise with the stop — 43% at 0.5 ATR, 54% at 1.0 —
+and then it flattens (52% at 1.5, 2.0 and 2.5), while the share of trades stopped out falls from
+39% to 0%. Pass rate follows the opposite of the intuition: 25% at 0.5 ATR, 52% at 1.0, 57% at
+1.5-2.0, and no better beyond. A wider stop buys win rate by making each loss bigger, and on a
+$1,000 buffer that trade is roughly one-for-one, so it buys no extra chance of passing.
+
+**`prevclose_break` is dead at every stop.** 944 ES trades since 2023: 47-48% win, **-$7 to -$16
+a trade**, 14-36% pass, 65-90% breach. On NQ it is 50% win and about +$5 a trade with a $1,440
+stop. The 93% win rate it showed once was the sample artefact already suspected — it only
+survives if you drop the sessions where both orders fill, which is exactly the look-ahead that
+made it look perfect. It is out at 0.5, 0.75, 1.0, 1.5, 2.0 and 2.5 ATR.
+
+**NQ cannot pass a 25K, for a boring reason.** One micro of NQ at a 1.0 ATR stop risks $1,054 —
+the whole buffer — and at 2.0 ATR it risks $2,108. NQ `nr-break-2` at 2.0 ATR reaches the target
+90% of the time and satisfies the consistency rule 23% of the time, because a single $2,000 day
+is more than 40% of a $1,250 target. The rule is fine; the account is too small for the contract.
+
+**The winner.** MES, two rules, one micro each: `nday_fade-5 0.5A tp1` + `nr_break-2 1.0A tp1`.
+896 trades since 2023, 59% win, +$36 a trade, and **88% of starting trades pass with the
+consistency rule intact** — against 80% for the best single leg — with **7% breaching**, a median
+session risk of $405, and a median of 26 sessions to the target. Both legs stopping on one day
+costs about $618, so the buffer holds two bad sessions rather than one.
+
+**Desk state.** `desk/account.json` back to a 25K with the plan recorded in it: when the 25K has
+banked cushion, either fund it to +$2,000 or buy a 50K, because 50K is the smallest account that
+holds the 2.0-2.5 ATR stops and the NQ lines at two micros. `desk/oracle-book.json` is the two ES
+legs, the ledger is reset to 30 October, and the 40-session replay is **34 trades,
+$+1,149, 59% win, worst drawdown $-510** — half the buffer — with the best day
+$280 at 24% of profit, inside the 40% rule. The forward page's worst
+case for the next session is one order and one stop: **$236 against $1,000**.
+
+**What the replay does not promise.** $1,149 over forty sessions is $29 a
+session and the target needs $1,250, so this book passes in about five weeks of sessions, not five
+days. That is the price of the 88% pass rate, and it is the right trade for a 25K: the fast books
+exist, and they are the ones that breach.
