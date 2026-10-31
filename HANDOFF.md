@@ -1,5 +1,10 @@
 # Handoff — 2026-10-26 (latest: $2,500 account reality check)
 
+> **For the trading desk, read `trading/HANDOFF-DESK.md` instead.** That file (2026-10-31)
+> holds the current account, the live paper book, every settled research question, the
+> test counts and the honesty conventions. This page covers the agent kit, the security
+> work and the earlier research, and parts of it are superseded.
+
 ## Where the project is
 Free Claude Code + a free model gateway, a durable task worker, and a paper-trading
 desk for NQ futures are built and security-audited. Nothing is running yet: the Mac

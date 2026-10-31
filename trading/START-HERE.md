@@ -1,5 +1,9 @@
 # Start here — paper trading the five December contracts
 
+> **Out of date in places.** The current state of the desk, the live book, every settled
+> research question and the honesty conventions are in **`trading/HANDOFF-DESK.md`**
+> (written 2026-10-31). Read that first; this page is the 26 October starting point.
+
 You do not need the Mac for this. A browser is enough, and a phone works for
 placing the orders. Read the numbers in section 1 first, because they change
 what "aggressive" is allowed to mean.
