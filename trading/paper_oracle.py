@@ -30,7 +30,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from lab26k import BOOK, day_trade, prep, spec_legs  # noqa: E402
+from lab26k import BOOK  # noqa: F401  (kept so older books still resolve)
+from mine26k import MINE, day_trade, prep, spec_legs  # noqa: E402
 from scalp import MARKETS  # noqa: E402
 
 DESK = Path(__file__).resolve().parent / "desk"
@@ -60,7 +61,16 @@ KEYS = ("family", "n", "stop", "exit", "gap", "trend", "dow", "dir")
 
 def label(spec: dict) -> str:
     n = "" if spec["n"] is None else f"-{spec['n']}"
-    return f"{spec['family']}{n} {spec['stop']}A {spec['exit']} {spec['dir']}"
+    bits = [f"{spec['family']}{n} {spec['stop']}A {spec['exit']}"]
+    if spec.get("gap", "any") != "any":
+        bits.append(f"gap {spec['gap']}")
+    if spec.get("dow", "all") != "all":
+        bits.append(spec["dow"])
+    if spec.get("dir", "both") != "both":
+        bits.append(spec["dir"])
+    if spec.get("trend"):
+        bits.append("trend")
+    return " ".join(bits)
 
 
 def spec_of(row: dict) -> dict:
@@ -256,6 +266,10 @@ def watch(D: dict, specs: list[dict], upto: int) -> list[dict]:
                 row.update({"level": round(lvl, 2), "dist": round(lvl - close, 2),
                             "risk": round(spec["stop"] * atr * pv, 2),
                             "note": "buy/sell stop at the level"})
+            if spec.get("gap", "any") != "any":
+                side_word = "above" if spec["gap"] == "with" else "below"
+                row["note"] = (row.get("note", "") +
+                               f" — only if the open is {side_word} the last close")
             out.append(row)
     return out
 
@@ -412,7 +426,8 @@ def write(state: dict, rows: list[dict], ledger_today: list[dict], path: Path, t
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--replay", type=int, default=0)
-    ap.add_argument("--book", default=str(BOOK), help="which book to trade")
+    ap.add_argument("--book", default=str(MINE if MINE.exists() else BOOK),
+                    help="which book to trade")
     ap.add_argument("--state", default=str(STATE), help="ledger file for that book")
     ap.add_argument("--out", default=str(FORWARD), help="report file for that book")
     args = ap.parse_args()
@@ -421,7 +436,7 @@ def main() -> None:
         out_path = REPLAY_MD          # a replay must never overwrite the forward record
 
     if not book_path.exists():
-        raise SystemExit(f"no {book_path.name} — run trading/lab26k.py first")
+        raise SystemExit(f"no {book_path.name} — run trading/mine26k.py (or lab26k.py) first")
     book = json.loads(book_path.read_text())
     if not book:
         raise SystemExit("the book is empty")
@@ -471,7 +486,7 @@ def main() -> None:
     rows = [r for sym, D in data.items()
             for r in watch(D, by_sym[sym], complete_len(D, now))]
     state_path.write_text(json.dumps(state, indent=2))
-    write(state, rows, fresh, out_path, "The 26,000-test paper book", unvalidated, fixes)
+    write(state, rows, fresh, out_path, "The wide-sweep paper book", unvalidated, fixes)
     print(f"  {len(state['ledger'])} closed trades, equity ${state['equity']:+,.2f}, "
           f"{len(rows)} orders standing")
     print(f"  written to {FORWARD}")

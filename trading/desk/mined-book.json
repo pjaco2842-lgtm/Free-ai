@@ -1,0 +1,27 @@
+[
+  {
+    "family": "nday_fade",
+    "n": 1,
+    "stop": 1.0,
+    "exit": "tp05",
+    "gap": "with",
+    "trend": false,
+    "dow": "all",
+    "dir": "long",
+    "symbol": "ES=F",
+    "market": "MES",
+    "test_net": 21372.14,
+    "test_trades": 270,
+    "test_win": 78.5,
+    "all_net": 40420.88,
+    "all_trades": 820,
+    "all_win": 77.7,
+    "risk_now": 412.55,
+    "luck_pct": 100.0,
+    "plateau": 1.0,
+    "pass_pct": 97.8,
+    "cons_pct": 96.0,
+    "p3_pct": 0.0,
+    "breach_pct": 0.6
+  }
+]

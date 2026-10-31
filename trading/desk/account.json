@@ -21,14 +21,15 @@
     "formula": "largest single day profit / account profit must be at or below the limit"
   },
   "desk": {
-    "book": "two ES daily rules, one micro each: nday_fade-5 0.5A tp1 + nr_break-2 1.0A tp1",
+    "book": "one ES daily rule, one micro: buy a stop at the prior day's low when the session opens above the prior close, long only, 1.0 ATR stop, take 0.5R",
     "risk_per_trade_pct": 1.6,
     "max_open": 2,
     "daily_stop": null,
     "buffer_guard_stops": 2.4,
     "governor_halt_fraction": null,
     "governor_caution_fraction": null,
-    "why": "Chosen by atr_grid.py, which walked $25,000 through every rule x stop x exit x market from every starting trade. This pair passes 88% of attempts with the 40% consistency rule intact and breaches the floor in 7%; a median session risks $405, both legs stopping costs about $618, so the $1,000 buffer holds two bad sessions. It is ES on purpose: one micro of NQ at a 1.0 ATR stop risks $1,054, which is the whole buffer in a single trade, and every NQ line on a 25K fails the consistency rule because one good day is more than 40% of the $1,250 target."
+    "book_file": "desk/mined-book.json (written by mine26k.py)",
+    "why": "Chosen by mine26k.py: 287,280 configurations across ES, NQ, GC, CL and NKD, through four gates (positive in 2009-2019 and in 2020-2024, a parameter plateau, 2025-2026 not negative, and 500 random fills on the same days/side/stop/exit), then scored on this account from every starting trade in the 2023+ era, because a stop's dollar size is a property of the price level and older history was traded at a fifth of today's prices. The winner is ES, long only: buy a stop at the prior day's low, but only when the session opens above the prior close, stop 1.0 ATR, target 0.5R. 820 trades since 2009, 77.7% win, $49/trade, every year positive; 2023 onward 204 trades, 80.4% win, $95/trade, worst drawdown $1,086. As a 25K walked from all 204 recent starting points: 91% pass, 84% with the 40% consistency rule intact, 3% breach, median 14 sessions to the target, $413 of risk in a median session. It replaces the fade-5 0.5A tp1 + nr_break-2 1.0A tp1 pair, which passed 88% with consistency but took a median 26 sessions at a 59% win rate."
   },
   "plan": {
     "now": "25K, paper only, until 2026-11-13",

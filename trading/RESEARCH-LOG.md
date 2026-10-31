@@ -692,3 +692,80 @@ case for the next session is one order and one stop: **$236 against $1,000**.
 session and the target needs $1,250, so this book passes in about five weeks of sessions, not five
 days. That is the price of the 88% pass rate, and it is the right trade for a 25K: the fast books
 exist, and they are the ones that breach.
+
+## 2026-10-31T04:45Z — wide sweep: 287,280 configurations across five markets
+
+- space: 57,456/market (38 rule variants x 7 stops x 4 exits x 54 filters)
+- gates: unseen years, plateau, 2025 regime, 500-run luck (same days/side/stop/exit), ≥100 trades
+- 9,629 positive in both halves, 289 through every gate (chance would pass ~30)
+- book: ES=F nday_fade-3 1.0A tp05 long
+- book account: pass 89%, with consistency 89%, ≤3 sessions 0%, breach 10%, median 43 sessions
+
+## 2026-10-31T04:47Z — wide sweep: 287,280 configurations across five markets
+
+- space: 57,456/market (38 rule variants x 7 stops x 4 exits x 54 filters)
+- gates: unseen years, plateau, 2025 regime, 500-run luck (same days/side/stop/exit), ≥100 trades
+- 9,629 positive in both halves, 289 through every gate (chance would pass ~30)
+- book: ES=F nday_fade-1 1.0A tp05 gapwith long
+- book account: pass 91%, with consistency 84%, ≤3 sessions 0%, breach 3%, median 14 sessions
+
+## 2026-10-31T04:48Z — wide sweep: 287,280 configurations across five markets
+
+- space: 57,456/market (38 rule variants x 7 stops x 4 exits x 54 filters)
+- gates: unseen years, plateau, 2025 regime, 500-run luck (same days/side/stop/exit), ≥100 trades
+- 9,629 positive in both halves, 289 through every gate (chance would pass ~30)
+- book: ES=F nday_fade-7 1.5A tp05 long
+- book account: pass 92%, with consistency 92%, ≤3 sessions 0%, breach 5%, median 12 sessions
+
+## 2026-10-31T04:50Z — wide sweep: 287,280 configurations across five markets
+
+- space: 57,456/market (38 rule variants x 7 stops x 4 exits x 54 filters)
+- gates: unseen years, plateau, 2025 regime, 500-run luck (same days/side/stop/exit), ≥100 trades
+- 9,629 positive in both halves, 289 through every gate (chance would pass ~30)
+- book: ES=F nday_fade-1 1.0A tp05 gapwith long
+- book account: pass 91%, with consistency 84%, ≤3 sessions 0%, breach 3%, median 14 sessions
+
+## 2026-10-31 (n) — the wide sweep picked one ES rule, and three sessions is not on the table
+
+**Idea.** The video's protocol, applied properly: 287,280 configurations (57,456 in each of
+ES, NQ, GC, CL, NKD), four gates, then scored on the 25K evaluation from every starting
+trade. The user's new objective was speed — $1,250 inside three sessions — with a higher
+win rate.
+
+**What survived.** 9,629 configs were positive in both halves; 289 cleared plateau, the
+2025 regime and a 500-run random-fill luck test, against ~30 that chance alone would let
+through at a 95th percentile. Every survivor in the stored top 60 is `nday_fade`. No
+`prevclose_break` ("Oracle"), no gap rule, no inside/outside day, no MA pullback, no pin
+bar, no strong-body continuation and no walk-forward ridge model made it. The Oracle is
+dead in this data at every stop, again: ES 47-48% win and -$7 to -$16 a trade.
+
+**The book.** ES, long only: buy a stop at the prior day's low, only when the session
+opens above the prior close, 1.0 ATR stop, take 0.5R. 820 trades since 2009, **77.7%
+win, $49/trade**, worst drawdown $1,086, positive in **all 18 calendar years**. 2023
+onward: 204 trades, **80.4% win, $95/trade**. As a 25K walked from all 204 recent
+starting points: **91% pass, 84% with the consistency rule intact, 3% breach, median 14
+sessions**, $413 of risk in a median session. Full history is 98%/96% at a median of 37
+sessions, but that half was traded at a fifth of today's prices.
+
+**The three-session answer.** 0 of 204 starting points reached +$1,250 within three
+sessions with the consistency rule intact. 5.4% inside five, 21% inside ten, 57% inside
+fifteen. $417 a session for three sessions straight is roughly 1.3R a day at a 60% win
+rate, every day; nothing that cleared the gates does that.
+
+**Rejected on evidence, not taste.** The fastest-looking lines in the whole sweep were NKD
+`nday_fade` variants (5-6% of starts inside three sessions), but at today's volatility a
+1.0 ATR NKD stop is **$5,600-8,700** — six to eight times the buffer. Their good pass rate
+came from 2009-2020 attempts made when the index was a fifth of today's level: the stop's
+dollar size is a property of the price level, not of the rule. Same trap for NQ: 1.0 ATR
+is $1,043 at one micro, so every NQ line fails the $500 session-risk cap that keeps two
+bad sessions inside the $1,000 buffer.
+
+**Verdict.** The desk trades this rule from 2026-11-02, paper, one micro. It is faster
+(median 14 sessions vs 26) and wins more often (80% vs 59%) than the pair it replaces, at
+roughly the same pass rate. It is long-only ES dip-buying, so part of its edge is the
+market's own drift and it will look worse in a year that goes down; the 2022 test window
+(+$6,218 over 75 trades) is the one that says the rule itself survives a bad tape, not the
+drift. Three sessions is a lottery with a $1,000 ticket, and no honest sweep makes it
+otherwise.
+
+**Count.** Configurations tested this phase: 287,280. Strategies traded forward: 1.
