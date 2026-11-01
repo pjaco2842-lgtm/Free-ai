@@ -1182,11 +1182,14 @@ over 413 trades. Gap fade: −$5.17 over 355. The 5-minute file holds only 49 se
 every ORB row there loses $10-23 a trade. The published 72% ORB figures did not survive
 contact with a fill model that cannot enter at the exact breakout price.
 
-**Arithmetic that settles the goal.** +$500 in a day at two micros needs $250 per session
-per micro-equivalent, i.e. roughly **28 winning 0.5R trades in one session**. The highest
-frequency measured here is 0.18 trades a session. $1,250 at the measured rate is a
-**58-session median**, not three days. No configuration in 3,584 daily and 45 intraday
-tests produced $200 a day, and the word "guaranteed" does not apply to any of it.
+**Arithmetic that settles the goal.** The rule fires on **43.8% of sessions** (1,093 trades in
+2,494) and can fire at most once a day, so a day is one trade or nothing. At one micro the average
+up day is **+$123.92** and the average down day **-$100.66**; a $500 day happened **17 times in ten
+years (0.68%)**, a $350 day 1.6%, a $200 day 5.1%. At two micros those double, so $500 is reachable
+on a single good trade — about 7% of sessions — but the same doubling turns a $175 stop into $350 of
+a $1,000 buffer. Expected value is **$10.19 a session at one micro**, $20.37 at two, and +$1,250 is a
+**58-session median**, not three days. No configuration in 3,584 daily and 45 intraday tests averaged
+$200 a day, and the word "guaranteed" does not apply to any of it.
 
 **Decision.** The live book is now the highest measured pass rate: prior-1-session-low buy
 limit, any gap, 0.5 ATR stop, 2R target, one micro, 59% pass / 26% breach / 58-session
