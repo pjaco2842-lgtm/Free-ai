@@ -1434,3 +1434,52 @@ has to be strong before it is anything at all.
 tests as random once costs are paid. Neither result is a licence to believe the combination works,
 and the video's author — with vastly more data than this repo will ever hold — concluded the same.
 The book does not change: prior-low limit, 0.5 ATR, tp2, one micro, median funded 17 Feb 2027.
+
+## 2026-11-01 (xii) — four sessions, at any size measured
+
+**Asked:** pass in 3-4 days, i.e. four sessions from 16 November. `four_days.py` walks all 961
+rolling four-session windows from 2023 with the trailing floor and the 40% consistency rule, at
+one and two micros, across the book and both NQ candidates.
+
+| rule | size | pass | blow | median window | 5% of windows | best ever |
+|---|---|---:|---:|---:|---:|---:|
+| ES book 0.5 ATR tp2 | x1 | 0.10% | 0.2% | +$19 | +$508 | +$1,377 |
+| ES book 0.5 ATR tp2 | x2 | 0.10% | 4.1% | +$36 | +$1,016 | +$2,753 |
+| NQ 0.25 ATR tp4 | x1 | 0.10% | 0.2% | +$66 | +$904 | +$2,478 |
+| NQ 0.25 ATR tp4 | x2 | 0.10% | 4.1% | +$108 | +$1,787 | +$4,955 |
+
+**Best pass rate found: 0.10% — one window in 961.** The target demands **$312.50 a session** for
+four sessions; the book earns about $15 at one micro and $30 at two. That is a factor-of-ten gap
+in dollars per session, and it is not closed by an indicator. Note the tell at NQ x2: 10% of
+windows reach **+$1,305**, above the target, yet 0.10% pass — because on the day the target is hit
+one session had already contributed more than 40% of the profit. In a four-day push the
+consistency rule, not the dollars, is what refuses the pass.
+
+## 2026-11-01 (xiii) — size does not buy accounts: the aggressive frontier
+
+**Objective changed on request:** stop ranking by expectancy, rank by accounts won minus accounts
+lost, and let size do what it can. `aggressive_eval.py` re-scores every configuration from the wide
+sweep by evaluation outcome over rolling 20-session windows, at 1, 2 and 3 micros, counting a size
+only when one stop costs less than the buffer. **57,712 rule/size combinations** scored.
+
+| stops included | combinations | net > 0 | best net | best combination |
+|---|---:|---:|---:|---|
+| all | 57,712 | 1,527 | **+13.3** | ES limit_low-1, 0.25 ATR tp3, x2 (pass 17.7%, blow 4.3%) |
+| ≥ 0.5 ATR only | 37,264 | 792 | **+6.2** | ES limit_low-1, 0.5 ATR tp2, x1 (pass 6.2%, blow 0.0%) |
+
+**Size destroys the result rather than scaling it.** Restricting to stops the measurement can
+actually resolve (≥0.5 ATR), the best net by size is x1 **+6.2**, x2 **+2.3**, x3 **+0.3**, and the
+number of net-positive combinations collapses from 683 to 94 to **15 out of 37,264**. At three
+micros one stop is $354-$707 and the floor is $1,000: an ordinary run of two or three losses ends
+the account before the target is reachable, so the extra size buys blow-ups rather than passes.
+
+**The +13.3 figure is not usable.** Every one of the top rows sits at a **0.25 ATR stop**, the
+configuration that close-based exits flatter most: a 0.25 ATR stop on ES is ~24 points, narrower
+than a normal bar, so the model holds trades through moves a real stop order would have filled.
+That is the same artifact recorded in entry (x), reappearing because the objective now rewards a
+smooth equity curve.
+
+**Verdict.** The aggressive frontier is real and narrow: at one micro, with a stop the buffer can
+pay, the best measured attempt wins **6.2 accounts per 100 attempts and loses none** over 20
+sessions. More micros does not multiply that — it multiplies the failures. The lever that works is
+**more attempts at the size that survives**, not more size per attempt.
