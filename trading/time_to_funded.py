@@ -46,11 +46,27 @@ TICK = E.SPECS["ES=F"]["tick"]
 LEG = dict(fam="limit_low", n=1, stop=0.5, exit="tp2", gap="any", engine="proven")
 
 
-def sessions() -> tuple[list[float], list[str], int]:
+def sessions(leg: dict | None = None) -> tuple[list[float], list[str], int]:
     """One dollar result per session, including the sessions with no trade."""
+    leg = leg or LEG
     D = E.load_csv(str(CSV))
-    trades = E.run_config(D, LEG["fam"], LEG["n"], LEG["stop"], LEG["exit"],
-                          LEG["gap"], LEG["engine"], MULT, TICK)
+    if leg["fam"] in ("nday_break", "nr_break"):
+        # the breakout families live in wide_stops.py because edge_causal's own
+        # "nr_break" has no narrow-range filter and has no prior-day breakout at all
+        import wide_stops as W
+        trades = []
+        for i in range(21, D["n"]):
+            sig = W.signal(D, i, leg["fam"], leg["n"])
+            if not sig:
+                continue
+            entry, kind = sig
+            pnl = E.trade_pnl(D, i, entry, kind, leg["stop"], E.EXITS[leg["exit"]],
+                              MULT, TICK, "proven")
+            if pnl is not None:
+                trades.append((D["d"][i], pnl))
+    else:
+        trades = E.run_config(D, leg["fam"], leg["n"], leg["stop"], leg["exit"],
+                              leg["gap"], leg["engine"], MULT, TICK)
     per_day: dict[str, float] = {}
     for day, pnl in trades:
         per_day[day] = per_day.get(day, 0.0) + pnl
@@ -91,8 +107,10 @@ def one_path(blocks: list[list[float]], size: int, rng: random.Random,
     return "running", max_sessions
 
 
-def run(size: int, paths: int, max_sessions: int, seed: int = 16) -> dict:
-    pnls, _calendar, _n = sessions()
+def run(size: int, paths: int, max_sessions: int, leg: dict | None = None,
+        seed: int = 16) -> dict:
+    leg = leg or LEG
+    pnls, _calendar, _n = sessions(leg)
     blocks = [pnls[i:i + BLOCK] for i in range(len(pnls) - BLOCK + 1)]
     rng = random.Random(seed + size)
     out = []
@@ -101,7 +119,7 @@ def run(size: int, paths: int, max_sessions: int, seed: int = 16) -> dict:
     passes = [d for kind, d in out if kind == "pass"]
     breach = sum(1 for kind, _ in out if kind == "breach")
     return {
-        "size": size, "paths": paths, "max_sessions": max_sessions,
+        "size": size, "paths": paths, "max_sessions": max_sessions, "leg": leg,
         "pass_sessions": passes, "breached": breach,
         "p_pass": len(passes) / paths, "p_breach": breach / paths,
         "ev_session": statistics.fmean(pnls) * size,
@@ -117,8 +135,10 @@ def by(tag: str, horizon: int, r: dict) -> str:
 
 def report(r: dict) -> list[str]:
     s = r["size"]
+    leg = r.get("leg") or {}
     L = [f"{'=' * 78}", f"  {s} micro{'s' if s > 1 else ''} — {r['paths']:,} paths, "
          f"{r['sessions_available']} sessions of history, {r['max_sessions']} max",
+         f"  rule: {leg.get('fam')}-{leg.get('n')} {leg.get('stop')} ATR {leg.get('exit')}",
          "=" * 78]
     L.append(f"  EV: ${r['ev_session']:+.2f}/session · rule fires {100*r['fire_rate']:.1f}% "
              "of sessions")
@@ -144,8 +164,13 @@ def main() -> None:
     ap.add_argument("--paths", type=int, default=20_000)
     ap.add_argument("--max-sessions", type=int, default=750)
     ap.add_argument("--json")
+    ap.add_argument("--fam", default=LEG["fam"])
+    ap.add_argument("--n", type=int, default=LEG["n"])
+    ap.add_argument("--stop", type=float, default=LEG["stop"])
+    ap.add_argument("--exit", default=LEG["exit"])
     a = ap.parse_args()
-    results = [run(size, a.paths, a.max_sessions) for size in (1, 2)]
+    leg = dict(LEG, fam=a.fam, n=a.n, stop=a.stop, exit=a.exit)
+    results = [run(size, a.paths, a.max_sessions, leg) for size in (1, 2)]
     for r in results:
         print("\n".join(report(r)))
     if a.json:

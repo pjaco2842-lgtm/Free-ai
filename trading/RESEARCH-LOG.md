@@ -1267,3 +1267,43 @@ run by hand and their outputs are cited in the log. Three things were genuinely 
 3. **The scheduler launched the wrong program.** `launchd.paper.example.plist` ran
    `trading/paper.py` — the paused legacy runner — so even a correctly loaded job would not
    have touched the book. It now runs `fetch_bars.py` then `paper_causal.py`.
+
+## 2026-11-01 (viii) — the wide-stop breakouts, re-run causally, and what they were
+
+**Asked:** redo the other project's wide-stop results (+$64/trade at 2.0 ATR, 56-79% win, narrow-range
+79% on 14 trades) and say how long funding takes on them. Re-run in `wide_stops.py` through
+`edge_causal`'s causal exits, one micro, costs inside every dollar, with two controls: **drift**
+(dollars from simply being long open-to-close on the same days) and **null** (random long entries,
+identical bracket and costs, 300 trials).
+
+**1. 2.0 ATR does not replicate.** Prior-day breakout n=1, 1,405 trades, tp2:
+
+| stop | win | $/trade | alpha vs random | drift $/trade | risk at 1 micro |
+|---|---|---|---|---|---|
+| 1.0 ATR | 49% | −$17.08 | −$21.24 | +$74.94 | $471 (47%) |
+| 1.5 ATR | 51% | −$7.00 | −$11.58 | +$74.94 | $707 (71%) |
+| 2.0 ATR | 52% | −$1.48 | −$7.08 | +$74.94 | $943 (94%) |
+| 2.5 ATR | 52% | +$0.36 | −$5.94 | +$74.94 | $1,178 (118%) |
+
+The dollars were drift, not edge: a random long on the same days earned $5.60/trade and simply
+holding earned $74.94. Every stop distance from 1.0 to 2.5 ATR has **negative alpha**.
+
+**2. Why wide stops look miraculous.** With tp2 and close-only resolution the exit rows are
+identical at every stop — $1.25/trade at 1.0, 1.5 and 2.0 ATR on the same 1,405 trades. The stop
+essentially never binds, so the rule has become buy-and-hold and books the drift. "99% fewer
+stop-outs" was true and meant nothing: a stop that is never reached is not risk management.
+
+**3. Narrow-range breakout is the only positive alpha, and it is unaffordable.** 426 trades,
+52% win, +$7.27/trade at 2.0 ATR, alpha +$1.56 — real but small. Its stop costs $943, **94% of
+the $1,000 buffer**, so a single trade is the account. Nothing with a positive alpha has a stop
+the buffer can pay for; the affordable rows are all negative.
+
+**4. Funding, on each.** First-passage, 12,000 paths per size:
+`nday_break-1 1.0 ATR tp2` — funded 14.6%, breached **85.4%**, median 43 sessions but only for
+the survivors; `nr_break-1 2.0 ATR tp2` — funded 43.1%, breached 56.1%, median 201 sessions
+(24 Aug 2027). The book in place — prior-low limit, 0.5 ATR, tp2, one micro — remains the best
+measured path: **77.6% funded, median 66 sessions, 16 Feb 2027**.
+
+**Verdict.** Redone, and the earlier numbers were the drift plus a stop that never fired. There is
+no faster honest route in the record: passing "asap" means more size, and more size halves the
+survival odds (2 micros: 48.4% funded, 51.6% breached) rather than shortening the wait.
