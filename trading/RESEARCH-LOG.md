@@ -1546,3 +1546,46 @@ order names the real contract.
 **Book for the session of 2026-11-02:** ES prior-low limit, 0.5 ATR, 2R, one micro, entry 7558.25.
 Unchanged, because 151,305 tests did not find anything better and the independent research did not
 either.
+
+## 2026-11-01 (xv) — "I don't care about the risk as long as the win rate is high"
+
+**Asked:** the same shape of request as always — sacrifice risk, maximise win rate. So measure it
+instead of arguing: `winrate_hunt.py` scores **12,000 settings** by sweeping four rule families on
+ES, GC, CL and NQ across a **0.1R–3.0R target grid at five stops**, and reports every setting with
+its win rate, dollars per trade after costs, the size needed for a $500 session, and the pass/blow
+rate of that size over 20-session windows.
+
+**The highest win rate in the whole sweep is 82.8% — and it loses money.**
+CL gap-up open, 0.1R target, 1.0 ATR stop: 1,319 trades, **82.8% win**, **−$16.80/trade**,
+−$12.00/session. A high win rate is manufacturable for free by shrinking the target: the price only
+has to travel a tenth of the stop to pay you. It does not add a single dollar, and here it does not
+even add cents — friction eats the tenth.
+
+**The highest 70%+ setting that still makes money** is NQ gap-up open, **2.0 ATR stop, 0.1R target**:
+1,273 trades, **78.5% win**, **+$14.08/trade**, +$13.93/session. That is $14 against a $2,720 stop per
+micro — 0.5% of risk per trade. For a $500 session it needs **x36 micros, whose single stop is
+9,766% of the $1,000 buffer**. Traded there over 945 windows: pass **50.3%**, blow **49.4%**,
+net +0.8 — a coin flip with extra steps. At the honest x2: pass 39.3%, blow 37.8%, net +1.5.
+
+**Then the control that ends the discussion** (`null_check.py`, the repo's own rule — rank on
+drift-adjusted alpha, never raw expectancy). Random long entries on the same weekdays, same stop,
+same target, 200 draws:
+
+| setting | rule win | rule $/trade | **null win** | null $/trade | alpha | t | clears t>2.12? |
+|---|---:|---:|---:|---:|---:|---:|---|
+| NQ 0.1R / 2.0 ATR | 78.5% | +14.08 | **77.7%** | −1.56 | +15.64 | +2.00 | **no** |
+| CL 0.1R / 1.0 ATR | 82.8% | −16.80 | **80.3%** | −22.64 | +5.84 | +2.01 | **no** |
+
+**A coin flip that is long wins 77.7% of the time on NQ.** The 78.5% win rate is the index's
+upward drift, not a rule: 0.8 points of the 78.5 is the strategy, and it does not clear the
+multiple-testing bar. Both settings fail, so neither is installed — the book is unchanged.
+
+**One more measurement worth keeping.** On the desk's own ES rule at a 1.0 ATR stop the win rate is
+**55.2% at every target from 0.1R to 3.0R** — completely flat. With close resolution the target
+almost never binds, so shrinking it does not raise the win rate at all; it only cuts the dollars,
+from −$46.44/trade at 0.1R to +$16.13 at 3.0R. The "turn the win rate up" dial is largely an
+intraday illusion: it needs a target that is actually touched inside the session to exist.
+
+**What this means for the ask, in one line:** risk isn't the dial that buys win rate. Target
+geometry is, it costs expectancy to turn, and past ~78% the only thing you are measuring is
+whether the market went up that day.
