@@ -313,11 +313,51 @@ def selftest() -> None:
     print("selftest ok: one causal fill, order levels ordered, 0.5R target exact")
 
 
+def run_leg(leg: dict, args, multi: bool) -> None:
+    """Settle, print and journal one book leg. Each leg keeps its own ledger."""
+    if not args.csv:
+        # The book's own daily file, refreshed by fetch_bars.py. Without this the
+        # scheduled run had to be handed a path by hand, so in practice it never ran.
+        args.csv = str(ROOT / "data" / f"{leg['symbol'].replace('=F', '')}_F_1d.csv")
+        if not Path(args.csv).exists():
+            print(f"  {leg['id']}: no bars at {Path(args.csv).name} — nothing invented, "
+                  "nothing written. Run fetch_bars.py.")
+            return
+        print(f"  bars: {Path(args.csv).relative_to(ROOT)} (run fetch_bars.py to refresh)")
+    D = E.load_csv(args.csv)
+    if D["n"] < 22:
+        print(f"  {leg['id']}: only {D['n']} bars — ATR(14) and a prior low need 22.")
+        return
+
+    slug = leg["id"].replace("=", "-")
+    sp = Path(args.state) if args.state != str(STATE) else DESK / (
+        f"live-ledger-{slug}.json" if multi else STATE.name)
+    out = DESK / (f"live-desk-{slug}.md" if multi else OUT.name)
+    state = json.loads(sp.read_text()) if sp.exists() else fresh_state(leg)
+    if not sp.exists() and args.since:
+        # Journal only from this date: a fresh ledger over ten years of replay is the
+        # backtest again, not a live record.
+        state["last"] = args.since
+    today = datetime.now(timezone.utc).date().isoformat()
+    fresh = [] if args.order else settle(D, leg, state, today)
+    o = order(D, leg)
+    if multi:
+        print(f"\n===== {leg['id']} ({leg['micros']} micro)\n")
+    print(report(leg, state, o, []))
+    if not args.order:
+        sp.write_text(json.dumps(state, indent=2) + "\n")
+        out.write_text(report(leg, state, o, []))
+        print(f"\n  {leg['id']}: {len(fresh)} settled, wrote {sp.name} and {out.name}")
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--book", default=str(BOOK))
     ap.add_argument("--state", default=str(STATE))
     ap.add_argument("--csv")
+    ap.add_argument("--leg", help="book id, or a unique part of it")
+    ap.add_argument("--all", action="store_true", help="every leg, one ledger each")
+    ap.add_argument("--since", help="only journal sessions after this date")
     ap.add_argument("--order", action="store_true")
     ap.add_argument("--selftest", action="store_true")
     ap.add_argument("--demo", action="store_true")
@@ -330,33 +370,17 @@ def main() -> None:
         demo()
         return
 
-    leg = load_book(Path(args.book))[0]
-    if not args.csv:
-        # The book's own daily file, refreshed by fetch_bars.py. Without this the
-        # scheduled run had to be handed a path by hand, so in practice it never ran.
-        default = ROOT / "data" / f"{leg['symbol'].replace('=F', '')}_F_1d.csv"
-        if default.exists():
-            args.csv = str(default)
-            print(f"  bars: {default.relative_to(ROOT)} (run fetch_bars.py to refresh)")
-    if not args.csv:
-        print("No bars: pass --csv date,open,high,low,close or restore network access. "
-              "No level was invented and nothing was written.")
-        raise SystemExit(2)
-    D = E.load_csv(args.csv)
-    if D["n"] < 22:
-        print(f"Only {D['n']} bars — ATR(14) and a prior low need at least 22.")
-        raise SystemExit(2)
-
-    sp = Path(args.state)
-    state = json.loads(sp.read_text()) if sp.exists() else fresh_state(leg)
-    today = datetime.now(timezone.utc).date().isoformat()
-    fresh = [] if args.order else settle(D, leg, state, today)
-    o = order(D, leg)
-    print(report(leg, state, o, []))
-    if not args.order:
-        sp.write_text(json.dumps(state, indent=2) + "\n")
-        OUT.write_text(report(leg, state, o, []))
-        print(f"\n{len(fresh)} settled, wrote {sp.name} and {OUT.name}")
+    legs = load_book(Path(args.book))
+    if args.leg:
+        legs = [l for l in legs if args.leg in l["id"]]
+        if not legs:
+            print(f"no leg matches {args.leg!r}; the book holds "
+                  + ", ".join(l["id"] for l in load_book(Path(args.book))))
+            raise SystemExit(2)
+    if not args.all:
+        legs = legs[:1]
+    for leg in legs:
+        run_leg(leg, args, multi=len(legs) > 1)
 
 
 if __name__ == "__main__":
