@@ -332,6 +332,13 @@ def main() -> None:
 
     leg = load_book(Path(args.book))[0]
     if not args.csv:
+        # The book's own daily file, refreshed by fetch_bars.py. Without this the
+        # scheduled run had to be handed a path by hand, so in practice it never ran.
+        default = ROOT / "data" / f"{leg['symbol'].replace('=F', '')}_F_1d.csv"
+        if default.exists():
+            args.csv = str(default)
+            print(f"  bars: {default.relative_to(ROOT)} (run fetch_bars.py to refresh)")
+    if not args.csv:
         print("No bars: pass --csv date,open,high,low,close or restore network access. "
               "No level was invented and nothing was written.")
         raise SystemExit(2)

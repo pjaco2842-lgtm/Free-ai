@@ -1224,3 +1224,46 @@ those guards still pass.
 **After the fix:** governor `run`, buffer $1,000, and the board emits `WAIT` ES, `BUY` CL,
 `SELL` GC, `SKIP` NQ/NKD. Those are bot opinions at 07:18Z on a Sunday, not the book's rule —
 the live book is still the prior-session-low limit, and nothing here places an order.
+
+## 2026-11-01 (vii) — when does the account fund, and what is actually wired
+
+**Question asked:** if trading starts 16 Nov, when is the account funded? A first-passage
+answer, not EV divided into the target, because the account can die first. `time_to_funded.py`
+resamples the book's own sessions in blocks of five (964 sessions, `proven` resolution, the
+rule fires 46.0%) and races +$1,250 against the $1,000 trailing floor with the 40%
+consistency rule enforced, 20,000 paths per size.
+
+| size | funded eventually | breached first | 25th / median / 75th sessions | median date | by 14 Dec 2026 |
+|---|---|---|---|---|---|
+| 1 micro | **77.6%** | 22.4% | 42 / **66** / 100 | **2027-02-16** | 3.1% |
+| 2 micros | 48.4% | **51.6%** | 22 / **34** / 51 | 2027-01-01 | 10.4% |
+
+Read it as a race, not a schedule: at one micro most paths get there and take about three
+months; at two micros half the paths are dead before the target arrives, so the extra size
+buys an earlier median funded date *by spending the account*. 65.7% at one micro are funded
+by session 120 (3 May 2027); the 2-micro curve flattens at 48% because the failures are gone.
+
+**What this is not:** the resampled sessions assume the measured drift persists, which is the
+single assumption the whole number rests on. It is a model of the record, not a forecast, and
+the block bootstrap preserves weeks, not regimes.
+
+**Wiring audit — what was not getting used.** An import map over `trading/*.py` found the
+measurement CLIs (`edge`, `sweep2`, `orb`, `atr_grid`, `survival`, `exits`, `breakout`,
+`montecarlo`, `luck`, `portfolio`) unreferenced, which is correct: they are research tools
+run by hand and their outputs are cited in the log. Three things were genuinely broken:
+
+1. **Two ledgers, one reader.** `paper_causal.py` writes `desk/live-ledger.json`; `bots.py`
+   read only `desk/ledger.jsonl`, which the current runner never appends to. So BOT 10's
+   benchmark, BOT 11's calibration and BOT 12's losing-streak check were blind to every live
+   trade — calibration sat at "4 samples" permanently. Now merged, converted to R by each
+   trade's own risk, and proven with three injected trades of $472 / −$236 / $472 against a
+   $236 risk: BOT 10 counts "3 settled trades". It only prints an R total once there are
+   ten, so the count is the proof and not a total. BOT 12 correctly halted on that injected
+   desk, which had no state file — the guard still fails closed.
+2. **The runner could not run itself.** `paper_causal.py` required `--csv` and exited 2
+   otherwise, so the scheduled invocation had to be hand-fed a path — in practice it never
+   ran. It now defaults to `data/ES_F_1d.csv`, the file `fetch_bars.py` refreshes, and prints
+   tomorrow's order: `BUY LIMIT 1 MES @ 7558.25`, stop 7511.12, target 7652.52, $236 risk.
+3. **The scheduler launched the wrong program.** `launchd.paper.example.plist` ran
+   `trading/paper.py` — the paused legacy runner — so even a correctly loaded job would not
+   have touched the book. It now runs `fetch_bars.py` then `paper_causal.py`.

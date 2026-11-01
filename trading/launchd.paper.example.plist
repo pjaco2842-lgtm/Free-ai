@@ -23,21 +23,12 @@
 
     <key>ProgramArguments</key>
     <array>
-        <string>/usr/bin/python3</string>
-        <string>/Users/YOURNAME/Free-ai/trading/paper.py</string>
-        <string>--once</string>
-        <string>--symbol</string>
-        <string>NQ=F</string>
-        <string>--tf</string>
-        <string>5m</string>
-        <string>--instrument</string>
-        <string>mnq</string>
-        <string>--account</string>
-        <string>25000</string>
-        <string>--risk-pct</string>
-        <string>2</string>
-        <string>--max-contracts</string>
-        <string>2</string>
+        <string>/bin/sh</string>
+        <string>-c</string>
+        <!-- This used to launch trading/paper.py, the paused legacy runner, so the
+             live book's own runner never ran on a schedule. Refresh the bars, then
+             settle the book and print tomorrow's order. Paper only: no broker. -->
+        <string>/usr/bin/python3 /Users/YOURNAME/Free-ai/trading/fetch_bars.py && /usr/bin/python3 /Users/YOURNAME/Free-ai/trading/paper_causal.py</string>
     </array>
 
     <key>WorkingDirectory</key>

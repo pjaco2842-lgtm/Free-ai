@@ -924,6 +924,18 @@ def live(symbols: list[str] | None = None, use_news: bool = True) -> list[dict]:
     decisions = _rows("decisions.jsonl") + _rows("shadow_decisions.jsonl")
     history = [{"net": float(r.get("net_r", 0))}
                for r in _rows("ledger.jsonl") if r.get("tradeable") is not False]
+    # The runner that trades the live book writes desk/live-ledger.json, not
+    # ledger.jsonl. Without this the benchmark, the calibration and the governor's
+    # losing-streak check were reading a file nothing has appended to since the
+    # book changed, which is why calibration sat at "4 samples" forever.
+    try:
+        live = json.loads((DESK / "live-ledger.json").read_text())
+        for t in live.get("ledger", []):
+            risk = float(t.get("risk") or 0)
+            if risk > 0:
+                history.append({"net": float(t.get("usd", 0)) / risk})
+    except (OSError, json.JSONDecodeError, ValueError):
+        pass
     try:
         state = json.loads((DESK / "state.json").read_text())
     except Exception:  # noqa: BLE001 - a missing state file is a fresh account
