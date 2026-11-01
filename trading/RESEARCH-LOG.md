@@ -1589,3 +1589,44 @@ intraday illusion: it needs a target that is actually touched inside the session
 **What this means for the ask, in one line:** risk isn't the dial that buys win rate. Target
 geometry is, it costs expectancy to turn, and past ~78% the only thing you are measuring is
 whether the market went up that day.
+
+## 2026-11-01 (xvi) — a leg that cannot miss, measured, and booked as a research leg
+
+**Asked:** book the best strategies for the next open, make sure at least one trade actually
+happens, keep it paper, review in two days.
+
+**The problem with "make sure it trades".** The book's prior-low limit fills **43.8%** of sessions,
+so a session can pass with nothing settled. Only an entry at the open can fire every time, and
+`open_desk.py` measures it: **120 settings** (stop 0.5–2.5 ATR × target 0.5–3.0R), market at the
+open in the direction of the gap, intraday stop and target, costs included, random-side null with
+500 draws. It fires on **98.9%** of sessions.
+
+**Every one of those settings loses money on the account.** Settings with a positive mean per
+trade: **0 of 30 on ES, 0 of 30 on CL**, 2 of 30 on GC, 26 of 30 on NQ — and the best NQ one still
+passes 31.2% against 50.1% blown, for a net of −18.8.
+
+| contract | best net at x1 | win | $/trade | stop $ | pass | blow | net | alpha | t |
+|---|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| CL 0.5A / 3.0R | — | 45.1% | −3.09 | 213 | 2.97% | 11.55% | −8.58 | +2.08 | +0.42 |
+| ES 0.5A / 2.5R | — | 42.1% | −6.34 | 236 | 5.40% | 24.55% | −19.15 | −1.32 | −0.21 |
+| GC 0.5A / 3.0R | — | 46.0% | +1.29 | 375 | 11.01% | 39.79% | −28.78 | +3.41 | +0.29 |
+| NQ 1.5A / 0.5R | — | 52.3% | +2.73 | 2,040 | 31.22% | 50.05% | −18.84 | +9.37 | +0.64 |
+
+**The win-rate lesson repeats inside this family:** the highest win rate here is 55.99% (GC
+0.5A/0.5R) and it earns **−$44.49 per trade**. Raising the target to 3R drops the win rate to 45%
+and the loss to −$3.09. Same trade-off as entry (xv), now on entries that always fill.
+
+**Booked anyway, as one micro of research:** `cl-open-gap-05atr-tp3` — MCL, market at the open with
+the gap, 0.5 ATR stop ($213 = 21% of the buffer), 3R target. It is labelled
+`research-negative`, its measured expectation (−$3.09/trade, t 0.42) is printed on its order sheet,
+and its kill rule is to cut the leg after two sessions if the forward record is worse than that
+— not to resize it. The reason to run it: the desk now always has a settled trade to learn from,
+which is what was asked for, and the forward record will confirm or refute the measurement.
+
+**Engine changes made for it:** `trade_pnl` takes a `side` argument (shorts are legal for stop and
+open entries), `open_signal` gives the gap direction at the open, `EXITS` gains `tp3`, and
+`paper_causal.py` renders open legs as a two-branch market order with stop and target in points
+rather than inventing a level it cannot know before the open.
+
+**Stated plainly:** no always-fires rule in this data makes money. The ES prior-low limit remains
+the only leg with a positive measured expectancy, and it is unchanged at 7558.25.

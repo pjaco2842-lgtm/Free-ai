@@ -77,7 +77,7 @@ CONSISTENCY = 0.40
 ERA = "2023-01-01"
 
 STOPS = (0.5, 0.75, 1.0, 1.5, 2.0, 2.5)
-EXITS = {"close": None, "tp05": 0.5, "tp1": 1.0, "tp15": 1.5, "tp2": 2.0}
+EXITS = {"close": None, "tp05": 0.5, "tp1": 1.0, "tp15": 1.5, "tp2": 2.0, "tp3": 3.0}
 
 
 # ----------------------------------------------------------------------------- data
@@ -233,14 +233,28 @@ def signal(D: dict, i: int, fam: str, n: int, gap: str):
     raise ValueError(fam)
 
 
-def trade_pnl(D, i, entry, kind, stopk, exitmode, mult, tick, engine):
+def open_signal(D, i):
+    """Market at the open, in the direction of the gap: (entry, kind, side).
+
+    Legal as a market order at the open, and it fires on every session whose open differs
+    from the previous close, which is why it is the leg that cannot miss.
+    """
+    o, pc = D["o"][i], D["c"][i - 1]
+    if o > pc:
+        return o, "open", 1
+    if o < pc:
+        return o, "open", -1
+    return None
+
+
+def trade_pnl(D, i, entry, kind, stopk, exitmode, mult, tick, engine, side=1):
     """Return dollars for one micro, or None if the entry could not have happened."""
     atr = D["atr"][i - 1]
-    if atr <= 0:
+    if atr != atr or atr <= 0:                 # NaN-safe: this module is pure python
         return None
     risk = stopk * atr
-    stop = entry - risk
-    tgt = None if exitmode is None else entry + exitmode * risk
+    stop = entry - side * risk
+    tgt = None if exitmode is None else entry + side * exitmode * risk
     h, l, c = D["h"][i], D["l"][i], D["c"][i]
 
     if exitmode is None:
@@ -248,12 +262,20 @@ def trade_pnl(D, i, entry, kind, stopk, exitmode, mult, tick, engine):
     elif kind == "stop" or kind == "open":
         # legal buy stop / market entry: the level is touched at entry time, so a
         # target above it is necessarily afterwards. Stop-first when both are hit.
-        if l <= stop:
-            px = stop
-        elif h >= tgt:
-            px = tgt
+        if side > 0:
+            if l <= stop:
+                px = stop
+            elif h >= tgt:
+                px = tgt
+            else:
+                px = c
         else:
-            px = c
+            if h >= stop:
+                px = stop
+            elif l <= tgt:
+                px = tgt
+            else:
+                px = c
     else:                                     # buy limit below the market
         if engine == "legacy":
             px = stop if l <= stop else (tgt if h >= tgt else c)

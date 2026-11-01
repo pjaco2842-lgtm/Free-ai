@@ -201,5 +201,49 @@
     "size_rule": "One micro. Two would be 43-75% of the buffer per stop.",
     "kill_rule": "Two stops in a session ends it for the day.",
     "contract": "MCL"
+  },
+  {
+    "id": "cl-open-gap-05atr-tp3",
+    "symbol": "CL=F",
+    "market": "micro",
+    "contract": "MCL",
+    "entry": "open",
+    "family": "open_gap",
+    "n": 1,
+    "stop": 0.5,
+    "exit": "tp3",
+    "gap": "any",
+    "dir": "both",
+    "micros": 1,
+    "resolution": "open",
+    "status": "research-negative",
+    "start": "2026-11-01",
+    "first_session": "2026-11-02",
+    "daily_targets": [
+      500,
+      500,
+      250
+    ],
+    "daily_stop_usd": 350,
+    "why_this_one": "Booked so the desk always trades at the open. The prior-low limit fills only 43.8% of sessions, so a Monday can pass with nothing settled; this leg fires on 98.9% of sessions because it takes the direction of the gap at the open. Its measured expectation is negative, which is why it is one micro and labelled research: the point is forward data, not profit.",
+    "measured": {
+      "source": "desk/open-desk.md, open_desk.py, 120 settings over stop 0.5-2.5 ATR x target 0.5-3.0R",
+      "sessions": 929,
+      "trades": 929,
+      "fires_pct_of_sessions": 98.9,
+      "win_rate_pct": 45.1,
+      "usd_per_trade_1_micro": -3.09,
+      "usd_per_session_1_micro": -2.98,
+      "stop_usd": 213,
+      "stop_share_of_buffer_pct": 21.0,
+      "pass_pct_x1": 2.97,
+      "blow_pct_x1": 11.55,
+      "net_x1": -8.58,
+      "alpha_vs_random_side": 2.08,
+      "t": 0.42,
+      "note": "This was the least-bad of the 120 open-entry settings on all four contracts: 0 of 30 ES settings and 0 of 30 CL settings had a positive mean per trade. A 0.42 t is noise, so no edge is claimed."
+    },
+    "size_rule": "One micro. Two would put a $426 stop at 43% of the buffer with a negative-expectancy rule.",
+    "kill_rule": "Two stops in a session (-$426) ends the day. If the forward record after two sessions is worse than the measured -$3.09/trade, cut the leg instead of resizing it."
   }
 ]

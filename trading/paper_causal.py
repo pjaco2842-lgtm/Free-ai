@@ -111,6 +111,44 @@ def order_lines(o: dict, leg: dict) -> list[str]:
     ]
 
 
+def open_order(D: dict, leg: dict) -> dict:
+    """A leg that enters at the open: the level is unknown, so the rule is printed in points."""
+    i = D["n"] - 1
+    pv = E.SPECS[leg["symbol"]]["mult"]
+    atr = D["atr"][i]
+    risk_pts = leg["stop"] * atr
+    m = E.EXITS[leg["exit"]]
+    px_risk = risk_pts * pv * leg["micros"]
+    return {"for_session": next_session(D["d"][-1]), "from_bar": D["d"][-1],
+            "last_close": D["c"][i], "atr": atr, "stop_pts": risk_pts,
+            "target_pts": m * risk_pts, "risk_usd": px_risk,
+            "risk_share": 100.0 * px_risk / MAX_LOSS,
+            "buffer_after_stop": MAX_LOSS - px_risk, "tick": E.SPECS[leg["symbol"]]["tick"],
+            "contract": leg.get("contract", "MES"), "micros": leg["micros"]}
+
+
+def open_order_lines(o: dict, leg: dict) -> list[str]:
+    c, s, t = o["last_close"], o["stop_pts"], o["target_pts"]
+    m, n = o["micros"], o["contract"]
+    return [
+        f"**MARKET AT THE OPEN, {m} {n}, in the direction of the gap** — for the session of "
+        f"{o['for_session']} (rule built from the completed bar {o['from_bar']}).", "",
+        "| field | value |", "|---|---|",
+        f"| open above {c:.2f} | **BUY {m} {n} at market** |",
+        f"| open below {c:.2f} | **SELL {m} {n} at market** |",
+        f"| stop | long: entry − **{s:.2f}** pts · short: entry + **{s:.2f}** pts "
+        f"({leg['stop']} × ATR {o['atr']:.2f}) |",
+        f"| target | long: entry + **{t:.2f}** pts · short: entry − **{t:.2f}** pts "
+        f"({E.EXITS[leg['exit']]}R) |",
+        f"| risk if stopped | **${o['risk_usd']:.0f}** = {o['risk_share']:.0f}% of the "
+        f"${MAX_LOSS:.0f} buffer |",
+        f"| buffer left after one stop | ${o['buffer_after_stop']:.0f} |", "",
+        "This leg fires on every session whose open differs from the last close, so it always "
+        "trades. Its measured expectation is negative — it is here to guarantee forward data, "
+        "not because it is expected to earn.",
+    ]
+
+
 # ------------------------------------------------------------------ settlement
 
 def settle(D: dict, leg: dict, state: dict, today: str) -> list[dict]:
@@ -131,20 +169,31 @@ def settle(D: dict, leg: dict, state: dict, today: str) -> list[dict]:
             break
         if D["d"][i] in stood:        # the day's stop was reached; stand down
             continue
-        sig = E.signal(D, i, leg["family"], leg["n"], leg["gap"])
-        if not sig:
-            continue
-        entry, kind = sig
+        if leg.get("entry") == "open":
+            sig = E.open_signal(D, i)
+            if not sig:
+                continue
+            entry, kind, side = sig
+        else:
+            sig = E.signal(D, i, leg["family"], leg["n"], leg["gap"])
+            if not sig:
+                continue
+            entry, kind = sig
+            side = 1
         one = E.trade_pnl(D, i, entry, kind, leg["stop"], E.EXITS[leg["exit"]],
-                          pv, tick, leg["resolution"])
+                          pv, tick, leg["resolution"], side=side)
         if one is None:
             continue
         atr = D["atr"][i - 1]
         fresh.append({
-            "date": D["d"][i], "order": f"buy limit {leg['micros']} @ {entry:.2f}",
+            "date": D["d"][i],
+            "order": (f"{'buy' if side > 0 else 'sell'} market @ {entry:.2f}"
+                      if leg.get("entry") == "open"
+                      else f"buy limit {leg['micros']} @ {entry:.2f}"),
             "entry": round(entry, 2), "micros": leg["micros"],
-            "stop": round(entry - leg["stop"] * atr, 2),
-            "target": round(entry + E.EXITS[leg["exit"]] * leg["stop"] * atr, 2),
+            "side": "long" if side > 0 else "short",
+            "stop": round(entry - side * leg["stop"] * atr, 2),
+            "target": round(entry + side * E.EXITS[leg["exit"]] * leg["stop"] * atr, 2),
             "risk": round(leg["stop"] * atr * pv * leg["micros"], 2),
             "usd": round(one * leg["micros"], 2),
             "result": "win" if one > 0 else "loss",
@@ -226,14 +275,21 @@ def pace_lines(leg: dict, state: dict) -> list[str]:
 
 def report(leg: dict, state: dict, o: dict | None, rows: list[str]) -> str:
     L = ["# The causal paper desk", "",
-         f"Book `{leg['id']}` — {leg['micros']} micro, {leg['symbol']}, {leg['family']}-{leg['n']}, "
-         f"{leg['stop']} ATR stop, {leg['exit']} target, gap:{leg['gap']}, long only.", "",
+         f"Book `{leg['id']}` — {leg['micros']} micro, {leg['symbol']}, "
+         + ("market at the open with the gap, either side" if leg.get("entry") == "open"
+            else f"{leg['family']}-{leg['n']}, gap:{leg['gap']}, long only")
+         + f", {leg['stop']} ATR stop, {leg['exit']} target.", "",
          "> **Paper only.** The evidence behind this book is unvalidated: `RESEARCH-LOG.md` (o) "
          "showed the old fill model could count a target that traded before the dip. This "
          "runner uses the causal resolution instead, so the first 100 settled trades here "
          "are the test, not a formality.", "",
          "## Next session", ""]
-    L += order_lines(o, leg) if o else ["No order: not enough completed bars to build a level."]
+    if not o:
+        L += ["No order: not enough completed bars to build a level."]
+    elif leg.get("entry") == "open":
+        L += open_order_lines(o, leg)
+    else:
+        L += order_lines(o, leg)
     L += ["", "## Account", ""] + account_lines(state) + [""]
     L += ["## Pace against your rubric", ""] + pace_lines(leg, state) + [""]
     if state["ledger"]:
@@ -340,7 +396,7 @@ def run_leg(leg: dict, args, multi: bool) -> None:
         state["last"] = args.since
     today = datetime.now(timezone.utc).date().isoformat()
     fresh = [] if args.order else settle(D, leg, state, today)
-    o = order(D, leg)
+    o = open_order(D, leg) if leg.get("entry") == "open" else order(D, leg)
     if multi:
         print(f"\n===== {leg['id']} ({leg['micros']} micro)\n")
     print(report(leg, state, o, []))

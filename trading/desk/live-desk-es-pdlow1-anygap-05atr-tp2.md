@@ -1,6 +1,6 @@
 # The causal paper desk
 
-Book `es-pdlow1-anygap-05atr-tp2` — 1 micro, ES=F, limit_low-1, 0.5 ATR stop, tp2 target, gap:any, long only.
+Book `es-pdlow1-anygap-05atr-tp2` — 1 micro, ES=F, limit_low-1, gap:any, long only, 0.5 ATR stop, tp2 target.
 
 > **Paper only.** The evidence behind this book is unvalidated: `RESEARCH-LOG.md` (o) showed the old fill model could count a target that traded before the dip. This runner uses the causal resolution instead, so the first 100 settled trades here are the test, not a formality.
 
