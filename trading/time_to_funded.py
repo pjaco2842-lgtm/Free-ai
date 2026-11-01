@@ -27,6 +27,7 @@ is a distribution, and the distribution is the answer.
 from __future__ import annotations
 
 import argparse
+import json
 import random
 import statistics
 from datetime import date, timedelta
@@ -46,7 +47,8 @@ TICK = E.SPECS["ES=F"]["tick"]
 LEG = dict(fam="limit_low", n=1, stop=0.5, exit="tp2", gap="any", engine="proven")
 
 
-def sessions(leg: dict | None = None) -> tuple[list[float], list[str], int]:
+def sessions(leg: dict | None = None,
+             only: set[str] | None = None) -> tuple[list[float], list[str], int]:
     """One dollar result per session, including the sessions with no trade."""
     leg = leg or LEG
     D = E.load_csv(str(CSV))
@@ -67,6 +69,8 @@ def sessions(leg: dict | None = None) -> tuple[list[float], list[str], int]:
     else:
         trades = E.run_config(D, leg["fam"], leg["n"], leg["stop"], leg["exit"],
                               leg["gap"], leg["engine"], MULT, TICK)
+    if only is not None:                 # a gate: the rule stands down on other days
+        trades = [(d, p) for d, p in trades if d in only]
     per_day: dict[str, float] = {}
     for day, pnl in trades:
         per_day[day] = per_day.get(day, 0.0) + pnl
@@ -108,9 +112,9 @@ def one_path(blocks: list[list[float]], size: int, rng: random.Random,
 
 
 def run(size: int, paths: int, max_sessions: int, leg: dict | None = None,
-        seed: int = 16) -> dict:
+        seed: int = 16, only: set[str] | None = None) -> dict:
     leg = leg or LEG
-    pnls, _calendar, _n = sessions(leg)
+    pnls, _calendar, _n = sessions(leg, only)
     blocks = [pnls[i:i + BLOCK] for i in range(len(pnls) - BLOCK + 1)]
     rng = random.Random(seed + size)
     out = []
@@ -168,9 +172,11 @@ def main() -> None:
     ap.add_argument("--n", type=int, default=LEG["n"])
     ap.add_argument("--stop", type=float, default=LEG["stop"])
     ap.add_argument("--exit", default=LEG["exit"])
+    ap.add_argument("--only-dates", help="JSON list of sessions the rule is allowed to trade")
     a = ap.parse_args()
     leg = dict(LEG, fam=a.fam, n=a.n, stop=a.stop, exit=a.exit)
-    results = [run(size, a.paths, a.max_sessions, leg) for size in (1, 2)]
+    only = set(json.loads(Path(a.only_dates).read_text())) if a.only_dates else None
+    results = [run(size, a.paths, a.max_sessions, leg, only=only) for size in (1, 2)]
     for r in results:
         print("\n".join(report(r)))
     if a.json:

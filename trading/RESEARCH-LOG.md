@@ -1307,3 +1307,52 @@ measured path: **77.6% funded, median 66 sessions, 16 Feb 2027**.
 **Verdict.** Redone, and the earlier numbers were the drift plus a stop that never fired. There is
 no faster honest route in the record: passing "asap" means more size, and more size halves the
 survival odds (2 micros: 48.4% funded, 51.6% breached) rather than shortening the wait.
+
+## 2026-11-01 (ix) — predicting tomorrow's efficiency ratio: it predicts, and it does not help
+
+**Claim tested** (video): a logistic regression over 15 price-movement measurements predicts the
+next session's efficiency ratio; high-ER sessions earn far more per trade; skipping the low ones
+improved almost every metric out of sample.
+
+**Method.** `er_gate.py`. Kaufman ER, k=10; "high" = ER ≥ 30%. Fifteen features built only from
+bars up to the previous close (returns 1/2/5/10, ATR/price, range/ATR, close-in-range, gap,
+distance from EMA 20/50/200, vol burst, up-day fraction, yesterday's own ER, distance under the
+20-day high). Logistic regression, trained before 2023, judged on 2023 onward only. The gate is
+then scored on the book itself, against 400 random drops of the same size.
+
+**The model does predict.** Test accuracy 79.8%, **AUC 0.863**, base rate 48.7% on 964 sessions.
+This part of the video is credible: efficiency is forecastable, and it is forecastable from the
+things one would guess.
+
+**But the gate does not pay.** 2023 onward, causal fills, one micro:
+
+| set | trades | $/trade | $/session |
+|---|---:|---:|---:|
+| every trade | 443 | +$32.24 | **+$14.82** |
+| predicted high ER | 212 | **+$39.21** | +$8.62 |
+| predicted low ER | 231 | +$25.85 | — |
+
+High-ER sessions are worth $13.36 more per trade, so the video's observation reproduces. It is
+still not a filter worth having: dropping the same number of days **at random** produced
++$32.62/trade (p05 +$16.60, p95 +$45.51), and the gate sits at the **76th percentile, p = 0.24**.
+Knowing more about tomorrow's efficiency does not beat cutting days blindly, because the book's
+trades already cluster on the days that matter.
+
+**And it costs time.** First-passage, 12,000 paths:
+
+| book | funded | breached | median date |
+|---|---|---|---|
+| ungated, 1 micro | 77.9% | 22.1% | **2027-02-17** |
+| ER gate, 1 micro | 83.9% | 16.1% | 2027-06-02 |
+| ungated, 2 micros | 48.4% | 51.6% | 2027-01-01 |
+| ER gate, 2 micros | 50.3% | 49.7% | 2027-03-08 |
+
+The gate trades on 22.0% of sessions instead of 46.0%, so dollars per session halve and the median
+funded date **slips from mid-February to early June** — the gate's one real effect is to deliver
+the same account six weeks later. It raises the eventual pass rate (83.9%) only by removing
+exposure, which is the same as trading less, not trading better.
+
+**Verdict.** Keep the idea on file as a *feature*, not a filter. A prediction that ranks days is
+not the same thing as a decision that improves a book; here the ranking is real and the decision
+still loses to a coin flip. To matter it would have to beat random dropping at p<0.10 and raise
+$/session at the same time, and it does neither.
