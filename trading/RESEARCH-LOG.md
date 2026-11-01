@@ -1483,3 +1483,66 @@ smooth equity curve.
 pay, the best measured attempt wins **6.2 accounts per 100 attempts and loses none** over 20
 sessions. More micros does not multiply that — it multiplies the failures. The lever that works is
 **more attempts at the size that survives**, not more size per attempt.
+
+## 2026-11-01 (xiv) — 151,305 configurations across the five named contracts, and the VWAP claim
+
+**Asked:** test "everything" — 250,000 ideas, candles, indicators, the 26,000-strategy video, the
+VWAP transcript — and install the best aggressive rule before tonight's futures open.
+
+**The video's claims, tested.** `video_sweep.py` scores **151,305 configurations** across ES, NQ,
+GC, CL and NKD on ten years of daily bars: eight families (gap-direction open, gap fade,
+prior-high/low break with hold to close, narrow-range break, Monday gap fade, fade after a trend
+day), four lookbacks, gap/trend/post-trend-day/weekday filters, seven stops and three exits.
+Costs are commission plus a tick of slippage a side. The exit is the session close ("no TP, hold
+to close"); the stop is resolved on the close, which flatters tight stops.
+
+| claim | best alpha | t | clears t > 4.88? |
+|---|---:|---:|---|
+| 1. breakout, tight stop, hold to close | +863.35 (NKD, 46 trades) | +2.32 | no |
+| 2. gap direction filters breakouts | +431.41 (NKD, 31 trades) | +0.82 | no |
+| 3. fade after a big trend day | **−95.11** (GC, 40 trades, 0% wins) | −6.30 | no — measured backwards |
+| 4. Monday gap fade | +74.29 (CL, 34 trades) | +1.67 | no |
+
+**Zero of 151,305 cleared the multiple-testing line.** 41.7% had positive alpha, which is what a
+coin-flipping crowd looks like. Claim 3 is the interesting one: fading after a trend day is
+*reliably* negative on gold, the opposite of the claim, which is at least a real signal — a real
+signal that the rule is bad rather than absent.
+
+**The "a take-profit makes it worse" claim could not be tested.** At 1.5-2.5 ATR stops the target
+and the stop never bind on close resolution, so close/tp1/tp2 produce identical rows. It needs
+intraday bars, which this repo has for 58 ES sessions only.
+
+**The VWAP transcript.** Researched independently. The "+149R, then +89.8R out of sample" figure
+is unaudited — every repost carries "results have not been independently verified". Independent
+tests of the same family on the same instrument disagree: sentinel.trades measured NQ VWAP
+following at 54% against a 55% baseline, +171R in 2020-23 becoming **−38R** out of sample, and a
+*placebo* line next to VWAP bouncing just as often; quantstackai's ±2 SD band fade over 37,442 NQ
+trades was **worse than random** (−$44 on 5-minute, −$71 on 15-minute, random −$1). The one
+rigorous study finding VWAP mean-reversion edge found it on the *short* side in percentage points,
+not the long side in R-multiples. Most likely error in the claim: cost accounting — 720 trades at
+0.1R of friction is 72R, about half the reported edge.
+
+**Affordability, which decides the roster.** One stop at 0.5 ATR, one micro:
+
+| contract | 0.5 ATR stop | share of $1,000 buffer |
+|---|---:|---:|
+| ES | $236 | 24% |
+| CL | $213 | 21% |
+| GC | $375 | 37% |
+| NQ | $680 | 68% |
+| **NKD** | **$4,487** | **449% — cannot be traded on this account** |
+
+**The same rule on the other contracts, 964 sessions, rolling 20-session windows, one micro:**
+ES net **+6.24**; GC pass 6.03 / blow 10.69, net **−4.66**; CL net **−1.48**; NQ net **−15.34**.
+Only ES wins more attempts than it loses. GC and CL are installed as **observation-negative**
+legs, one micro, so the forward record accumulates and the difference is visible instead of
+argued.
+
+**Two runner bugs found and fixed in the process:** `run_leg` assigned into `args.csv`, so every
+leg after the first re-used ES bars, and the order template hardcoded "MES" for every contract —
+together they priced a CL order at $4,713 of risk off ES levels. Bars are now per-leg and the
+order names the real contract.
+
+**Book for the session of 2026-11-02:** ES prior-low limit, 0.5 ATR, 2R, one micro, entry 7558.25.
+Unchanged, because 151,305 tests did not find anything better and the independent research did not
+either.

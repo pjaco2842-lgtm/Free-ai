@@ -1,0 +1,29 @@
+{
+ "GC=F": {
+  "trades": 431,
+  "mean": 33.55,
+  "win_pct": 52.0,
+  "pass_pct": 6.03,
+  "blow_pct": 10.69,
+  "net": -4.66,
+  "sessions": 964
+ },
+ "CL=F": {
+  "trades": 433,
+  "mean": -0.82,
+  "win_pct": 47.8,
+  "pass_pct": 0.21,
+  "blow_pct": 1.69,
+  "net": -1.48,
+  "sessions": 963
+ },
+ "NQ=F": {
+  "trades": 426,
+  "mean": 53.19,
+  "win_pct": 52.8,
+  "pass_pct": 8.25,
+  "blow_pct": 23.6,
+  "net": -15.34,
+  "sessions": 964
+ }
+}

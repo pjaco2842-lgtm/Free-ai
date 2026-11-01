@@ -77,7 +77,7 @@ def order(D: dict, leg: dict) -> dict:
     return {
         "for_session": next_session(D["d"][-1]),
         "from_bar": D["d"][-1],
-        "order": f"BUY LIMIT {leg['micros']} MES @ {level:.2f}",
+        "order": f"BUY LIMIT {leg['micros']} {leg.get('contract', 'MES')} @ {level:.2f}",
         "level": level,
         "gap_condition": (f"post only if the open is above the last close {close:.2f}"
                           if leg["gap"] == "with" else "no gap condition"),
@@ -315,16 +315,16 @@ def selftest() -> None:
 
 def run_leg(leg: dict, args, multi: bool) -> None:
     """Settle, print and journal one book leg. Each leg keeps its own ledger."""
+    # Local, not args.csv: assigning into args made the second leg reuse the first
+    # leg's bars, so GC and CL were priced off ES levels with CL's multiplier.
+    csv = args.csv or str(ROOT / "data" / f"{leg['symbol'].replace('=F', '')}_F_1d.csv")
+    if not Path(csv).exists():
+        print(f"  {leg['id']}: no bars at {Path(csv).name} — nothing invented, "
+              "nothing written. Run fetch_bars.py.")
+        return
     if not args.csv:
-        # The book's own daily file, refreshed by fetch_bars.py. Without this the
-        # scheduled run had to be handed a path by hand, so in practice it never ran.
-        args.csv = str(ROOT / "data" / f"{leg['symbol'].replace('=F', '')}_F_1d.csv")
-        if not Path(args.csv).exists():
-            print(f"  {leg['id']}: no bars at {Path(args.csv).name} — nothing invented, "
-                  "nothing written. Run fetch_bars.py.")
-            return
-        print(f"  bars: {Path(args.csv).relative_to(ROOT)} (run fetch_bars.py to refresh)")
-    D = E.load_csv(args.csv)
+        print(f"  bars: {Path(csv).relative_to(ROOT)} (run fetch_bars.py to refresh)")
+    D = E.load_csv(csv)
     if D["n"] < 22:
         print(f"  {leg['id']}: only {D['n']} bars — ATR(14) and a prior low need 22.")
         return

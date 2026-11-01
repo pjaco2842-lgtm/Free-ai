@@ -24,6 +24,9 @@ JOBS = [
     ("ES=F",  "730d", "60m", "ES_F_1h"),
     ("ES=F",  "60d", "5m",  "ES_F_5m"),
     ("NQ=F",  "10y", "1d",  "NQ_F_1d"),
+    ("GC=F",  "10y", "1d",  "GC_F_1d"),
+    ("CL=F",  "10y", "1d",  "CL_F_1d"),
+    ("NKD=F", "10y", "1d",  "NKD_F_1d"),
     # ^GSPC is deliberately absent: Yahoo's max range returned 169 rows spanning 42
     # years (monthly-thinned), which would silently corrupt any daily measurement.
 ]

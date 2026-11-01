@@ -59,6 +59,12 @@ UA = ("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
 SPECS = {
     "ES=F": {"mult": 5.0, "tick": 0.25},
     "NQ=F": {"mult": 2.0, "tick": 0.25},
+    # Micro contracts for the other symbols the desk was asked to cover. MGC is $10 a
+    # point with a $1 tick, MCL is $100 a point with a $1 tick, NKD is $5 a point with a
+    # $25 tick -- which is why one NKD stop cannot fit inside a $1,000 buffer.
+    "GC=F": {"mult": 10.0, "tick": 0.10},
+    "CL=F": {"mult": 100.0, "tick": 0.01},
+    "NKD=F": {"mult": 5.0, "tick": 5.0},
 }
 COMM_SIDE = 1.24
 

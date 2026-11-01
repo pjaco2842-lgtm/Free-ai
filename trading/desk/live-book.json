@@ -68,7 +68,8 @@
     "size_rule": "One micro. Do not escalate on win-rate grounds: two micros doubles a $175 stop to $350, which is 35% of the buffer per trade, and nothing measured reaches the win rate that would justify it.",
     "why_this_one": "It is the highest measured pass rate of any configuration whose order type can actually be placed (59%), it trades 0.18 times a session so it will actually fire, and a 2R target only needs 30.8% wins to break even rather than the 67.6% that 0.5R demanded.",
     "what_is_not_proven": "No daily-bar rule in this repo has a statistically separable edge once 3,584 configurations are corrected for and index drift is removed. The best surviving line earns $2.49 per session at one micro. This book is the best of a weak field, not a known winner.",
-    "kill_rule": "Two consecutive full stops (-$350) or -$700 in a session: stop for the day and log it. A breach of the trailing floor ends the attempt, not the research."
+    "kill_rule": "Two consecutive full stops (-$350) or -$700 in a session: stop for the day and log it. A breach of the trailing floor ends the attempt, not the research.",
+    "contract": "MES"
   },
   {
     "id": "es-pdlow1-anygap-05atr-tp2-aggr",
@@ -84,22 +85,121 @@
     "resolution": "proven",
     "status": "retired-negative",
     "do_not_trade": true,
-    "variant": "aggressive — identical rule, twice the size",
+    "variant": "aggressive \u2014 identical rule, twice the size",
     "start": "2026-11-01",
     "first_session": "2026-11-02",
-    "daily_targets": [500, 500, 250],
+    "daily_targets": [
+      500,
+      500,
+      250
+    ],
     "daily_stop_usd": 700,
     "why_this_one": "Requested aggressive. The measurement says the rule is already the best one available, so the only aggressive lever left is size: same entry, same stop, two micros instead of one. Nothing about the signal changes.",
     "measured": {
       "source": "this exact rule, 964 sessions from 2023-01-03 to 2026-10-30, rolling 20-session windows, trailing floor and 40% consistency enforced",
       "this_exact_rule": {
-        "x1": {"pass_pct": 6.24, "blow_pct": 0.0, "net": 6.24},
-        "x2": {"pass_pct": 13.54, "blow_pct": 18.2, "net": -4.66},
-        "x3": {"pass_pct": 15.34, "blow_pct": 36.08, "net": -20.74}
+        "x1": {
+          "pass_pct": 6.24,
+          "blow_pct": 0.0,
+          "net": 6.24
+        },
+        "x2": {
+          "pass_pct": 13.54,
+          "blow_pct": 18.2,
+          "net": -4.66
+        },
+        "x3": {
+          "pass_pct": 15.34,
+          "blow_pct": 36.08,
+          "net": -20.74
+        }
       },
       "meaning": "Doubling size roughly doubles the passes and then overshoots on the blows: 13.5% pass against 18.2% blown. Net is negative at every size above one micro, so this leg loses more accounts than it wins."
     },
     "size_rule": "Two micros, kept only as a measured negative control: one stop is $472 = 47% of the buffer, and 18.2% of attempts are blown against 13.5% passed. Do not trade this leg. It is journalled so the ledger can show why more size is not the lever.",
-    "kill_rule": "One stop -$472; two stops in a session (-$944) ends the attempt."
+    "kill_rule": "One stop -$472; two stops in a session (-$944) ends the attempt.",
+    "contract": "MES"
+  },
+  {
+    "id": "gc-pdlow1-anygap-05atr-tp2-obs",
+    "symbol": "GC=F",
+    "market": "micro",
+    "family": "limit_low",
+    "n": 1,
+    "stop": 0.5,
+    "exit": "tp2",
+    "gap": "any",
+    "dir": "long",
+    "micros": 1,
+    "resolution": "proven",
+    "status": "observation-negative",
+    "do_not_trade": true,
+    "start": "2026-11-01",
+    "first_session": "2026-11-02",
+    "daily_targets": [
+      500,
+      500,
+      250
+    ],
+    "daily_stop_usd": 350,
+    "why_this_one": "Same rule as the ES book, run on this contract only to collect forward data. No measured edge is claimed for it here.",
+    "measured": {
+      "rule_on_this_contract": {
+        "trades": 431,
+        "mean": 33.55,
+        "win_pct": 52.0,
+        "pass_pct": 6.03,
+        "blow_pct": 10.69,
+        "net": -4.66,
+        "sessions": 964
+      },
+      "note": "pass/blow over rolling 20-session windows at one micro since 2023; the alpha sweep found nothing above the multiple-testing line, so this is an observation leg, not a book",
+      "risk_per_stop_usd": 375,
+      "risk_share_of_buffer_pct": 38.0
+    },
+    "size_rule": "One micro. Two would be 43-75% of the buffer per stop.",
+    "kill_rule": "Two stops in a session ends it for the day.",
+    "contract": "MGC"
+  },
+  {
+    "id": "cl-pdlow1-anygap-05atr-tp2-obs",
+    "symbol": "CL=F",
+    "market": "micro",
+    "family": "limit_low",
+    "n": 1,
+    "stop": 0.5,
+    "exit": "tp2",
+    "gap": "any",
+    "dir": "long",
+    "micros": 1,
+    "resolution": "proven",
+    "status": "observation-negative",
+    "do_not_trade": true,
+    "start": "2026-11-01",
+    "first_session": "2026-11-02",
+    "daily_targets": [
+      500,
+      500,
+      250
+    ],
+    "daily_stop_usd": 350,
+    "why_this_one": "Same rule as the ES book, run on this contract only to collect forward data. No measured edge is claimed for it here.",
+    "measured": {
+      "rule_on_this_contract": {
+        "trades": 433,
+        "mean": -0.82,
+        "win_pct": 47.8,
+        "pass_pct": 0.21,
+        "blow_pct": 1.69,
+        "net": -1.48,
+        "sessions": 963
+      },
+      "note": "pass/blow over rolling 20-session windows at one micro since 2023; the alpha sweep found nothing above the multiple-testing line, so this is an observation leg, not a book",
+      "risk_per_stop_usd": 213,
+      "risk_share_of_buffer_pct": 21.0
+    },
+    "size_rule": "One micro. Two would be 43-75% of the buffer per stop.",
+    "kill_rule": "Two stops in a session ends it for the day.",
+    "contract": "MCL"
   }
 ]
