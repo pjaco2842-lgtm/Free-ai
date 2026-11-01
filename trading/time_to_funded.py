@@ -112,9 +112,14 @@ def one_path(blocks: list[list[float]], size: int, rng: random.Random,
 
 
 def run(size: int, paths: int, max_sessions: int, leg: dict | None = None,
-        seed: int = 16, only: set[str] | None = None) -> dict:
+        seed: int = 16, only: set[str] | None = None,
+        series: list[float] | None = None) -> dict:
+    """`series` lets any sweep hand over its own per-session dollars directly."""
     leg = leg or LEG
-    pnls, _calendar, _n = sessions(leg, only)
+    if series is None:
+        pnls, _calendar, _n = sessions(leg, only)
+    else:
+        pnls = series
     blocks = [pnls[i:i + BLOCK] for i in range(len(pnls) - BLOCK + 1)]
     rng = random.Random(seed + size)
     out = []
@@ -140,9 +145,11 @@ def by(tag: str, horizon: int, r: dict) -> str:
 def report(r: dict) -> list[str]:
     s = r["size"]
     leg = r.get("leg") or {}
+    rule = leg.get("name") or (f"{leg.get('fam')}-{leg.get('n')} "
+                                f"{leg.get('stop')} ATR {leg.get('exit')}")
     L = [f"{'=' * 78}", f"  {s} micro{'s' if s > 1 else ''} — {r['paths']:,} paths, "
          f"{r['sessions_available']} sessions of history, {r['max_sessions']} max",
-         f"  rule: {leg.get('fam')}-{leg.get('n')} {leg.get('stop')} ATR {leg.get('exit')}",
+         f"  rule: {rule}",
          "=" * 78]
     L.append(f"  EV: ${r['ev_session']:+.2f}/session · rule fires {100*r['fire_rate']:.1f}% "
              "of sessions")
@@ -173,10 +180,22 @@ def main() -> None:
     ap.add_argument("--stop", type=float, default=LEG["stop"])
     ap.add_argument("--exit", default=LEG["exit"])
     ap.add_argument("--only-dates", help="JSON list of sessions the rule is allowed to trade")
+    ap.add_argument("--pnl-json", help="a sweep's own per-session dollars (one micro)")
     a = ap.parse_args()
     leg = dict(LEG, fam=a.fam, n=a.n, stop=a.stop, exit=a.exit)
     only = set(json.loads(Path(a.only_dates).read_text())) if a.only_dates else None
-    results = [run(size, a.paths, a.max_sessions, leg, only=only) for size in (1, 2)]
+    series, label = None, None
+    if a.pnl_json:
+        blob = json.loads(Path(a.pnl_json).read_text())
+        series = blob["pnl"]
+        label = blob.get("config") or {}
+        label = (f"{label.get('sym')} {label.get('rule')} "
+                 f"{label.get('gap')}/{label.get('trend')}/{label.get('dow')} "
+                 f"{label.get('stop')} ATR {label.get('exit')}" if label else None)
+        print(f"  series: {len(series)} sessions from {a.pnl_json} — {label}")
+        leg = dict(leg, name=label) if label else leg
+    results = [run(size, a.paths, a.max_sessions, leg, only=only, series=series)
+               for size in (1, 2)]
     for r in results:
         print("\n".join(report(r)))
     if a.json:

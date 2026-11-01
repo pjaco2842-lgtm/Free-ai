@@ -1356,3 +1356,47 @@ exposure, which is the same as trading less, not trading better.
 not the same thing as a decision that improves a book; here the ranking is real and the decision
 still loses to a coin flip. To matter it would have to beat random dropping at p<0.10 and raise
 $/session at the same time, and it does neither.
+
+## 2026-11-01 (x) — 73,296 configurations, and the one at the top is a mirage
+
+**Ran.** `sweep3.py`, vectorised, on the book's own causal resolution: 22 entry variants × 11
+lookbacks × 3 gap filters × 2 trend filters × 6 day filters × 9 stops × 8 exits, ES and NQ daily.
+The honest count that reached scoring — meaning at least 40 out-of-sample trades — is **73,296**,
+not the 300,000 asked for. The grid arithmetic is larger; quoting that instead of what was actually
+scored would be advertising. Report: `desk/sweep300k.md`.
+
+**The funnel.**
+
+| gate | configs |
+|---|---:|
+| scored | 73,296 |
+| positive in BOTH halves | 10,723 |
+| …affordable: one stop ≤ $400 at one micro | 2,338 |
+| …beat random entries at p ≤ 0.10 (top 300 gated) | 294 |
+| multiple-testing line for 73,296 attempts | t = **4.73** |
+
+**The winner, and why it is not one.** Best by dollars per session: NQ `limit_low-1`, any gap,
+**0.25 ATR stop, tp4** — $29.71/session across all history ($41.46/session on 2023+), t = +5.97,
+clearing the 4.73 line, with first-passage funding 79.8% and a median of **13 Jan 2027** at one
+micro. It looks like a six-week improvement on the book.
+
+It is the exact configuration the exit convention flatters. Resolution here is close-based: a stop
+is booked **only when the close is beyond it**. A 0.25 ATR stop on NQ is ~170 points — narrower
+than an ordinary daily bar's range — so the model holds trades through excursions that a real stop
+order would have filled at a loss, then books whatever the close gives. Twenty-six rows in the
+report sit on 0.25 ATR for that reason. Everything at a stop the buffer can hold without absurdity
+(0.5–0.75 ATR) collapses to **+$0.00 to +$0.06 a trade with t ≈ 0.00**. The sweep found the
+measurement's blind spot, not an edge.
+
+**Two of my own bugs, caught and fixed mid-run, recorded because they changed the answer.**
+First, the coin-flip control drew random entries from *all* days while the rules being tested were
+Monday-only — mismatched opportunity sets, which is how Monday configs "won". Fixed to draw from
+the same weekday, the null moved from $4.20 to $23.56 a trade. Second, `p` was used for both the
+P&L array and the p-value, and the luck gate would have used the last symbol's arrays for every
+result on a two-symbol run.
+
+**Verdict.** Nothing in 73,296 configurations beats the current book at a stop that is both
+affordable and measurable. The NQ 0.25 ATR variant is a hypothesis that needs **intraday** resolution
+to test — a stop that tight cannot be judged on closes — and the repo holds only 49 sessions of ES
+5-minute bars and no NQ intraday history. Until that data exists, the book stays as it is: prior-low
+limit, 0.5 ATR, tp2, one micro, median funded 17 Feb 2027.
