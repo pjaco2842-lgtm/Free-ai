@@ -1104,3 +1104,37 @@ to forbid escalation on win-rate grounds), `CLAUDE-HANDOFF.md` §3.5 added and �
 
 **Supersedes.** Every leg-count pass rate in (q) and every "2 micros" figure in the repo
 before this entry, including the one in `CLAUDE-HANDOFF.md` §4 as first written.
+
+## 2026-10-31 (u) — "take the profit early" is a rule; here are five measurable versions
+
+**The instinct.** If the trade is in profit but looks like it will not reach the target,
+take what is there. On daily bars there is no path to look at — the bar has a low, a high
+and a close but not their order — so "it started to tank" is not observable. What *is*
+observable is the close, so every version below acts on closes only, and a close beyond the
+stop fills at the stop (the same conservative convention as the causal engine).
+
+**Policies in `exits.py`** — entry is the live book's own signal (prior low buy limit,
+gap-with, 1.0 ATR, one micro, $4.98 round trip), only the exit differs:
+
+| policy | rule |
+|---|---|
+| `tp05` | hold for the 0.5R target, stop on a close, give up at the horizon close |
+| `tp_any` | take the first close that clears entry plus costs — the literal request |
+| `be025` | hold for target, but arm a breakeven stop once a close shows +0.25R |
+| `time2` / `time5` | hold a fixed number of closes, then take the close |
+| `trail025` | hold for target, stop trails 0.25R behind the best close |
+
+**The arithmetic that decides it.** An early exit shrinks the average win, and the break-even
+win rate `p* = |avg loss| / (avg win + |avg loss|)` rises as the average win falls. At a fixed
+stop, the target size sets the floor: 0.25R needs 84.5%, 0.5R needs 67.6%, 1R needs 50.7%.
+Taking *any* profit sits far above all of them and has to be paid for by converting losses
+into scratches. So the instinct is not automatically cautious — measured against holding it
+may be the more demanding rule, not the safer one.
+
+**Also recorded:** the causal engine as written closes every proven-resolution trade at the
+*entry day's* close, so it already "takes what is there" whenever the target does not hit that
+session; `exits.py` is where multi-day holding, breakeven arming and time stops become testable.
+
+**Status.** `--selftest` passes on fixtures (early-exit price, target fill, breakeven never
+worse than plain, time stop exits on time). **No market numbers yet** — same blocker as (t):
+no bars in this workspace. Conclusion deferred, not assumed.

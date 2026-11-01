@@ -103,20 +103,58 @@ def _chunk(sym: str, p1: int, p2: int) -> list:
     raise RuntimeError(f"{sym} {p1}-{p2}: {last}")
 
 
+ALIASES = {"date": ("date", "datetime", "time", "timestamp"),
+           "open": ("open",), "high": ("high",), "low": ("low",),
+           "close": ("close", "price", "close/last")}
+
+
+def _pick(head: list[str], key: str) -> int | None:
+    """Exact name first, so `close` wins over `adj close`, then a prefix match."""
+    for a in ALIASES[key]:
+        if a in head:
+            return head.index(a)
+    for a in ALIASES[key]:
+        for i, h in enumerate(head):
+            if h.startswith(a):
+                return i
+    return None
+
+
 def load_csv(path: str) -> dict:
-    """Offline bars: date,open,high,low,close (header names are matched loosely)."""
+    """Offline bars from any date,open,high,low,close export.
+
+    A vendor export usually carries extra columns (`Adj Close`, `Volume`, `Price`), and
+    some files have no header at all. Both are accepted: recognised names win, otherwise
+    the canonical five-column order is assumed. Rows that will not parse, or repeat a
+    date, are dropped rather than silently shifting the series.
+    """
     import csv
     with open(path, newline="") as fh:
-        rdr = csv.reader(fh)
-        rows = list(rdr)
+        rows = [r for r in csv.reader(fh) if r and any(c.strip() for c in r)]
+    if not rows:
+        raise SystemExit(f"{path}: empty")
     head = [h.strip().lower() for h in rows[0]]
-    idx = {k: head.index(k) for k in ("date", "open", "high", "low", "close")}
+    col = {k: _pick(head, k) for k in ALIASES}
+    if any(v is None for v in col.values()):
+        col = {"date": 0, "open": 1, "high": 2, "low": 3, "close": 4}
+        body = rows
+    else:
+        body = rows[1:]
     out = []
-    for r in rows[1:]:
-        if not r or len(r) < 5:
+    for r in body:
+        if len(r) <= max(col.values()):
             continue
-        out.append([r[idx["date"]][:10]] + [float(r[idx[k]]) for k in ("open", "high", "low", "close")])
-    return build(sorted(out))
+        try:
+            d = r[col["date"]].strip()[:10]
+            datetime.strptime(d, "%Y-%m-%d")
+            o, h, l, c = (float(r[col[k]]) for k in ("open", "high", "low", "close"))
+        except (ValueError, TypeError):
+            continue
+        out.append([d, o, h, l, c])
+    if not out:
+        raise SystemExit(f"{path}: no usable date,open,high,low,close rows")
+    uniq = {r[0]: r for r in out}                     # last row per date wins
+    return build([uniq[k] for k in sorted(uniq)])
 
 
 def fetch(sym: str) -> dict:
