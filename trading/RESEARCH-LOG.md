@@ -905,3 +905,202 @@ rules and truly independent validation remain prerequisites. Fixing all historic
 research or guaranteeing a profitable three-day strategy cannot be asserted. Keep
 paper-only and preserve the plan to consider a $2,000 cushion or 50K only after
 the 25K has banked its cushion.
+
+## 2026-10-31 (q) — what the account permits, and why three days is arithmetic
+
+**Request.** The owner asked for the highest-win-rate book, explicitly accepting the
+occasional blown account, and named `prevclose_break`, 2.0-2.5 ATR stops, `nr_break-2`
+and two/three-rule books. Those are settled questions (§4, entries (m) and (n)) and are
+not re-run here. What was missing was not another sweep but the arithmetic of the
+constraint, since every one of those answers is bounded by the $1,000 buffer and the
+40% consistency rule rather than by the signal.
+
+**Data blocker, stated plainly.** A causal re-test exists (`trading/edge_causal.py`,
+`--selftest` passes) but has **not run**: this workspace cannot reach daily bars.
+Yahoo returns HTTP 429 for every window (1y and 20y, both hosts, chunked or not);
+WSJ and MarketWatch download endpoints return 401; stooq serves a JavaScript challenge.
+No vendor key is configured. The loader caches to `trading/.cache/<sym>.json`; the
+first run with data access fills it, and `--csv` accepts any date,open,high,low,close
+file. So: **no new backtest numbers this entry.** Anything quoted below is arithmetic
+or the retracted record, labelled as such.
+
+**Entry ordering, fixed in code.** For a buy limit below the market (the only legal
+reading of "buy the prior-day low" when the open is above it) the engine books a stop
+only if the CLOSE is through the stop, a target only if the CLOSE is beyond it, else
+exits at the close — a close is always after the entry, so neither can be counted
+early. The old high/low comparison is kept as `legacy` purely to measure the bias. Buy
+stops above the market (valid orders) keep stop-first ties. A fixture asserts that a
+target which trades before the dip is not a win.
+
+**What arithmetic says** (`trading/feasibility.py`, `desk/feasibility.md`; MES, ATR 70
+pts, $350 risk at 1.0 ATR, $4.98 round-trip):
+- break-even win rate for 0.5R is **67.6%**; for 0.2R it is **84.5%**, and a 0.2R book
+  is still negative at an 85% win rate. Max win rate and positive expectancy pull in
+  opposite directions; this is the same finding as `edge.py` in §3.
+- $417/session at 0.5R and a 78% win rate needs ~8 micros: $2,800 of simultaneous risk
+  against a $1,000 buffer.
+- 20,000 simulated 25K walks per line, consistency enforced at the moment of passing:
+  78% win, 0.5R, 1 micro → 77% pass, **0% within 3**, 13.8% within 10, 23% breach,
+  median 14 sessions. 2 micros → 82% pass, 18% breach, median 9. 6 micros → 6.9%
+  within 3, 23% breach.
+- the 40% rule caps a passing day at $500 = 2.4 wins at 1 micro 0.5R, so a 3-session
+  pass needs >=2.1 wins a day with no losing day.
+- 2.0 and 2.5 ATR stops cost $700 and $875 on one micro — 70-88% of the entire risk
+  budget. They are not available on a 25K at any win rate; on a 50K they are 35-44%.
+
+**Verdict.** Three sessions is a size problem, not a strategy problem, and the size
+that solves it is the size that ends the evaluation. The current book is positive only
+because of the 78% win rate (break-even 67.6%), which is the exact number the audit
+retracted — so the causal run is the gate, not an optional extra. Honest expectation
+for 2-13 November on one micro: the rule fires ~0.21 sessions in 5, so ~2 trades,
+roughly +$100 to +$200 if the win rate holds, with about a 1-in-5 chance of a breach.
+No book installed, no order standing, paper ledger still 0 trades / $0.00.
+
+## 2026-10-31 (r) — the paper desk, implemented causally for the 2 November session
+
+**What was asked.** Name the best strategies with a win rate and a speed to pass, and
+put the winner on the paper bot for Sunday. Every family named in the request
+(`prevclose_break`, 2.0-2.5 ATR, 2- and 3-rule books, `nr_break-2`) is a settled
+question (§4, (m), (n)) and none was re-run.
+
+**The ranking, with its evidence status attached** — this is the whole answer:
+
+| # | rule | win % | speed to pass | status |
+|---|---|---|---|---|
+| 1 | ES buy limit at prior-day low, gap-with, long, 1.0 ATR, 0.5R | 77.7% all / 80.4% 2023+ **claimed** | 91% pass, 84% with consistency, median 14 sessions **claimed** | retracted as evidence ((o) item 1); break-even is 67.6% |
+| 2 | same, 2 micros | same | 82% pass, 18% breach, median 9 sessions | arithmetic only (`feasibility.py`), conditional on #1's win rate |
+| 3 | ES pair `nday_fade-5 0.5A tp1` + `nr_break-2 1.0A tp1` | 59% claimed | 88% pass, 26 sessions, $405/session risk | retracted; two-leg risk is 70% of the buffer |
+| 4 | ES open-entry `prior_return_2 < -1`, long, 1.5 ATR, 1R | 55.2% train / 50.3% reused | not a pass candidate | **causally measured**, p=0.475, no edge |
+| 5 | `prevclose_break` ("Oracle"), any stop | 47-48% | dead | settled |
+| 6 | NQ / NKD / 2.0-2.5 ATR on 25K | — | unavailable: one stop is 70-104% of the buffer | settled |
+
+Only #4 has ever been measured with correct entry ordering, and it is not profitable.
+#1 is the best available book, but its headline win rate is exactly the number the
+retracted engine inflated, so it is on probation until the causal engine has run.
+
+**Implemented.** `desk/live-book.json` (one micro, ES, limit_low-1, 1.0 ATR, tp05,
+gap-with, long, `resolution: proven`) and `trading/paper_causal.py`, a separate runner
+with its own ledger (`desk/live-ledger.json`, `desk/live-desk.md`) that leaves the
+paused legacy runner and its $0 record untouched. It:
+- settles only completed sessions, using close-based causal resolution for the limit
+  entry (a target that traded before the dip is not a win) and stop-first ties;
+- prints the next session's order with level, gap condition, stop, target, dollar risk
+  and share of the $1,000 buffer;
+- tracks the EOD trailing floor, the $25,100 lock, the 40% share and target progress;
+- **refuses to invent a level** when bars are unavailable (exit 2, nothing written).
+
+Checks: `python3 -m py_compile paper_causal.py edge_causal.py feasibility.py`;
+`paper_causal.py --selftest` (one causal fill, levels ordered, 0.5R exact);
+`--demo` on synthetic bars; the no-bars path exits 2 without touching state.
+
+**Sizing decision, on the record.** One micro, not two. Two micros is the higher pass
+rate (82% vs 77%) only if the 78% win rate is real; at 2 micros a single stop is $700,
+70% of the buffer, and two stops end the evaluation. The escalation rule is written
+into the book: 2 micros after a proven-resolution win rate of 72%+ over 100+ trades.
+
+**Data blocker, unchanged.** No daily bars from this workspace this session: Yahoo 429
+on both hosts for every window including the HTML history page (no embedded JSON),
+Barchart/CME 403, WSJ/MarketWatch 401, stooq bot challenge. The desk therefore has a
+book and a causal runner but **no printed order yet** — the 2 November levels need one
+successful bar pull (or a CSV). Not a strategy result; a plumbing result.
+
+**Unchanged.** `oracle-state.json` still 0 trades / $0.00, legacy runner still paused,
+no order standing in `oracle-forward.md`, no broker, paper only.
+
+## 2026-10-31 (s) — the 16 November plan, priced honestly
+
+**What was asked.** Evaluation starts 16 November; $500 on the first session, $500 on the
+second, $250 on the third, paper from Sunday 15 November, then keep / tweak / rework by
+result. Also: study candles, news, whale flow, "250,000 indicators".
+
+**The ladder, priced.** $1,250 in three sessions is $417 a session. This book, from the
+retracted report's own per-trade figures, makes **$95 a trade and fires 0.21 times a
+session — about $20 a session at one micro.** So $500 on day one is 5.3 trades at one
+micro, which at this cadence is 25 sessions, not one. To hit $417 a session at one micro
+the rule would have to fire **4.4 times a session — 21× its frequency.** At two micros it
+is 2.2 trades a session, and two micros put $826 of risk on the table per session against
+a $1,000 buffer. There is no size that reaches $417 a session in three sessions without
+the buffer being the thing that pays for it, which is exactly what the 0.0% "inside 3
+sessions" figure in `mine26k.md` says.
+
+**The internal inconsistency, now on the record.** That same report claims a median of 14
+sessions to target. With $95 a trade and 0.21 trades a session, 14 sessions is about three
+trades, or $285 — not $1,250. Either the frequency or the median is wrong, or the walk was
+sized differently from the book it describes. The 14-session claim cannot be used to plan
+the 16th until it is recomputed; the per-trade dollar and the frequency are the two
+figures a causal re-run will settle.
+
+**The frequency route has already been tested and failed.** `scalp.md` (15 market/timeframe
+cells, second half) is a portfolio of **-$20,133 to -$23,838 over 59 sessions**. The
+`retest-intraday` coin-flip test put the 15-minute GC breakout at **p = 0.68** and CL at
+**p = 0.79** — indistinguishable from random entries with the same stop, target and
+frequency — with costs eating **27% and 68%** of the loss respectively. So "trade more
+often to get to $417 a day" is not an untried idea here; it is the idea that was tried
+and did not clear its own null.
+
+**On the sweep.** 287,280 configurations, 289 survivors against roughly 30 expected from
+chance on the luck gate alone. That is a reason to test forward, not a catalogue of edges.
+The 250,000-indicator question is therefore already answered as far as daily bars go: the
+families that looked strong (pin_break, body_cont, gap_fade, prevclose_break) have
+negative median out-of-sample dollars, and only nday_fade on ES survives at all.
+
+**What is honestly not testable here.** Candle-shape and news-direction rules are testable
+with daily bars and were tested (pin, inside, outside, body, streak, gap families). News
+event studies need an economic calendar with timestamps; whale/order-flow inference on ES
+needs futures tape data that is not available on any free source from this workspace. I
+will not simulate either and present it as evidence — that is the failure mode (o) was
+written to stop.
+
+**Implemented for 15/16 November.** `desk/live-book.json` now carries `start`
+(2026-11-15), `first_session` (2026-11-16), the ladder `[500, 500, 250]`, a $350 daily
+stand-down, the recorded `expected_pace`, and the inconsistency above.
+`paper_causal.py` gained `pace_lines()` — a per-session table against the ladder with the
+keep/tweak/rework verdict applied to what actually settled — and the stand-down is now
+enforced in `settle()`, not just described: once a session's realised loss reaches
+$350 no further entry is taken that day.
+
+Checks: `py_compile` clean; `--selftest` passes; `--demo` on synthetic bars renders the
+order sheet, the pace table and the stand-down line.
+
+**Still blocked.** No daily bars from this workspace (Yahoo 429 on both hosts, HTML
+history page has no embedded JSON, Barchart/CME 403, WSJ/MarketWatch 401, stooq
+bot-walled). Nothing settles and no order prints on the 16th until one successful pull or
+a CSV. This is a data-plumbing blocker, not a strategy result.
+
+## 2026-10-31 (t) — two model errors found and fixed; the survival answer is one micro
+
+**What was wrong.** (1) `feasibility.sim` drew an independent win/loss for every contract,
+so ten micros of one signal behaved like ten independent bets. That manufactured
+diversification and made oversized books look safe. (2) The walk assumed a trade every
+session, while this book fires 0.21 times a session, and a 60-session horizon at that
+cadence censors 57% of paths as unfinished. Fixed: one outcome per session shared by all
+contracts, a `freq` parameter, and a horizon scaled to 60 sessions of *trading* (286
+calendar sessions at 0.21).
+
+**What that changes at a 78% win rate, 0.5R** — 1 micro: **76% pass**, 23% breach, median
+**69 sessions**, ~$11 a session. 2 micros: **65%** pass, 35% breach, median 24, ~$23 a
+session. The old "2 micros → 82% pass, 18% breach, 9 sessions" and "6 micros → 77%" were
+the artefact and are retracted.
+
+**The answer to "if there is a 75% or better chance of surviving, I will take it".** The
+size that meets that floor at a 78% win rate is **one micro (76%)**. Two micros fails it
+(65%). Size does not buy survival on this rule, it spends it: one stop at 2 micros is $700
+of a $1,000 buffer, and the 40% consistency rule caps how fast profit can be booked. Above
+an 85% win rate 2 micros reaches 83% — but nothing here has measured 85%.
+
+**And it still does not reach $417 a session.** At 0.21 trades/session the causal EV is
+about $11/session at one micro and $23 at two. $500 on day one is 28 winning trades at one
+micro, or 14 at two.
+
+**Many attempts.** `EV/attempt = p·V − C`, break-even `p* = C/V`. If an evaluation fee is a
+fifth of what a pass is worth, anything above 20% pass is positive EV, so 76% is comfortably
+positive — the 75% floor is a comfort threshold, not an economic one. What re-buying cannot
+fix is a negative edge per trade: five copies of a losing rule is five losing accounts, and
+the fee is paid every time.
+
+**Files.** `feasibility.py` (shared outcome + `freq`), `survival.py` (new), `desk/survival.md`,
+`desk/feasibility.md` regenerated, `desk/live-book.json` (survival block; `size_rule` rewritten
+to forbid escalation on win-rate grounds), `CLAUDE-HANDOFF.md` §3.5 added and §4 corrected.
+
+**Supersedes.** Every leg-count pass rate in (q) and every "2 micros" figure in the repo
+before this entry, including the one in `CLAUDE-HANDOFF.md` §4 as first written.
