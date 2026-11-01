@@ -1,13 +1,13 @@
 [
   {
-    "id": "es-dip-1atr-tp05-gapwith",
+    "id": "es-pdlow1-anygap-05atr-tp2",
     "symbol": "ES=F",
     "market": "MES",
     "family": "limit_low",
     "n": 1,
-    "stop": 1.0,
-    "exit": "tp05",
-    "gap": "with",
+    "stop": 0.5,
+    "exit": "tp2",
+    "gap": "any",
     "dir": "long",
     "micros": 1,
     "resolution": "proven",
@@ -15,38 +15,42 @@
     "start": "2026-11-15",
     "first_session": "2026-11-16",
     "no_changes_before": "2026-11-15",
-    "daily_targets": [500, 500, 250],
+    "daily_targets": [
+      500,
+      500,
+      250
+    ],
     "daily_stop_usd": 350,
     "rubric": "keep unchanged if a session makes $500+; keep and tweak if the average is $200+; rework if below that or the account breaches",
-    "expected_pace": {
-      "trades_per_session": 0.21,
-      "ev_per_trade_1_micro": 55,
-      "usd_per_session_1_micro": 11,
-      "usd_per_session_2_micros": 23,
-      "claimed_usd_per_trade_1_micro": 95,
-      "note": "the $55 is arithmetic at a 78% win rate minus $4.98 costs; the $95 is the retracted report's own figure and is kept only to show why the 3-day target cannot be planned"
+    "measured": {
+      "source": "desk/causal-es.md (account walk) and desk/sweep-es.md (alpha sweep); raw bars from fetch_bars.py",
+      "window": "2016-11-01 to 2026-10-30, 2515 sessions, Yahoo ES=F continuous proxy",
+      "trades": 443,
+      "trades_per_session": 0.18,
+      "win_rate_pct": 55.1,
+      "usd_per_trade_1_micro": 32.24,
+      "pass_rate_pct": 59,
+      "breach_rate_pct": 26,
+      "median_sessions_to_target": 58,
+      "pct_reached_by_10_sessions": 0.6,
+      "pct_reached_by_15_sessions": 2.8,
+      "usd_per_session_1_micro": 5.9,
+      "usd_per_session_2_micros": 11.8,
+      "trade_shape": "0.5 ATR stop on ES is roughly 35 points = $175 at one micro, 17.5% of the $1,000 buffer; 2R target is +$350",
+      "note": "these replace every earlier figure. The 77.7-80.4% win rate and the 91% pass rate were produced by a resolution that could book a target before the limit filled."
     },
-    "survival": {
-      "model": "one signal per session, all contracts share the outcome, 40% consistency, stop-first, $4.98 round trip; 4000 walks, horizon 286 sessions at 0.21 trades/session",
-      "win_assumed": 0.78,
-      "one_micro": {"pass": 76, "breach": 23, "median_sessions": 69, "usd_per_session": 11},
-      "two_micros": {"pass": 65, "breach": 35, "median_sessions": 24, "usd_per_session": 23},
-      "note": "size lowers survival on this rule: $700 per stop is 70% of the buffer. The old 82% pass for two micros came from drawing an independent outcome per contract and is retracted (RESEARCH-LOG (t))."
+    "retracted": {
+      "win_all_pct": 77.7,
+      "win_2023_pct": 80.4,
+      "pass_pct": 91,
+      "consistent_pass_pct": 84,
+      "median_sessions": 14,
+      "why": "RESEARCH-LOG (t) and (v). The legacy sweep still reproduces them on the same bars: 84.8% win and a 96% pass rate, from the same rule, purely by resolution.",
+      "size_survival_by_78pct": "the 1 micro 76% / 2 micro 65% survival table was built on the retracted win rate and is withdrawn"
     },
-    "provenance": "Book from RESEARCH-LOG (n). Entry ordering corrected per (o) item 1: the instruction is a BUY LIMIT at the prior-day low, not a buy stop below the market. Win rate, pass rate and replay in (n) are retracted as evidence until edge_causal.py has run.",
-    "evidence": {
-      "claimed_win_all": 77.7,
-      "claimed_win_2023": 80.4,
-      "claimed_pass": 91,
-      "claimed_consistent_pass": 84,
-      "claimed_median_sessions": 14,
-      "trades_2023_plus": 204,
-      "sessions_2023_plus": 960,
-      "verified": false,
-      "breakeven_win": 67.6,
-      "inconsistency": "median 14 sessions cannot follow from $95/trade at 0.21 trades/session: that needs 13 trades, about 62 sessions. One of the two figures was computed at a different size or on a different book. (s) records this."
-    },
-    "size_rule": "One micro, and do not escalate on win-rate grounds. At a 78% win rate two micros lowers the pass chance from 76% to 65% because one stop is $700 of a $1,000 buffer. Two micros only becomes the better size above an 85% win rate (83% pass), which nothing here has measured.",
-    "why_this_one": "Of every family in the 287,280-config sweep it is the only one whose order type can actually be placed, its risk is 35% of the buffer instead of 70-100%, and the 0.5R target needs 67.6% wins rather than 84%."
+    "size_rule": "One micro. Do not escalate on win-rate grounds: two micros doubles a $175 stop to $350, which is 35% of the buffer per trade, and nothing measured reaches the win rate that would justify it.",
+    "why_this_one": "It is the highest measured pass rate of any configuration whose order type can actually be placed (59%), it trades 0.18 times a session so it will actually fire, and a 2R target only needs 30.8% wins to break even rather than the 67.6% that 0.5R demanded.",
+    "what_is_not_proven": "No daily-bar rule in this repo has a statistically separable edge once 3,584 configurations are corrected for and index drift is removed. The best surviving line earns $2.49 per session at one micro. This book is the best of a weak field, not a known winner.",
+    "kill_rule": "Two consecutive full stops (-$350) or -$700 in a session: stop for the day and log it. A breach of the trailing floor ends the attempt, not the research."
   }
 ]

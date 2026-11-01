@@ -1138,3 +1138,57 @@ session; `exits.py` is where multi-day holding, breakeven arming and time stops 
 **Status.** `--selftest` passes on fixtures (early-exit price, target fill, breakeven never
 worse than plain, time stop exits on time). **No market numbers yet** — same blocker as (t):
 no bars in this workspace. Conclusion deferred, not assumed.
+
+## 2026-11-01 (v) — the bars arrived, and the answer is not $500 a day
+
+**Data.** Yahoo's endpoint answered again, so `fetch_bars.py` pulled and cached:
+ES=F daily 2,515 sessions (2016-11-01 → 2026-10-30), ES=F hourly 13,638 bars, ES=F
+5-minute 13,389 bars (49 regular sessions), NQ=F daily 2,515 sessions as a twin. The
+`^GSPC` job is removed: its "max" range returned 169 rows spanning 42 years, which
+would corrupt any daily measurement. Nothing here is invented; every table below is
+reproducible with `python3 fetch_bars.py` then the named script.
+
+**1. The exit question, answered on 472 causal trades** (`exits.py`, ES daily, prior-low
+buy limit, 1.0 ATR stop): holding for 0.5R wins 68% and makes **+$7.29** a trade. Taking
+the first profitable close wins **82%** and makes **+$51.40**. Time stops at 2 and 5
+sessions: 60% at +$47.92, 56% at +$100.56. So "take what you have" was right about the
+money on this family — and the break-even table shows why: early exits need 70.3% wins
+versus 65.9%, and this family produces enough.
+
+**2. The causal ranking flips the book** (`edge_causal.py`). Best proven pass rate is
+`limit_low-1 gap:any`, 0.5 ATR stop, 2R target: 443 trades, **55.1% win, +$32.24**,
+**59% pass, 26% breach, median 58 sessions**, 0.6% of starts reach the target within 10
+sessions. The book's old shape (1.0 ATR, 0.5R target, gap-with) does not appear in the
+top ten at all. The legacy engine, on identical bars, still prints 84.8% win and 96%
+pass for the same rule — the bug is worth 25 win-rate points and 37 pass points.
+
+**3. The wide sweep, drift-adjusted** (`sweep2.py`, 3,584 configurations). ES rose **+98%**
+across the out-of-sample window, so dollars are not evidence: every long rule collects
+beta. Ranked on alpha (dollars minus what simply being positioned that way paid) the only
+lines positive in both halves are 60%-win 5-day holds: `pd_low n=2 gap:with` 1.5 ATR,
+close exit, 5 sessions — **+$37.69 alpha a trade, t = +4.13, $2.49 a session** at one
+micro. Two hundred and fifty-one sessions to +$1,250.
+
+**4. The 70% win rate is free.** Random entries through the same exit grid reached
+**71% win, +$95.50 a trade, +$79.35 alpha** out-of-sample on ES (69% / +$174 on NQ).
+Every single configuration at 70%+ win had **negative** alpha, between −$35 and −$65 a
+trade. A 70% win rate is a property of where the target sits, not of an edge, and it can
+be produced with no signal at all — which is exactly what the retracted 78-80% turned out
+to be.
+
+**5. Intraday does not rescue it** (`orb.py`, 595 hourly sessions, close-confirmed entry,
+stops win ties). Opening-range breakout: best of 45 configurations is **−$0.79 a trade**
+over 413 trades. Gap fade: −$5.17 over 355. The 5-minute file holds only 49 sessions and
+every ORB row there loses $10-23 a trade. The published 72% ORB figures did not survive
+contact with a fill model that cannot enter at the exact breakout price.
+
+**Arithmetic that settles the goal.** +$500 in a day at two micros needs $250 per session
+per micro-equivalent, i.e. roughly **28 winning 0.5R trades in one session**. The highest
+frequency measured here is 0.18 trades a session. $1,250 at the measured rate is a
+**58-session median**, not three days. No configuration in 3,584 daily and 45 intraday
+tests produced $200 a day, and the word "guaranteed" does not apply to any of it.
+
+**Decision.** The live book is now the highest measured pass rate: prior-1-session-low buy
+limit, any gap, 0.5 ATR stop, 2R target, one micro, 59% pass / 26% breach / 58-session
+median. Paper only. Its own kill rule: −$700 in a session, or a floor breach, stops the
+attempt.

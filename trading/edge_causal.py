@@ -199,6 +199,8 @@ def signal(D: dict, i: int, fam: str, n: int, gap: str):
     pc = D["c"][i - 1]
     gap_up = o > pc
     if fam == "limit_low":
+        if n < 1 or i - n < 0:
+            return None
         lvl = min(D["l"][i - n:i])
         if gap == "with" and not gap_up:
             return None
@@ -356,11 +358,13 @@ def main() -> None:
     ap.add_argument("--sym", action="append")
     ap.add_argument("--csv", help="offline bars: date,open,high,low,close")
     ap.add_argument("--selftest", action="store_true")
+    ap.add_argument("--out", help="report path, so two symbols do not overwrite each other")
     args = ap.parse_args()
 
     if args.selftest:
         selftest()
         return
+    out = Path(args.out) if args.out else OUT
 
     syms = args.sym or list(SPECS)
     lines = ["# Causal re-test of the rule families", "",
@@ -389,37 +393,56 @@ def main() -> None:
                         st = stats(recent)
                         if st["n"] < 100:
                             continue
-                        rows.append({"engine": engine, "fam": fam, "n": n, "gap": gap,
+                        # fam_n, not n: `**st` carries its own "n" = trade count, and
+                        # the collision silently turned a lookback into a trade count
+                        # (min() of an empty slice crashed the first full run).
+                        rows.append({"engine": engine, "fam": fam, "fam_n": n, "gap": gap,
                                      "stop": stopk, "exit": exitname, **st,
                                      "all": stats(tr)})
 
         # rank by pass rate, which is the desk's stated objective; the account walk
         # is expensive, so it runs here on 2023+ trades only
         for r in rows:
-            tr = [(t, p) for t, p in run_config(D, r["fam"], r["n"], r["stop"], r["exit"],
+            tr = [(t, p) for t, p in run_config(D, r["fam"], r["fam_n"], r["stop"], r["exit"],
                                                 r["gap"], r["engine"], spec["mult"], spec["tick"])
                   if t >= ERA]
             r["acct"] = account(D, tr)
             r["recent_trades"] = tr
 
-        top = sorted(rows, key=lambda r: (-r["acct"]["p_any"], -r["mean"]))[:12]
-        lines += [f"## {sym} (micro)", "",
-                  f"{D['n']} completed sessions, {D['d'][0]} to {D['d'][-1]}. "
-                  f"One micro, ${spec['mult']:.0f}/pt.", "",
-                  "| engine | rule | stop | exit | trades | win | $/trade | pass% | <=3 | <=5 | <=10 | <=15 | breach% | median sess |",
-                  "|---|---|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|"]
-        for r in top:
+        ranked = sorted(rows, key=lambda r: (-r["acct"]["p_any"], -r["mean"]))
+        # Split by engine on purpose. Ranked together, the legacy rows swamp the top of
+        # the table with 92-96% pass rates and the causal rows never appear -- which is
+        # precisely how the retracted 78-80% figure survived as long as it did.
+        top = [r for r in ranked if r["engine"] == "proven"][:10]
+        bug = [r for r in ranked if r["engine"] == "legacy"][:3]
+
+        HEAD = ("| rule | stop | exit | trades | win | $/trade | pass% | <=3 | <=5 | <=10 "
+                "| <=15 | breach% | median sess |")
+        SEP = "|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|"
+
+        def trow(r):
             a = r["acct"]
-            name = {"limit_low": f"limit_low-{r['n']} gap:{r['gap']}",
+            name = {"limit_low": f"limit_low-{r['fam_n']} gap:{r['gap']}",
                     "prevclose_break": "prevclose_break",
-                    "nr_break": f"nr_break-{r['n']}",
+                    "nr_break": f"nr_break-{r['fam_n']}",
                     "open_gap": "open_gap"}[r["fam"]]
             med = f"{a['median']:.0f}" if a["median"] is not None else "-"
-            lines.append(
-                f"| {r['engine']} | {name} | {r['stop']}A | {r['exit']} | {r['n']} | "
-                f"{r['win']:.1f}% | ${r['mean']:+.2f} | {a['p_any']:.0f}% | "
-                f"{a['p_3']:.1f}% | {a['p_5']:.1f}% | {a['p_10']:.1f}% | {a['p_15']:.1f}% | "
-                f"{a['breach']:.0f}% | {med} |")
+            return (f"| {name} | {r['stop']}A | {r['exit']} | {r['n']} | "
+                    f"{r['win']:.1f}% | ${r['mean']:+.2f} | {a['p_any']:.0f}% | "
+                    f"{a['p_3']:.1f}% | {a['p_5']:.1f}% | {a['p_10']:.1f}% | "
+                    f"{a['p_15']:.1f}% | {a['breach']:.0f}% | {med} |")
+
+        lines += [f"## {sym} (micro) — causal ranking", "",
+                  f"{D['n']} completed sessions, {D['d'][0]} to {D['d'][-1]}. "
+                  f"One micro, ${spec['mult']:.0f}/pt. Entry ordering cannot look ahead.",
+                  "", HEAD, SEP]
+        lines += [trow(r) for r in top] or ["| (no proven config reached 100 trades) |" + " |" * 12]
+
+        if bug:
+            lines += ["", f"### The same sweep judged the old way ({sym})", "",
+                      "These are the look-ahead resolutions. They are here to show what the bug "
+                      "is worth, not what a rule earns:", "", HEAD, SEP]
+            lines += [trow(r) for r in bug]
 
         # the 10-session window
         best = top[0]
@@ -430,8 +453,12 @@ def main() -> None:
                           f"{win10['pos']:.0f}% of windows positive."]
         lines.append("")
 
-    OUT.write_text("\n".join(lines) + "\n")
-    print(f"wrote {OUT.relative_to(ROOT)}")
+    out.write_text("\n".join(lines) + "\n")
+    try:
+        shown = out.resolve().relative_to(ROOT)
+    except ValueError:                       # caller passed an absolute path
+        shown = out
+    print(f"wrote {shown}")
 
 
 def selftest() -> None:
