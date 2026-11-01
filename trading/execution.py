@@ -103,7 +103,11 @@ def load_state() -> dict:
             return json.loads(STATE.read_text())
         except json.JSONDecodeError:
             pass
-    return {"equity": EQUITY, "day_pnl": 0.0, "open_positions": [], "best_day": 0.0}
+    # peak_eod is the closing high-water mark the drawdown floor follows. A fresh
+    # account's high-water mark is its starting balance; leaving the key out made
+    # buffer_now() fail closed and halted every market on the board.
+    return {"equity": EQUITY, "peak_eod": EQUITY, "day_pnl": 0.0,
+            "open_positions": [], "best_day": 0.0}
 
 
 # ------------------------------------------------------------------ validation

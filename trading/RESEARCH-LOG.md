@@ -1195,3 +1195,32 @@ $200 a day, and the word "guaranteed" does not apply to any of it.
 limit, any gap, 0.5 ATR stop, 2R target, one micro, 59% pass / 26% breach / 58-session
 median. Paper only. Its own kill rule: −$700 in a session, or a floor breach, stops the
 attempt.
+
+## 2026-11-01 (vi) — the agents ran; the desk was halted by a missing field
+
+**Verified end to end, not by inspection.** `agent/worker.py` was driven against a scripted
+model over HTTP with a throwaway `AGENT_ROOT`: eleven checks passed — task queued, six steps
+journalled, `cat .env` refused by the blocked-command list, `../escape.txt` refused by the
+path guard, file written and read back inside the workspace, `echo` executed with exit 0, no
+escape file created, summary and `out/t1.md` produced. `swarm.py --feeds` fetched live:
+**16 of 20 feeds up**, with `bls_latest`, `yahoo_finance`, `kitco` and `treasury` down —
+below half, so the swarm is not degraded and reports the gap rather than claiming silence.
+`bots.py --board` ran across all five markets.
+
+**The defect it exposed.** `bots.py:815` halts the desk when `state["peak_eod"]` is unknown,
+and `desk/state.json` had no such field, so **every market returned SKIP** with "governor
+halted the desk". The board had no way to produce a tradeable call from that state, and
+nothing would have changed on 16 November. (Entry (t)/(v) recorded that `peak_eod` was
+absent and had not been backfilled. That was an accurate description and a broken operating
+state: correct at the account level, fatal at the desk level.)
+
+**Fix, at the cause and the file.** `execution.load_state()` now returns
+`peak_eod = EQUITY` for a fresh account — a new account's closing high-water mark is its
+start balance, not an unknown. `desk/state.json` is migrated once to
+`peak_eod = 25,000`, which is the true value: equity is 25,000 and no trade has settled.
+`buffer_now()` still fails closed on missing, `nan` or zero, and the repo unit tests for
+those guards still pass.
+
+**After the fix:** governor `run`, buffer $1,000, and the board emits `WAIT` ES, `BUY` CL,
+`SELL` GC, `SKIP` NQ/NKD. Those are bot opinions at 07:18Z on a Sunday, not the book's rule —
+the live book is still the prior-session-low limit, and nothing here places an order.
