@@ -1400,3 +1400,37 @@ affordable and measurable. The NQ 0.25 ATR variant is a hypothesis that needs **
 to test — a stop that tight cannot be judged on closes — and the repo holds only 49 sessions of ES
 5-minute bars and no NQ intraday history. Until that data exists, the book stays as it is: prior-low
 limit, 0.5 ATR, tp2, one micro, median funded 17 Feb 2027.
+
+## 2026-11-01 (xi) — gamma exposure and order flow, implemented as far as honesty allows
+
+**Asked:** implement what the video describes — GEX for context and location, order flow for
+entry — "so we can get the job done". Note what the video actually reports: three months, ~$11k,
+5 billion rows of tick and options data, and **no positive expectancy found**. It is a negative
+result, and copying it is not a plan.
+
+**Gamma exposure — built, and it refuses to lie.** `gex.py` computes Black-Scholes gamma per
+strike and sums dealer exposure itself rather than reading a vendor's number, which was the
+video's own first hard lesson. `--selftest` passes four independent checks: gamma from finite
+differences of the price matches the closed form; call and put gamma are identical at a strike;
+gamma peaks at the money; and the flip strike and wall levels land where a synthetic chain says
+they should. With no chain it **exits 2 and invents nothing**. This repo holds no options data,
+so no GEX level exists for any live session — that is a deliberate refusal, not an oversight.
+
+**Order flow — built, and it says nothing yet.** `orderflow.py` builds the best proxies 5-minute
+ES bars can support (signed volume delta, cumulative delta, absorption, VWAP distance) and runs
+12 rule/horizon combinations across 13,389 bars in 58 sessions, with commission, two ticks of
+slippage and 1.0 ATR(5m) stops. Every rule loses **$7.5-$8.9 a trade**; every random-entry control
+loses **$7.0-$7.8**; the alpha column runs from **-$0.08 to -$1.80**. Wins land at 24-31%.
+
+**Why the t-stats (-10 to -26) must not be read as precision.** The rules fire repeatedly inside a
+session, so consecutive trades share bars and regime. The independent unit is the **session**, and
+there are 58 of them. The t is inflated by overlap; the alpha near zero is the real signal.
+
+That near-zero alpha is consistent with this desk's earlier finding that its intraday book lost
+about $6.65 a trade to friction. At a 5-minute horizon the round trip costs roughly $5, so a rule
+has to be strong before it is anything at all.
+
+**Verdict.** The GEX half cannot be tested here for lack of an options chain; the order-flow half
+tests as random once costs are paid. Neither result is a licence to believe the combination works,
+and the video's author — with vastly more data than this repo will ever hold — concluded the same.
+The book does not change: prior-low limit, 0.5 ATR, tp2, one micro, median funded 17 Feb 2027.
