@@ -286,7 +286,7 @@ def trade_pnl(D, i, entry, kind, stopk, exitmode, mult, tick, engine, side=1):
                 px = tgt
             else:
                 px = c
-    gross = (px - entry) * mult
+    gross = (px - entry) * side * mult          # side: a short earns when px < entry
     cost = 2 * COMM_SIDE + 2 * tick * mult
     return gross - cost
 

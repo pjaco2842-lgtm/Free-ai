@@ -395,6 +395,10 @@ def run_leg(leg: dict, args, multi: bool) -> None:
         # backtest again, not a live record.
         state["last"] = args.since
     today = datetime.now(timezone.utc).date().isoformat()
+    if args.settle_today:
+        # The guard below refuses the current bar because it may still be forming. After the
+        # 22:00 UTC futures close it is final, and waiting a day would hide tonight's session.
+        today = (datetime.now(timezone.utc).date() + timedelta(days=1)).isoformat()
     fresh = [] if args.order else settle(D, leg, state, today)
     o = open_order(D, leg) if leg.get("entry") == "open" else order(D, leg)
     if multi:
@@ -415,6 +419,8 @@ def main() -> None:
     ap.add_argument("--all", action="store_true", help="every leg, one ledger each")
     ap.add_argument("--since", help="only journal sessions after this date")
     ap.add_argument("--order", action="store_true")
+    ap.add_argument("--settle-today", action="store_true",
+                    help="settle the current session's bar too; only after the 22:00 UTC close")
     ap.add_argument("--selftest", action="store_true")
     ap.add_argument("--demo", action="store_true")
     args = ap.parse_args()

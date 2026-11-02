@@ -1,0 +1,66 @@
+# The causal paper desk, once per trading day, with no laptop involved.
+#
+# Why this exists: the plan is "run it a couple of days, then judge it". That only
+# works if the record grows without anyone remembering to type a command, and
+# GitHub's scheduler does not sleep the way a Codespace or a Mac does.
+#
+# Timing: 23:10 UTC is after the 22:00 UTC futures close, so the day's daily bar is
+# final and `--settle-today` books a completed session instead of a forming one.
+# Without that flag the runner would wait a whole day, which is also safe — just
+# slower to show anything.
+#
+# Security: one permission (contents: write), the action pinned to a commit SHA, no
+# secrets, no user-controlled values interpolated into the shell, and `git add`
+# limited to the bar data and the desk directory.
+
+name: paper-causal
+
+on:
+  schedule:
+    - cron: "10 23 * * 1-5"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: paper-causal
+  cancel-in-progress: false
+
+jobs:
+  settle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: true
+
+      # Fresh bars first: settling against a stale file is how a paper record turns
+      # into a replay without anyone noticing.
+      - name: Refresh the bars
+        run: |
+          set -euo pipefail
+          python3 --version
+          python3 trading/fetch_bars.py
+
+      - name: Settle the session and print the next orders
+        run: |
+          set -euo pipefail
+          python3 trading/paper_causal.py --all --since 2026-09-15 --settle-today \
+            | tee /tmp/desk.txt
+          cat /tmp/desk.txt >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Record it
+        run: |
+          set -euo pipefail
+          git config user.name  "paper-desk-bot"
+          git config user.email "paper-desk-bot@users.noreply.github.com"
+          git add -A trading/data trading/desk
+          if git diff --cached --quiet; then
+            echo "nothing changed"
+            exit 0
+          fi
+          git commit -m "paper: settle $(date -u +%F)"
+          git push

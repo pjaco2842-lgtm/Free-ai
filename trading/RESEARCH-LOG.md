@@ -1630,3 +1630,51 @@ rather than inventing a level it cannot know before the open.
 
 **Stated plainly:** no always-fires rule in this data makes money. The ES prior-low limit remains
 the only leg with a positive measured expectancy, and it is unchanged at 7558.25.
+
+## 2026-11-02 (xvii) — the desk went live, and the short side was inverted
+
+**Started.** `fetch_bars.py` refreshed every contract through the 2026-11-02 session, the
+runner was given a `--settle-today` flag (its guard refuses any bar dated today, which is
+right while a session is open and too strict after the 22:00 UTC close), and the first
+forward session was settled.
+
+**A bug was caught by the first trade, not by a test.** `trade_pnl` computed
+`gross = (px - entry) * mult` and ignored the `side` argument added in (xvi). Every short
+was scored inverted: the CL open-gap leg shorted the 102.39 open into a 6.3-point drop and
+came out at **−$643.27** instead of **+$634.31**. Fixed to `(px - entry) * side * mult`,
+with a regression check that symmetric bars pay the same both ways
+(+$145.52 to target, −$54.48 to stop, long and short). The poisoned rows were removed by
+reverting the two ledgers to committed state and re-settling — not edited by hand, which
+would have left a record nobody can reproduce.
+
+**Scope of the damage.** The open-entry study in (xvi) does not use this function: it has
+its own vectorised `pnl_vec`, which applies `side` correctly. Re-run today it reproduces
+the same answer — CL 0.5A/3.0R at **−$2.40/trade over 930 trades, alpha +2.19, t +0.44**
+(the only change is the extra session, 929 → 930). So the research was sound and only the
+live runner was wrong, for exactly one session. No earlier conclusion in this log is
+withdrawn.
+
+**The first forward session, 2026-11-02:**
+
+| leg | order | outcome |
+|---|---|---|
+| CL open-gap | **short** market at the open 102.39, stop 104.52, target 96.00 | target hit **+$634.31** |
+| CL prior-low (obs) | buy limit 102.43, gapped through → filled at the open 102.39, stop 100.26 | stopped **−$217.41** |
+| ES prior-low | buy limit 7558.25; low of the session 7570.75 | no fill |
+| GC prior-low (obs) | buy limit 3879.30; low 3889.00 | no fill |
+| ES ×2 (retired) | buy limit 7558.25 | no fill |
+
+**Net +$416.90 — and it is one trade, not two.** Both CL legs expressed the same 6.3-point
+collapse in opposite directions: one was right because it followed the gap, the other was
+wrong because it was buying a level that no longer existed. Writing it as "+$417 on the
+desk" would double-count a single move.
+
+**The uncomfortable part, stated plainly.** The leg that earned is the one measured at
+−$2.40 per trade over 930 sessions; the leg that lost is the one with the better recent
+record. One session is not evidence in either direction, and the 930-trade estimate is
+still the best guess for tomorrow.
+
+**Automated so the record grows without me:** `.github/workflows/paper-causal.yml` runs
+Monday–Friday at 23:10 UTC — refresh bars, settle the completed session, commit the bars
+and the ledgers. Judging the desk after two days is only worth anything if the two days
+actually get recorded.
