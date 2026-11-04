@@ -1678,3 +1678,49 @@ still the best guess for tomorrow.
 Monday–Friday at 23:10 UTC — refresh bars, settle the completed session, commit the bars
 and the ledgers. Judging the desk after two days is only worth anything if the two days
 actually get recorded.
+
+## 2026-11-04 (xviii) — the nightly job booked a session that had not happened yet
+
+**What the bot recorded.** The first two runs of `paper-causal.yml` committed
+`paper: settle 2026-11-02` and `paper: settle 2026-11-03`. The 11-02 one was right. The
+11-03 one was **wrong**: it booked a long from 96.81 for −$11.48. The real 11-03 session
+opened at **96.30**.
+
+**Why.** Yahoo relabels the futures daily bar to the new session at **23:00 UTC**, an hour
+after the 22:00 UTC close. The job ran at 23:44 UTC, so the last bar in the file was dated
+"2026-11-03" and held 44 minutes of the session that had just opened. That bar's open was
+96.81 — the number the bot used. `--settle-today` (added in xvii) told the runner that a
+bar dated today was finished, which is true at 22:30 UTC and false at 23:44 UTC. The
+guard I had removed was right and the flag I added to get past it was the bug.
+
+**Repair.** Both ledgers were restored to the pre-bot commit and re-settled from complete
+bars — no hand-edited rows, so the record stays reproducible. The real 11-03:
+
+| leg | order | outcome |
+|---|---|---|
+| CL open-gap | **short** at the open 96.30, stop 98.63, target 89.32 | stopped **−$237.27** |
+| CL prior-low (obs) | long 95.15 (gapped through), exit at the close 96.09 | **+$89.52** |
+| ES prior-low | long 7570.75, exit at the close 7596.75 | **+$125.02** |
+| GC prior-low (obs) | buy limit 3879.30; low 3904.10 | no fill |
+| ES ×2 (retired) | same as ES, two micros | +$250.04, not counted |
+
+**Net −$22.73** at one micro per leg. Two forward sessions: **+$394.17**.
+
+**Second finding, from the repair.** The gap direction is not stable, because it depends on
+a close that the data source revises: the 11-02 close was 96.26 when the 11-03 order was
+published and 96.46 after revision. Above 96.26 means long; above 96.46 means short, and the
+open was 96.30. The order sheet said long, the settlement booked short, and **both lost
+$237** — so nothing here flatters the record, but it is a real flaw: a forward book must
+freeze its direction when the order is issued, not recompute it from revised data. Logged,
+not yet fixed; the cheap fix is a pending-order row written the night before.
+
+**Schedule fixed, loudly.** `paper-causal.yml` now runs at **12:10 UTC** with no
+`--settle-today`, so the forming bar is labelled today and the runner's own guard skips it
+unaided. The flag itself now **refuses to run outside 22:00–23:00 UTC**, which is the only
+window where "today's bar is finished" is true. Verified: the refusal exits 1, a re-run
+books nothing twice, and an assertion walks every ledger for a row dated after the last
+finished session.
+
+**Which is why 2026-11-04 is not in the table.** At the time of writing the session is a
+few hours old. Its bar exists, and settling it would repeat the mistake above in a smaller
+way.

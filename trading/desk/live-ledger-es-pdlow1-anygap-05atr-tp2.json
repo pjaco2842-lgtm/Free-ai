@@ -206,9 +206,22 @@
       "usd": -212.93,
       "result": "loss",
       "resolution": "proven"
+    },
+    {
+      "date": "2026-11-03",
+      "order": "buy limit 1 @ 7570.75",
+      "entry": 7570.75,
+      "micros": 1,
+      "side": "long",
+      "stop": 7520.28,
+      "target": 7671.7,
+      "risk": 252.37,
+      "usd": 125.02,
+      "result": "win",
+      "resolution": "proven"
     }
   ],
-  "equity": -495.2,
+  "equity": -370.18,
   "peak_eod": 25000.0,
   "largest_day": 245.02,
   "passed": false,

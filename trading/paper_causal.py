@@ -420,10 +420,19 @@ def main() -> None:
     ap.add_argument("--since", help="only journal sessions after this date")
     ap.add_argument("--order", action="store_true")
     ap.add_argument("--settle-today", action="store_true",
-                    help="settle the current session's bar too; only after the 22:00 UTC close")
+                    help="settle the current session's bar too; only 22:00-23:00 UTC")
     ap.add_argument("--selftest", action="store_true")
     ap.add_argument("--demo", action="store_true")
     args = ap.parse_args()
+
+    if args.settle_today and datetime.now(timezone.utc).hour != 22:
+        # Yahoo relabels the futures daily bar to the new session at 23:00 UTC, so from
+        # then on "today's bar" is a session that opened minutes ago. The nightly job ran
+        # at 23:44 UTC on 2026-11-03 and booked exactly that (RESEARCH-LOG (xviii)).
+        raise SystemExit(
+            "--settle-today is only safe between 22:00 and 23:00 UTC: after that, the bar "
+            "dated today is the new session, not the one that just closed. Run without the "
+            "flag, which settles every session that has actually finished.")
 
     if args.selftest:
         selftest()

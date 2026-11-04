@@ -1,13 +1,15 @@
 # The causal paper desk, once per trading day, with no laptop involved.
 #
 # Why this exists: the plan is "run it a couple of days, then judge it". That only
-# works if the record grows without anyone remembering to type a command, and
-# GitHub's scheduler does not sleep the way a Codespace or a Mac does.
+# works if the record grows without anyone remembering to type a command.
 #
-# Timing: 23:10 UTC is after the 22:00 UTC futures close, so the day's daily bar is
-# final and `--settle-today` books a completed session instead of a forming one.
-# Without that flag the runner would wait a whole day, which is also safe — just
-# slower to show anything.
+# Timing: 12:10 UTC, NOT just after the 22:00 UTC futures close. Yahoo relabels the
+# futures daily bar to the new session at 23:00 UTC, so a job running at 23:10 finds a
+# bar dated "today" that is ten minutes old and, with --settle-today, books it as a
+# finished session. That is exactly what happened on 2026-11-03 (see RESEARCH-LOG
+# (xviii)). Running at 12:10 UTC means today's forming bar is unambiguously labelled
+# today, the runner's own guard skips it without help, and the completed prior session
+# is what gets settled. The record is one session behind intraday; it is never wrong.
 #
 # Security: one permission (contents: write), the action pinned to a commit SHA, no
 # secrets, no user-controlled values interpolated into the shell, and `git add`
@@ -17,7 +19,7 @@ name: paper-causal
 
 on:
   schedule:
-    - cron: "10 23 * * 1-5"
+    - cron: "10 12 * * 1-5"
   workflow_dispatch:
 
 permissions:
@@ -45,11 +47,12 @@ jobs:
           python3 --version
           python3 trading/fetch_bars.py
 
-      - name: Settle the session and print the next orders
+      # No --settle-today here, deliberately. The guard settles every bar dated before
+      # today, which at 12:10 UTC is every session that has actually finished.
+      - name: Settle the finished sessions and print the next orders
         run: |
           set -euo pipefail
-          python3 trading/paper_causal.py --all --since 2026-09-15 --settle-today \
-            | tee /tmp/desk.txt
+          python3 trading/paper_causal.py --all --since 2026-09-15 | tee /tmp/desk.txt
           cat /tmp/desk.txt >> "$GITHUB_STEP_SUMMARY"
 
       - name: Record it

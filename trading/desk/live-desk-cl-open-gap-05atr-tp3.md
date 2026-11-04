@@ -6,25 +6,25 @@ Book `cl-open-gap-05atr-tp3` — 1 micro, CL=F, market at the open with the gap,
 
 ## Next session
 
-**MARKET AT THE OPEN, 1 MCL, in the direction of the gap** — for the session of 2026-11-04 (rule built from the completed bar 2026-11-03).
+**MARKET AT THE OPEN, 1 MCL, in the direction of the gap** — for the session of 2026-11-05 (rule built from the completed bar 2026-11-04).
 
 | field | value |
 |---|---|
-| open above 96.74 | **BUY 1 MCL at market** |
-| open below 96.74 | **SELL 1 MCL at market** |
-| stop | long: entry − **2.27** pts · short: entry + **2.27** pts (0.5 × ATR 4.53) |
-| target | long: entry + **6.80** pts · short: entry − **6.80** pts (3.0R) |
-| risk if stopped | **$227** = 23% of the $1000 buffer |
-| buffer left after one stop | $773 |
+| open above 96.41 | **BUY 1 MCL at market** |
+| open below 96.41 | **SELL 1 MCL at market** |
+| stop | long: entry − **2.35** pts · short: entry + **2.35** pts (0.5 × ATR 4.70) |
+| target | long: entry + **7.04** pts · short: entry − **7.04** pts (3.0R) |
+| risk if stopped | **$235** = 23% of the $1000 buffer |
+| buffer left after one stop | $765 |
 
 This leg fires on every session whose open differs from the last close, so it always trades. Its measured expectation is negative — it is here to guarantee forward data, not because it is expected to earn.
 
 ## Account
 
-- balance **$26,638.26** (+1,638.26 of the $1,250 target, 131%)
-- end-of-day floor $25,649.74 — room $989
-- largest day $634 = 39% of profit (limit 40%)
-- status: **passed**, 35 settled trades
+- balance **$26,412.47** (+1,412.47 of the $1,250 target, 113%)
+- end-of-day floor $25,649.74 — room $763
+- largest day $634 = 45% of profit (limit 40%)
+- status: **running**, 35 settled trades
 
 ## Pace against your rubric
 
@@ -64,9 +64,9 @@ This leg fires on every session whose open differs from the last close, so it al
 | 2026-10-29 | — | $-0.48 | $+887.91 |
 | 2026-10-30 | — | $+127.52 | $+1,015.43 |
 | 2026-11-02 | — | $+634.31 | $+1,649.74 |
-| 2026-11-03 | — | $-11.48 | $+1,638.26 |
+| 2026-11-03 | — | $-237.27 | $+1,412.47 |
 
-- best session $+634.31, average $+46.81/session
+- best session $+634.31, average $+40.36/session
 - your rubric: **keep it, no changes** (>= $500 keep, >= $200 a day keep and tweak, below that rework)
 - stand-down at -$350/session: not hit
 
@@ -108,6 +108,6 @@ This leg fires on every session whose open differs from the last close, so it al
 | 2026-10-29 | 101.96 | 104.11 | 95.50 | $215 | loss | $-0.48 |
 | 2026-10-30 | 102.80 | 100.61 | 109.38 | $219 | win | $+127.52 |
 | 2026-11-02 | 102.39 | 104.52 | 96.00 | $213 | win | $+634.31 |
-| 2026-11-03 | 96.81 | 94.48 | 103.79 | $233 | loss | $-11.48 |
+| 2026-11-03 | 96.30 | 98.63 | 89.32 | $233 | loss | $-237.27 |
 
-35 trades, 57% win, $+46.81/trade. Break-even on this book is 25.0% — below that, more trades lose money.
+35 trades, 57% win, $+40.36/trade. Break-even on this book is 25.0% — below that, more trades lose money.
