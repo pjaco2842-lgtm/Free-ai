@@ -6,17 +6,17 @@ Book `cl-pdlow1-anygap-05atr-tp2-obs` — 1 micro, CL=F, limit_low-1, gap:any, l
 
 ## Next session
 
-**BUY LIMIT 1 MCL @ 94.98** — for the session of 2026-11-05 (levels from the completed bar 2026-11-04).
+**BUY LIMIT 1 MCL @ 94.43** — for the session of 2026-11-05 (levels from the completed bar 2026-11-04).
 
 | field | value |
 |---|---|
-| entry (buy limit) | **94.98** |
+| entry (buy limit) | **94.43** |
 | condition | no gap condition |
-| distance from last close | 96.41 → -1.48% |
-| stop | **92.63** (0.5 × ATR, ATR 4.70) |
-| target | **99.68** (2.0R) |
-| risk if stopped | **$235** = 23% of the $1000 buffer |
-| buffer left after one stop | $765 |
+| distance from last close | 95.02 → -0.62% |
+| stop | **92.06** (0.5 × ATR, ATR 4.74) |
+| target | **99.17** (2.0R) |
+| risk if stopped | **$237** = 24% of the $1000 buffer |
+| buffer left after one stop | $763 |
 
 If the market gaps below the level, the limit fills at the open (better price); one tick of entry and exit slippage and $1.24 per side are charged on settlement.
 

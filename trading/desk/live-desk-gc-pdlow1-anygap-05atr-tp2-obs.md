@@ -12,11 +12,11 @@ Book `gc-pdlow1-anygap-05atr-tp2-obs` — 1 micro, GC=F, limit_low-1, gap:any, l
 |---|---|
 | entry (buy limit) | **3928.20** |
 | condition | no gap condition |
-| distance from last close | 4018.20 → -2.24% |
-| stop | **3890.04** (0.5 × ATR, ATR 76.31) |
-| target | **4004.51** (2.0R) |
-| risk if stopped | **$382** = 38% of the $1000 buffer |
-| buffer left after one stop | $618 |
+| distance from last close | 4051.90 → -3.05% |
+| stop | **3888.58** (0.5 × ATR, ATR 79.24) |
+| target | **4007.44** (2.0R) |
+| risk if stopped | **$396** = 40% of the $1000 buffer |
+| buffer left after one stop | $604 |
 
 If the market gaps below the level, the limit fills at the open (better price); one tick of entry and exit slippage and $1.24 per side are charged on settlement.
 
