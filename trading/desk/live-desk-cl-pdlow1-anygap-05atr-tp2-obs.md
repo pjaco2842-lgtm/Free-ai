@@ -6,26 +6,26 @@ Book `cl-pdlow1-anygap-05atr-tp2-obs` — 1 micro, CL=F, limit_low-1, gap:any, l
 
 ## Next session
 
-**BUY LIMIT 1 MCL @ 94.43** — for the session of 2026-11-05 (levels from the completed bar 2026-11-04).
+**BUY LIMIT 1 MCL @ 86.65** — for the session of 2026-11-06 (levels from the completed bar 2026-11-05).
 
 | field | value |
 |---|---|
-| entry (buy limit) | **94.43** |
+| entry (buy limit) | **86.65** |
 | condition | no gap condition |
-| distance from last close | 95.02 → -0.62% |
-| stop | **92.06** (0.5 × ATR, ATR 4.74) |
-| target | **99.17** (2.0R) |
-| risk if stopped | **$237** = 24% of the $1000 buffer |
-| buffer left after one stop | $763 |
+| distance from last close | 89.58 → -3.27% |
+| stop | **84.09** (0.5 × ATR, ATR 5.12) |
+| target | **91.77** (2.0R) |
+| risk if stopped | **$256** = 26% of the $1000 buffer |
+| buffer left after one stop | $744 |
 
 If the market gaps below the level, the limit fills at the open (better price); one tick of entry and exit slippage and $1.24 per side are charged on settlement.
 
 ## Account
 
-- balance **$26,065.78** (+1,065.78 of the $1,250 target, 85%)
-- end-of-day floor $25,193.67 — room $872
-- largest day $388 = 36% of profit (limit 40%)
-- status: **running**, 16 settled trades
+- balance **$25,817.30** (+817.30 of the $1,250 target, 65%)
+- end-of-day floor $25,193.67 — room $624
+- largest day $388 = 47% of profit (limit 40%)
+- status: **running**, 17 settled trades
 
 ## Pace against your rubric
 
@@ -47,8 +47,9 @@ If the market gaps below the level, the limit fills at the open (better price); 
 | 2026-10-27 | — | $-47.48 | $+1,193.67 |
 | 2026-11-02 | — | $-217.41 | $+976.26 |
 | 2026-11-03 | — | $+89.52 | $+1,065.78 |
+| 2026-11-04 | — | $-248.48 | $+817.30 |
 
-- best session $+387.59, average $+66.61/session
+- best session $+387.59, average $+48.08/session
 - your rubric: **rework it** (>= $500 keep, >= $200 a day keep and tweak, below that rework)
 - stand-down at -$350/session: not hit
 
@@ -72,5 +73,6 @@ If the market gaps below the level, the limit fills at the open (better price); 
 | 2026-10-27 | 100.33 | 98.15 | 104.69 | $218 | loss | $-47.48 |
 | 2026-11-02 | 102.39 | 100.26 | 106.65 | $213 | loss | $-217.41 |
 | 2026-11-03 | 95.15 | 92.82 | 99.81 | $233 | win | $+89.52 |
+| 2026-11-04 | 93.59 | 91.15 | 98.47 | $244 | loss | $-248.48 |
 
-16 trades, 69% win, $+66.61/trade. Break-even on this book is 33.3% — below that, more trades lose money.
+17 trades, 65% win, $+48.08/trade. Break-even on this book is 33.3% — below that, more trades lose money.

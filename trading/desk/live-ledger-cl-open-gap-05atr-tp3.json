@@ -1,7 +1,7 @@
 {
   "created": "2026-11-01T21:20:23Z",
   "book": "cl-open-gap-05atr-tp3",
-  "last": "2026-11-03",
+  "last": "2026-11-04",
   "ledger": [
     {
       "date": "2026-09-16",
@@ -457,9 +457,22 @@
       "usd": -237.27,
       "result": "loss",
       "resolution": "open"
+    },
+    {
+      "date": "2026-11-04",
+      "order": "buy market @ 96.81",
+      "entry": 96.81,
+      "micros": 1,
+      "side": "long",
+      "stop": 94.37,
+      "target": 104.13,
+      "risk": 244.0,
+      "usd": -248.48,
+      "result": "loss",
+      "resolution": "open"
     }
   ],
-  "equity": 1412.47,
+  "equity": 1163.99,
   "peak_eod": 26649.74,
   "largest_day": 634.31,
   "passed": false,
