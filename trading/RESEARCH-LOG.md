@@ -1724,3 +1724,65 @@ finished session.
 **Which is why 2026-11-04 is not in the table.** At the time of writing the session is a
 few hours old. Its bar exists, and settling it would repeat the mistake above in a smaller
 way.
+
+## 2026-11-06 (xix) — the stop is written in ATR, so the risk is written in the week
+
+Four forward sessions booked, **+$165.24** at one micro per leg: +416.90, -22.73, -18.99,
+-209.94. The +$394 two-session lead is gone; one ES target trade is still 2.9x the whole
+net. That is the P&L. The finding is what the 2-5 November week did to the *risk*: the
+stop is 0.5 ATR, so when ATR doubled the dollars at risk doubled with it. ES went from a
+$175 stop to $318, gas to $262, gold to $416 — **$996 of stop risk across three one-micro
+legs against a $1,000 daily buffer.** One bad session ends the evaluation rather than
+denting it, and that is a property of the rule, not of the market's mood.
+
+**The fix was measured, not assumed** (`riskcap.py`, all legs' rules, 2023-01-01 onward,
+one micro, account walk from every starting session for 240 sessions with the $1,000 floor
+and the $25,100 lock):
+
+| per-trade cap | net | worst day | max DD | pass% | breach% | sessions risking >$800 |
+|---:|---:|---:|---:|---:|---:|---:|
+| none | +26,089 | -1,390 | -6,255 | 50.7% | 48.2% | 118 of 961 |
+| $150 | +1,557 | -417 | -3,529 | 24.8% | 56.1% | 0 of 727 |
+| $200 | +7,713 | -464 | -3,424 | 47.8% | 40.6% | 0 of 826 |
+| $250 | +13,571 | -597 | -2,828 | 53.8% | 44.8% | 0 of 900 |
+| **$300** | **+16,049** | **-597** | **-2,661** | **59.4%** | **39.1%** | **0 of 921** |
+| $350 | +18,562 | -597 | -2,661 | 55.7% | 42.9% | 5 of 938 |
+| $400 | +16,153 | -710 | -3,330 | 54.2% | 44.7% | 7 of 943 |
+
+**Adopted: $300, which is 30% of the buffer.** Highest pass rate and lowest breach rate of
+any cap, drawdown halved, worst day capped at -$597, no session able to risk more than
+$800. The shape matters as much as the winner: $150 is catastrophic (pass 24.8%, breach
+56.1%) because it discards the volatile trades that carry the book, so "smaller stops" is
+not a monotone improvement; and 250/300/350 all beat no cap, so this is a plateau rather
+than a spike I picked.
+
+**It holds leg by leg, which is the test that a cap is not curve-fitting:**
+
+| leg | $/trade, no cap | $/trade at $300 | trades kept |
+|---|---:|---:|---:|
+| ES prior-low | +33.57 | +27.91 | 94% (421/447) |
+| CL prior-low | -0.91 | **+1.27** | 96% (419/437) |
+| GC prior-low | +33.58 | +10.29 | 65% (279/432) |
+| CL open-gap | -3.24 | **+1.02** | 94% (880/934) |
+
+GC gives up most of its measured edge, which lives entirely in its wide-stop trades; it is
+an observation leg, so it stays and simply trades less often. The honest caveat: breach is
+still **39.1%** with the cap. The cap makes the book survivable, not good.
+
+**What this changes tonight.** The ES order risks $318 and the GC order $416 — both above
+the cap, so both are skipped and the desk trades only the CL gap leg at $262. The runner
+now journals every skip with its date and the risk it avoided, and the order sheet prints
+"would NOT be sent", so a flat session is a documented decision rather than a suspicion
+that the job died.
+
+**The open-gap leg was reviewed, not cut.** Its kill rule (cut if the forward record is
+worse than the measured -$3.09/trade after two sessions) was passed at +$198/trade, and
+four trades at -$29.70 cannot be separated from -3.09 — cutting on that would be the same
+noise-chasing as trusting the good start. With the cap its 2023+ record is +$1.02/trade,
+so it stays at one micro and is re-tested at ten sessions.
+
+**Rows booked 11-02 to 11-05 predate the cap** and are left exactly as they settled; the
+rule changes from 2026-11-06 and this entry dates it. Also fixed: the workflow labelled
+its commits with the run date ("paper: settle 2026-11-06" on a day whose session was still
+open), which read like an early booking and cost a morning of checking. It now names the
+last session actually settled.

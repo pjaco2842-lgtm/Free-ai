@@ -244,6 +244,7 @@
       "note": "This was the least-bad of the 120 open-entry settings on all four contracts: 0 of 30 ES settings and 0 of 30 CL settings had a positive mean per trade. A 0.42 t is noise, so no edge is claimed."
     },
     "size_rule": "One micro. Two would put a $426 stop at 43% of the buffer with a negative-expectancy rule.",
-    "kill_rule": "Two stops in a session (-$426) ends the day. If the forward record after two sessions is worse than the measured -$3.09/trade, cut the leg instead of resizing it."
+    "kill_rule": "Two stops in a session (-$426) ends the day. If the forward record after two sessions is worse than the measured -$3.09/trade, cut the leg instead of resizing it.",
+    "reviewed": "2026-11-06 at 4 forward trades: -$29.70/trade. The written two-session gate passed (+$198/trade), and four trades cannot separate -29.70 from -3.09, so cutting now would be noise-chasing. What the leg actually needed was the runner's $300 stop cap: with it its 2023+ record moves from -$3.24 to +$1.02/trade (riskcap.py). Kept at one micro, re-tested at ten sessions. RESEARCH-LOG (xix)."
   }
 ]

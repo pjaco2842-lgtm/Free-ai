@@ -65,5 +65,9 @@ jobs:
             echo "nothing changed"
             exit 0
           fi
-          git commit -m "paper: settle $(date -u +%F)"
+          # Label the commit with the last session actually settled, not today's date.
+          # "paper: settle 2026-11-06" on a day whose session is still open read like the
+          # bot had booked an unfinished session, and cost a morning chasing it.
+          LAST=$(python3 -c 'import glob,json;d=[t["date"] for f in glob.glob("trading/desk/live-ledger-*.json") for t in json.load(open(f))["ledger"]];print(max(d) if d else "none")')
+          git commit -m "paper: settle through $LAST"
           git push

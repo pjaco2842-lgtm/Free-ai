@@ -42,6 +42,12 @@ OUT = DESK / "live-desk.md"
 
 START, TARGET, MAX_LOSS = E.START_BAL, E.TARGET, E.MAX_LOSS
 LOCK_AT, LOCK_TRIG, CONS = E.LOCK_AT, E.LOCK_TRIGGER, E.CONSISTENCY
+# One trade may not risk more than 30% of the daily buffer. The stop is 0.5 ATR, so the
+# dollars at risk follow volatility: in the week of 2-5 November three one-micro legs
+# risked $996 against a $1,000 buffer. Measured in riskcap.py, this cap raised the pass
+# rate 50.7% -> 59.4%, cut breach 48.2% -> 39.1%, halved the drawdown and removed every
+# session that risked >$800; a $150 cap destroyed the book (RESEARCH-LOG (xix)).
+RISK_CAP = 0.30 * MAX_LOSS
 
 
 def load_book(path: Path) -> list[dict]:
@@ -88,6 +94,8 @@ def order(D: dict, leg: dict) -> dict:
         "target": level + m * risk_pts,
         "risk_usd": px_risk,
         "risk_share": 100.0 * px_risk / MAX_LOSS,
+        "cap_usd": RISK_CAP,
+        "capped": px_risk > RISK_CAP,
         "buffer_after_stop": MAX_LOSS - px_risk,
         "tick": tick,
     }
@@ -105,6 +113,8 @@ def order_lines(o: dict, leg: dict) -> list[str]:
         f"| target | **{o['target']:.2f}** ({E.EXITS[leg['exit']]}R) |",
         f"| risk if stopped | **${o['risk_usd']:.0f}** = {o['risk_share']:.0f}% of the "
         f"${MAX_LOSS:.0f} buffer |",
+        f"| risk cap | ${o['cap_usd']:.0f} (30% of the buffer) — "
+        + ("**this order would NOT be sent**" if o["capped"] else "inside the cap") + " |",
         f"| buffer left after one stop | ${o['buffer_after_stop']:.0f} |", "",
         "If the market gaps below the level, the limit fills at the open (better price); "
         "one tick of entry and exit slippage and $1.24 per side are charged on settlement.",
@@ -122,7 +132,8 @@ def open_order(D: dict, leg: dict) -> dict:
     return {"for_session": next_session(D["d"][-1]), "from_bar": D["d"][-1],
             "last_close": D["c"][i], "atr": atr, "stop_pts": risk_pts,
             "target_pts": m * risk_pts, "risk_usd": px_risk,
-            "risk_share": 100.0 * px_risk / MAX_LOSS,
+            "risk_share": 100.0 * px_risk / MAX_LOSS, "cap_usd": RISK_CAP,
+            "capped": px_risk > RISK_CAP,
             "buffer_after_stop": MAX_LOSS - px_risk, "tick": E.SPECS[leg["symbol"]]["tick"],
             "contract": leg.get("contract", "MES"), "micros": leg["micros"]}
 
@@ -142,6 +153,8 @@ def open_order_lines(o: dict, leg: dict) -> list[str]:
         f"({E.EXITS[leg['exit']]}R) |",
         f"| risk if stopped | **${o['risk_usd']:.0f}** = {o['risk_share']:.0f}% of the "
         f"${MAX_LOSS:.0f} buffer |",
+        f"| risk cap | ${o['cap_usd']:.0f} (30% of the buffer) — "
+        + ("**this order would NOT be sent**" if o["capped"] else "inside the cap") + " |",
         f"| buffer left after one stop | ${o['buffer_after_stop']:.0f} |", "",
         "This leg fires on every session whose open differs from the last close, so it always "
         "trades. Its measured expectation is negative — it is here to guarantee forward data, "
@@ -180,11 +193,18 @@ def settle(D: dict, leg: dict, state: dict, today: str) -> list[dict]:
                 continue
             entry, kind = sig
             side = 1
+        atr = D["atr"][i - 1]
+        risk_usd = leg["stop"] * atr * pv * leg["micros"]
+        if risk_usd > RISK_CAP:          # wide stop: the cap skips it, it is not resized
+            skips = state.setdefault("skipped", [])
+            if not any(s["date"] == D["d"][i] for s in skips):
+                skips.append({"date": D["d"][i], "risk": round(risk_usd, 2),
+                              "reason": f"stop ${risk_usd:.0f} > cap ${RISK_CAP:.0f}"})
+            continue
         one = E.trade_pnl(D, i, entry, kind, leg["stop"], E.EXITS[leg["exit"]],
                           pv, tick, leg["resolution"], side=side)
         if one is None:
             continue
-        atr = D["atr"][i - 1]
         fresh.append({
             "date": D["d"][i],
             "order": (f"{'buy' if side > 0 else 'sell'} market @ {entry:.2f}"
@@ -235,6 +255,8 @@ def account_lines(state: dict) -> list[str]:
         f"- largest day ${state['largest_day']:,.0f} = {share:.0f}% of profit "
         f"(limit {100*CONS:.0f}%)",
         f"- status: **{status}**, {len(state['ledger'])} settled trades",
+        f"- risk cap ${RISK_CAP:.0f}/trade (30% of the buffer): "
+        f"{len(state.get('skipped', []))} signals skipped, not resized",
     ]
 
 

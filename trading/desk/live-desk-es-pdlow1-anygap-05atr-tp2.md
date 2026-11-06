@@ -16,6 +16,7 @@ Book `es-pdlow1-anygap-05atr-tp2` — 1 micro, ES=F, limit_low-1, gap:any, long 
 | stop | **7256.76** (0.5 × ATR, ATR 130.98) |
 | target | **7453.23** (2.0R) |
 | risk if stopped | **$327** = 33% of the $1000 buffer |
+| risk cap | $300 (30% of the buffer) — **this order would NOT be sent** |
 | buffer left after one stop | $673 |
 
 If the market gaps below the level, the limit fills at the open (better price); one tick of entry and exit slippage and $1.24 per side are charged on settlement.
@@ -26,6 +27,7 @@ If the market gaps below the level, the limit fills at the open (better price); 
 - end-of-day floor $24,107.79 — room $723
 - largest day $478 = 0% of profit (limit 40%)
 - status: **running**, 20 settled trades
+- risk cap $300/trade (30% of the buffer): 0 signals skipped, not resized
 
 ## Pace against your rubric
 

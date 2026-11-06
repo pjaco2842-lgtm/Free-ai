@@ -15,6 +15,7 @@ Book `cl-open-gap-05atr-tp3` — 1 micro, CL=F, market at the open with the gap,
 | stop | long: entry − **2.56** pts · short: entry + **2.56** pts (0.5 × ATR 5.12) |
 | target | long: entry + **7.69** pts · short: entry − **7.69** pts (3.0R) |
 | risk if stopped | **$256** = 26% of the $1000 buffer |
+| risk cap | $300 (30% of the buffer) — inside the cap |
 | buffer left after one stop | $744 |
 
 This leg fires on every session whose open differs from the last close, so it always trades. Its measured expectation is negative — it is here to guarantee forward data, not because it is expected to earn.
@@ -25,6 +26,7 @@ This leg fires on every session whose open differs from the last close, so it al
 - end-of-day floor $25,649.74 — room $247
 - largest day $634 = 71% of profit (limit 40%)
 - status: **running**, 37 settled trades
+- risk cap $300/trade (30% of the buffer): 0 signals skipped, not resized
 
 ## Pace against your rubric
 
