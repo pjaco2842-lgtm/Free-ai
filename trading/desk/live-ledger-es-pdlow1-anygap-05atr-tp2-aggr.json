@@ -1,7 +1,7 @@
 {
   "created": "2026-11-01T08:22:58Z",
   "book": "es-pdlow1-anygap-05atr-tp2-aggr",
-  "last": "2026-11-04",
+  "last": "2026-11-05",
   "ledger": [
     {
       "date": "2026-09-16",
@@ -232,9 +232,22 @@
       "usd": 955.93,
       "result": "win",
       "resolution": "proven"
+    },
+    {
+      "date": "2026-11-05",
+      "order": "buy limit 2 @ 7490.00",
+      "entry": 7490.0,
+      "micros": 2,
+      "side": "long",
+      "stop": 7435.57,
+      "target": 7598.86,
+      "risk": 544.29,
+      "usd": -554.25,
+      "result": "loss",
+      "resolution": "proven"
     }
   ],
-  "equity": 215.59,
+  "equity": -338.66,
   "peak_eod": 25215.59,
   "largest_day": 955.93,
   "passed": false,

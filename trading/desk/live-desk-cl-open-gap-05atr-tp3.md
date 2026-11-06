@@ -6,12 +6,12 @@ Book `cl-open-gap-05atr-tp3` — 1 micro, CL=F, market at the open with the gap,
 
 ## Next session
 
-**MARKET AT THE OPEN, 1 MCL, in the direction of the gap** — for the session of 2026-11-06 (rule built from the completed bar 2026-11-05).
+**MARKET AT THE OPEN, 1 MCL, in the direction of the gap** — for the session of 2026-11-09 (rule built from the completed bar 2026-11-06).
 
 | field | value |
 |---|---|
-| open above 89.58 | **BUY 1 MCL at market** |
-| open below 89.58 | **SELL 1 MCL at market** |
+| open above 90.16 | **BUY 1 MCL at market** |
+| open below 90.16 | **SELL 1 MCL at market** |
 | stop | long: entry − **2.56** pts · short: entry + **2.56** pts (0.5 × ATR 5.12) |
 | target | long: entry + **7.69** pts · short: entry − **7.69** pts (3.0R) |
 | risk if stopped | **$256** = 26% of the $1000 buffer |
@@ -21,10 +21,10 @@ This leg fires on every session whose open differs from the last close, so it al
 
 ## Account
 
-- balance **$26,163.99** (+1,163.99 of the $1,250 target, 93%)
-- end-of-day floor $25,649.74 — room $514
-- largest day $634 = 54% of profit (limit 40%)
-- status: **running**, 36 settled trades
+- balance **$25,896.65** (+896.65 of the $1,250 target, 72%)
+- end-of-day floor $25,649.74 — room $247
+- largest day $634 = 71% of profit (limit 40%)
+- status: **running**, 37 settled trades
 
 ## Pace against your rubric
 
@@ -66,8 +66,9 @@ This leg fires on every session whose open differs from the last close, so it al
 | 2026-11-02 | — | $+634.31 | $+1,649.74 |
 | 2026-11-03 | — | $-237.27 | $+1,412.47 |
 | 2026-11-04 | — | $-248.48 | $+1,163.99 |
+| 2026-11-05 | — | $-267.34 | $+896.65 |
 
-- best session $+634.31, average $+32.33/session
+- best session $+634.31, average $+24.23/session
 - your rubric: **keep it, no changes** (>= $500 keep, >= $200 a day keep and tweak, below that rework)
 - stand-down at -$350/session: not hit
 
@@ -111,5 +112,6 @@ This leg fires on every session whose open differs from the last close, so it al
 | 2026-11-02 | 102.39 | 104.52 | 96.00 | $213 | win | $+634.31 |
 | 2026-11-03 | 96.30 | 98.63 | 89.32 | $233 | loss | $-237.27 |
 | 2026-11-04 | 96.81 | 94.37 | 104.13 | $244 | loss | $-248.48 |
+| 2026-11-05 | 88.05 | 90.68 | 80.16 | $263 | loss | $-267.34 |
 
-36 trades, 56% win, $+32.33/trade. Break-even on this book is 25.0% — below that, more trades lose money.
+37 trades, 54% win, $+24.23/trade. Break-even on this book is 25.0% — below that, more trades lose money.
