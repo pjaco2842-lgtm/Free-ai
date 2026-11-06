@@ -12,11 +12,11 @@ Book `es-pdlow1-anygap-05atr-tp2` — 1 micro, ES=F, limit_low-1, gap:any, long 
 |---|---|
 | entry (buy limit) | **7322.25** |
 | condition | no gap condition |
-| distance from last close | 7390.00 → -0.92% |
-| stop | **7258.26** (0.5 × ATR, ATR 127.98) |
-| target | **7450.23** (2.0R) |
-| risk if stopped | **$320** = 32% of the $1000 buffer |
-| buffer left after one stop | $680 |
+| distance from last close | 7426.50 → -1.40% |
+| stop | **7256.76** (0.5 × ATR, ATR 130.98) |
+| target | **7453.23** (2.0R) |
+| risk if stopped | **$327** = 33% of the $1000 buffer |
+| buffer left after one stop | $673 |
 
 If the market gaps below the level, the limit fills at the open (better price); one tick of entry and exit slippage and $1.24 per side are charged on settlement.
 
