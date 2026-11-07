@@ -22,10 +22,11 @@ This leg fires on every session whose open differs from the last close, so it al
 
 ## Account
 
-- balance **$25,896.65** (+896.65 of the $1,250 target, 72%)
-- end-of-day floor $25,649.74 — room $247
-- largest day $634 = 71% of profit (limit 40%)
-- status: **running**, 37 settled trades
+- balance **$25,854.17** (+854.17 of the $1,250 target, 68%)
+- end-of-day floor $25,649.74 — room $204
+- this leg's best day $634 = 74% of its profit (limit 50%; the rule is measured on the whole account)
+- eligible at 50% only once profit reaches **$1,269** (best day $634 ÷ 0.50) — $414 more, unless a smaller best day is booked
+- status: **running**, 38 settled trades
 - risk cap $300/trade (30% of the buffer): 0 signals skipped, not resized
 
 ## Pace against your rubric
@@ -69,8 +70,9 @@ This leg fires on every session whose open differs from the last close, so it al
 | 2026-11-03 | — | $-237.27 | $+1,412.47 |
 | 2026-11-04 | — | $-248.48 | $+1,163.99 |
 | 2026-11-05 | — | $-267.34 | $+896.65 |
+| 2026-11-06 | — | $-42.48 | $+854.17 |
 
-- best session $+634.31, average $+24.23/session
+- best session $+634.31, average $+22.48/session
 - your rubric: **keep it, no changes** (>= $500 keep, >= $200 a day keep and tweak, below that rework)
 - stand-down at -$350/session: not hit
 
@@ -115,5 +117,6 @@ This leg fires on every session whose open differs from the last close, so it al
 | 2026-11-03 | 96.30 | 98.63 | 89.32 | $233 | loss | $-237.27 |
 | 2026-11-04 | 96.81 | 94.37 | 104.13 | $244 | loss | $-248.48 |
 | 2026-11-05 | 88.05 | 90.68 | 80.16 | $263 | loss | $-267.34 |
+| 2026-11-06 | 91.20 | 88.58 | 99.04 | $262 | loss | $-42.48 |
 
-37 trades, 54% win, $+24.23/trade. Break-even on this book is 25.0% — below that, more trades lose money.
+38 trades, 53% win, $+22.48/trade. Break-even on this book is 25.0% — below that, more trades lose money.

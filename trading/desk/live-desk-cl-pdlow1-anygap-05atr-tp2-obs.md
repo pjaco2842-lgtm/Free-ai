@@ -25,7 +25,7 @@ If the market gaps below the level, the limit fills at the open (better price); 
 
 - balance **$26,151.82** (+1,151.82 of the $1,250 target, 92%)
 - end-of-day floor $25,193.67 — room $958
-- largest day $388 = 34% of profit (limit 40%)
+- this leg's best day $388 = 34% of its profit (limit 50%; the rule is measured on the whole account)
 - status: **running**, 18 settled trades
 - risk cap $300/trade (30% of the buffer): 0 signals skipped, not resized
 

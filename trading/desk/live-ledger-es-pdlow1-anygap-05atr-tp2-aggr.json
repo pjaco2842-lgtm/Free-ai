@@ -1,7 +1,7 @@
 {
   "created": "2026-11-01T08:22:58Z",
   "book": "es-pdlow1-anygap-05atr-tp2-aggr",
-  "last": "2026-11-05",
+  "last": "2026-11-06",
   "ledger": [
     {
       "date": "2026-09-16",
@@ -251,5 +251,12 @@
   "peak_eod": 25215.59,
   "largest_day": 955.93,
   "passed": false,
-  "breached": false
+  "breached": false,
+  "skipped": [
+    {
+      "date": "2026-11-06",
+      "risk": 636.88,
+      "reason": "stop $637 > cap $300"
+    }
+  ]
 }

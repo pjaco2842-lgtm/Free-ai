@@ -11,7 +11,7 @@ runner so nothing that was retracted is overwritten. It does exactly three thing
      dollar risk and share of the $1,000 buffer, plus the gap condition that has
      to hold at the open;
   3. tracks the evaluation honestly: end-of-day trailing floor locking at
-     $25,100, the 40% consistency share, and target progress.
+     $25,100, the consistency share against the account's own limit, and target progress.
 
 It refuses to invent a level. If bars cannot be fetched and no --csv is given,
 it says so and writes nothing.
@@ -44,9 +44,10 @@ START, TARGET, MAX_LOSS = E.START_BAL, E.TARGET, E.MAX_LOSS
 LOCK_AT, LOCK_TRIG, CONS = E.LOCK_AT, E.LOCK_TRIGGER, E.CONSISTENCY
 # One trade may not risk more than 30% of the daily buffer. The stop is 0.5 ATR, so the
 # dollars at risk follow volatility: in the week of 2-5 November three one-micro legs
-# risked $996 against a $1,000 buffer. Measured in riskcap.py, this cap raised the pass
-# rate 50.7% -> 59.4%, cut breach 48.2% -> 39.1%, halved the drawdown and removed every
-# session that risked >$800; a $150 cap destroyed the book (RESEARCH-LOG (xix)).
+# risked $996 against a $1,000 buffer. Measured in riskcap.py at the account's 50%
+# consistency rule, this cap raises the pass rate 53.7% -> 62.1%, cuts breach 45.2% ->
+# 36.4%, halves the drawdown and removes every session that risked >$800; a $150 cap
+# destroyed the book (RESEARCH-LOG (xix), re-measured under the real rule in (xx)).
 RISK_CAP = 0.30 * MAX_LOSS
 
 
@@ -246,18 +247,30 @@ def account_lines(state: dict) -> list[str]:
     floor = max(state["peak_eod"] - MAX_LOSS, LOCK_AT) if state["peak_eod"] >= LOCK_TRIG \
         else state["peak_eod"] - MAX_LOSS
     profit = bal - START
-    share = 100.0 * state["largest_day"] / profit if profit > 0 else 0.0
+    share = 100.0 * state["largest_day"] / profit if profit > 0 else None
     status = "breached" if state["breached"] else ("passed" if state["passed"] else "running")
-    return [
+    # The best day is a fact already booked; the only lever left is more profit, so the
+    # line states the profit the rule demands rather than a verdict the desk cannot change.
+    need = state["largest_day"] / CONS if state["largest_day"] > 0 else 0.0
+    out = [
         f"- balance **${bal:,.2f}** ({profit:+,.2f} of the ${TARGET:,.0f} target, "
         f"{100*profit/TARGET:.0f}%)",
         f"- end-of-day floor ${floor:,.2f} — room ${bal-floor:,.0f}",
-        f"- largest day ${state['largest_day']:,.0f} = {share:.0f}% of profit "
-        f"(limit {100*CONS:.0f}%)",
+        f"- this leg's best day ${state['largest_day']:,.0f} = "
+        + (f"{share:.0f}% of its profit" if share is not None
+           else "no profit to measure it against yet")
+        + f" (limit {100*CONS:.0f}%; the rule is measured on the whole account)",
+    ]
+    if profit > 0 and need > profit and not state["passed"]:
+        out.append(f"- eligible at {100*CONS:.0f}% only once profit reaches **${need:,.0f}** "
+                   f"(best day ${state['largest_day']:,.0f} ÷ {CONS:.2f}) — "
+                   f"${need - profit:,.0f} more, unless a smaller best day is booked")
+    out += [
         f"- status: **{status}**, {len(state['ledger'])} settled trades",
         f"- risk cap ${RISK_CAP:.0f}/trade (30% of the buffer): "
         f"{len(state.get('skipped', []))} signals skipped, not resized",
     ]
+    return out
 
 
 # ---------------------------------------------------------------------- report

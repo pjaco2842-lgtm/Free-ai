@@ -73,7 +73,10 @@ TARGET = 1_250.0
 MAX_LOSS = 1_000.0
 LOCK_AT = 25_100.0
 LOCK_TRIGGER = 26_100.0
-CONSISTENCY = 0.40
+# 50%, not the standard 40%: the purchased 25K account carries the consistency add-on,
+# verified on the dashboard on 2026-11-07. Every walk in this repo before that date used
+# 40%, which is stricter than the account, so those pass rates understate it.
+CONSISTENCY = 0.50
 ERA = "2023-01-01"
 
 STOPS = (0.5, 0.75, 1.0, 1.5, 2.0, 2.5)

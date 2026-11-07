@@ -18,8 +18,10 @@
   "stop_loss_required": false,
   "stop_loss_required_note": "Confirm the purchased account rules; this field is not verified by the audit.",
   "consistency": {
-    "rule": 0.4,
+    "rule": 0.5,
     "add_on": 0.5,
+    "verified": "2026-11-07: the owner verified on the dashboard that this account carries the 50% consistency add-on, not the standard 40%. Everything measured before this date used 40% and is therefore stricter than the account, so its pass rates are conservative.",
+    "cushion": "Lucid builds a small cushion into the add-on: a best day of $650 still passes at exactly $1,250 on a 25K. The desk models the plain formula (largest <= 50% of profit) and does not spend the cushion.",
     "applies_to": "evaluation only; the rule is dropped once funded",
     "formula": "largest single day profit / account profit must be at or below the limit"
   },

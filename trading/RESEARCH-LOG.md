@@ -1749,6 +1749,10 @@ and the $25,100 lock):
 | $350 | +18,562 | -597 | -2,661 | 55.7% | 42.9% | 5 of 938 |
 | $400 | +16,153 | -710 | -3,330 | 54.2% | 44.7% | 7 of 943 |
 
+These figures were walked with the 40% consistency constant the desk carried at the
+time. The account turned out to allow 50% \u2014 see (xx) \u2014 and the same table
+re-measured under the real rule is there: $300 is still the best cap.
+
 **Adopted: $300, which is 30% of the buffer.** Highest pass rate and lowest breach rate of
 any cap, drawdown halved, worst day capped at -$597, no session able to risk more than
 $800. The shape matters as much as the winner: $150 is catastrophic (pass 24.8%, breach
@@ -1786,3 +1790,73 @@ rule changes from 2026-11-06 and this entry dates it. Also fixed: the workflow l
 its commits with the run date ("paper: settle 2026-11-06" on a day whose session was still
 open), which read like an early booking and cost a morning of checking. It now names the
 last session actually settled.
+
+## 2026-11-07 (xx) — the account is 50%, and every pass rate in this repo was 40%
+
+The owner verified on the dashboard that this 25K LucidFlex evaluation carries the **50%
+consistency add-on**, not the standard 40%. `desk/account.json` already listed the add-on as
+an option; what was wrong is that every measurement in this repo used 40% anyway, because
+`edge_causal.CONSISTENCY` was pinned there and `pick_book`, `mine26k`, `atr_grid`,
+`four_days`, `time_to_funded`, `riskcap` and the live runner all inherit it.
+
+The direction of that error matters: **40% is stricter than the account**, so the desk has
+been throwing away rules and under-reporting pass rates for a rule the account does not
+have. Nothing was ever flattered by the mistake. The rule as Lucid states it:
+
+    largest single day profit / account profit <= 50%, evaluated when the target is reached,
+
+with a small cushion built into the add-on ($650 still passes at exactly $1,250 on a 25K).
+The desk models the plain formula and does not spend the cushion. Fixed here:
+`edge_causal.CONSISTENCY = 0.50`, `desk/account.json` rule `0.5` with the verification and
+the cushion recorded, and the runner's account line now prints the profit the rule demands.
+
+**The cap decision survives the correction, and improves.** Re-walking the same four legs,
+one micro, 2023+, the same account walk:
+
+| per-trade cap | net | worst day | max DD | pass% at 40% | **pass% at 50%** | breach% at 40% | **breach% at 50%** |
+|---:|---:|---:|---:|---:|---:|---:|---:|
+| none | +26,089 | -1,390 | -6,255 | 50.7% | **53.7%** | 48.2% | **45.2%** |
+| $150 | +1,557 | -417 | -3,529 | 24.8% | **24.9%** | 56.1% | **56.0%** |
+| $200 | +7,713 | -464 | -3,424 | 47.8% | **51.2%** | 40.6% | **37.7%** |
+| $250 | +13,571 | -597 | -2,828 | 53.8% | **56.8%** | 44.8% | **41.8%** |
+| **$300** | **+16,049** | **-597** | **-2,661** | **59.4%** | **62.1%** | **39.1%** | **36.4%** |
+| $350 | +18,562 | -597 | -2,661 | 55.7% | **58.4%** | 42.9% | **40.2%** |
+| $400 | +16,153 | -710 | -3,330 | 54.2% | **58.0%** | 44.7% | **40.9%** |
+
+$300 is still the highest pass rate and still the second-lowest breach rate at either
+constant, so no part of (xix) is withdrawn: the cap stands, the ordering of the table is
+unchanged, and the gap to no-cap widens (62.1% against 53.7%).
+
+**The 2026-11-06 session settled, and the cap did what it was bought for.** Bars through
+11-06 are now final, so the session booked: **CL open-gap −$42.48 only.** The ES leg
+(risk $318) and the GC leg (risk $416) were both over the $300 cap and were skipped, each
+journalled in its ledger with the date and the risk avoided. So the +$397.52 and +$48.52
+marks that were open at Friday's close never existed as trades — the book took one $262-risk
+trade and lost what it was supposed to lose.
+
+Forward record after five sessions, twelve trades: **+$122.76** at one micro per leg
+(11-02 +416.90, 11-03 −22.73, 11-04 −18.99, 11-05 −209.94, 11-06 −42.48).
+
+**Where the consistency rule actually bites.** The best day is 11-02 at **+$416.90 = 340% of
+the $122.76 profit**. At 50% the record is eligible only once profit reaches **$833.80**
+with that day in it — $711.04 away — or once a smaller best day is booked. That is the rule
+working as designed: it does not forbid a good day, it sets how much total profit that day
+then demands. It is why "pass in 3-4 days" and "one big day" cannot coexist, and it is a
+constraint on *speed*, not on profitability.
+
+There is a real synergy with the cap that was not designed, only noticed: a 2R win at the
+$300 stop cap is about **+$600**, so a day above the $625 target-share now needs two legs to
+win big in the same session rather than one wide-stop leg running. The cap that protected
+the floor also makes an unfixable consistency failure much rarer.
+
+**What is now open, not settled.** Every pass rate quoted in this repo before today — the
+59% book figure, NQ's elimination at 23% consistency, the 3-4 day verdicts — was computed at
+40%, so each is a conservative estimate of the same question, and none is a settled question
+any more. NQ is the one worth revisiting properly: it was eliminated because a single $2,000
+day sits above a $1,250 target, and that mechanism is untouched by raising the limit to 50%
+(a $2,000 day still needs $4,000 of profit to be eligible). The desk does not re-open it on
+this entry alone; it is listed here so the next sweep starts from the real rule.
+
+Book metadata (`desk/live-book.json` `measured.pass_rate_pct`) still carries 40%-based pass
+figures. They are understated, not inflated, and are left until the next measurement run so
+the numbers in one table come from one walk.
