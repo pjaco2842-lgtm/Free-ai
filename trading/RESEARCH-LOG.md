@@ -1860,3 +1860,80 @@ this entry alone; it is listed here so the next sweep starts from the real rule.
 Book metadata (`desk/live-book.json` `measured.pass_rate_pct`) still carries 40%-based pass
 figures. They are understated, not inflated, and are left until the next measurement run so
 the numbers in one table come from one walk.
+
+## 2026-11-07 (xxi) — bank a good day: the lock helps, the cooldown does not
+
+The ask was to trade less and be safer after a day like the +$634 session, rather than
+pressing a good hand. Two policies, measured on the 2023+ book with the $300 stop cap in
+force, applied in the order the legs actually trade (open-gap at the open, rests later):
+
+1. **session profit lock** — once the book has banked $L in a session, no further leg enters
+   that session;
+2. **cooldown** — the whole book stands down for K sessions after a session that made $T.
+
+| lock | net | best day | worst day | max DD | pass% | reached% | breach% | median sessions |
+|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| none | +16,049 | +906 | -597 | -2,876 | 59.8% | 62.1% | 36.4% | 35 |
+| **$400** | **+17,434** | **+719** | -597 | -2,880 | **62.0%** | **63.7%** | **34.9%** | 36 |
+| $500 | +16,200 | +719 | -597 | -2,876 | 61.0% | 62.6% | 35.9% | 36 |
+| $625 | +16,377 | +906 | -597 | -2,876 | 59.4% | 62.1% | 36.4% | 36 |
+| $800 | +16,049 | +906 | -597 | -2,876 | 59.8% | 62.1% | 36.4% | 35 |
+
+| trigger | cooldown | net | pass% | breach% | median sessions |
+|---:|---:|---:|---:|---:|---:|
+| (none) | 0 | +16,049 | 59.8% | 36.4% | 35 |
+| $500 | 1 | +16,436 | 59.6% | 36.3% | 34 |
+| $500 | 2 | +15,134 | 59.5% | 34.9% | 35 |
+| $600 | 1 | +16,533 | 60.0% | 36.3% | 35 |
+| $600 | 2 | +15,040 | 59.5% | 34.9% | 36 |
+
+**Adopted: a $400 session lock. Rejected: the cooldown.** The cooldown is not free — it
+either does nothing (60.0% against 59.8%) or costs a point of pass rate when it runs two
+sessions deep, and it would make the desk sit out recovery sessions. The after-a-big-day
+study is why it looked plausible and also why it is not enough:
+
+| session made at least | sessions | next session | next 3 sessions | vs all sessions | next 3 negative |
+|---:|---:|---:|---:|---:|---:|
+| $400 | 32 | -34.65 | +37.92 | -51.22 | 44% |
+| $500 | 15 | -25.80 | +32.34 | -42.36 | 33% |
+| $600 | 8 | -60.53 | +103.34 | -77.10 | 25% |
+| $800 | 1 | -275.85 | -682.24 | -292.42 | 100% |
+
+Every 2023+ session averages **+$16.56**. The session after a big one averages -$25 to -$60,
+so the pullback is real, but the **three** sessions after average +$32 to +$103 — the desk
+gives back one session and then recovers. A cooldown sells the recovery to avoid one weak
+day, and 8 observations at the $600 trigger is not a sample to build a rule on.
+
+**Why the lock helps is not "less risk" — it is which trades it removes.** On a gap day the
+open trade already captures the move, and the resting prior-low limits then fill into the
+reversal: CL's limit leg is -$0.91/trade uncapped, and 11-02 is that pattern exactly, with
+the gap leg +$634.31 and the limit leg -$217.41 on the same session. The lock keeps the
+winner and declines the giveback, so net rises, the day's tail shrinks (best day +$906 ->
++$719) and the breach rate falls, all at once.
+
+**Caveats, plainly.** +2.2 points of pass rate on 921 overlapping starting points is not
+statistically separable, and 500/400/625 do not separate cleanly — the honest reading is a
+plateau between $400 and $500, not a magic number. $400 is taken because it is the only
+level where net, pass and breach all improve together and because it truncates the best day,
+which is the constraint the 50% rule enforces. If forward data disagrees, it is one constant.
+
+One honest tension: the lock can make a single day *larger*, because it declines the trade
+that would have diluted it. It does not bound a day — the $300 stop cap bounds a trade
+(roughly $600 at 2R, $900 at 3R). Cap bounds the trade; lock bounds how many trades bank
+into the same day. They are complements, not substitutes, and neither one replaces the fact
+that a $634 day still demands $1,268 of profit under the 50% rule.
+
+**What it would have done to the live record** (not booked — the ledger keeps what happened):
+on 11-02 the gap leg banked +$634.31 before the CL limit filled, so the lock would have
+refused that -$217.41; the day would read +$634.31 and the five-session record +$340.17
+instead of +$122.76. The rule applies from the next session, 2026-11-09, and history keeps
+its 12 booked trades and no lock entries.
+
+**Implementation.** `DAY_LOCK = 400` in `paper_causal.py`. The day's profit is summed from
+every ledger on disk, excluding the retired two-micro leg (journalled, not traded), and each
+leg accrues to it as it settles; legs settle open-entry first so the lock cannot fire on the
+wrong leg and the journal cannot misreport the sequence. Every stand-down is journalled with
+its date, the risk avoided and the amount already banked, and the desk's account line now
+reports both counters — stop-cap skips and lock stand-downs — separately. The selftest
+asserts that a banked day refuses an entry and says why. `profitlock.py --selftest` pins the
+sequencing arithmetic.

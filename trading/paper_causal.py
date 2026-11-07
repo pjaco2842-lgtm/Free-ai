@@ -49,6 +49,12 @@ LOCK_AT, LOCK_TRIG, CONS = E.LOCK_AT, E.LOCK_TRIGGER, E.CONSISTENCY
 # 36.4%, halves the drawdown and removes every session that risked >$800; a $150 cap
 # destroyed the book (RESEARCH-LOG (xix), re-measured under the real rule in (xx)).
 RISK_CAP = 0.30 * MAX_LOSS
+# Once a session has banked $400, the desk stops opening new positions in it. Measured in
+# profitlock.py on the 2023+ book with the $300 cap in force: pass 59.8% -> 62.0%, breach
+# 36.4% -> 34.9%, net +$16,049 -> +$17,434, and the best day falls from +$906 to +$719,
+# which is the number the 50% consistency rule cares about. A cooldown after a big day was
+# measured in the same script and rejected: it changed nothing (RESEARCH-LOG (xxi)).
+DAY_LOCK = 400.0
 
 
 def load_book(path: Path) -> list[dict]:
@@ -165,8 +171,10 @@ def open_order_lines(o: dict, leg: dict) -> list[str]:
 
 # ------------------------------------------------------------------ settlement
 
-def settle(D: dict, leg: dict, state: dict, today: str) -> list[dict]:
+def settle(D: dict, leg: dict, state: dict, today: str,
+           day_profit: dict | None = None) -> list[dict]:
     """Append every completed session after state['last'] that the rule traded."""
+    dp = day_profit if day_profit is not None else {}
     pv = E.SPECS[leg["symbol"]]["mult"]
     tick = E.SPECS[leg["symbol"]]["tick"]
     stop = leg.get("daily_stop_usd")
@@ -196,6 +204,14 @@ def settle(D: dict, leg: dict, state: dict, today: str) -> list[dict]:
             side = 1
         atr = D["atr"][i - 1]
         risk_usd = leg["stop"] * atr * pv * leg["micros"]
+        banked = dp.get(D["d"][i], 0.0)
+        if DAY_LOCK and banked >= DAY_LOCK:   # the session is made; no new risk in it
+            skips = state.setdefault("skipped", [])
+            if not any(s["date"] == D["d"][i] for s in skips):
+                skips.append({"date": D["d"][i], "risk": round(risk_usd, 2),
+                              "reason": f"day locked: book already +${banked:.0f} "
+                                        f"(lock ${DAY_LOCK:.0f})"})
+            continue
         if risk_usd > RISK_CAP:          # wide stop: the cap skips it, it is not resized
             skips = state.setdefault("skipped", [])
             if not any(s["date"] == D["d"][i] for s in skips):
@@ -220,6 +236,7 @@ def settle(D: dict, leg: dict, state: dict, today: str) -> list[dict]:
             "result": "win" if one > 0 else "loss",
             "resolution": leg["resolution"],
         })
+        dp[D["d"][i]] = round(dp.get(D["d"][i], 0.0) + one * leg["micros"], 2)
         if stop and sum(x["usd"] for x in state["ledger"] + fresh
                         if x["date"] == D["d"][i]) <= -stop:
             stood.add(D["d"][i])
@@ -252,6 +269,9 @@ def account_lines(state: dict) -> list[str]:
     # The best day is a fact already booked; the only lever left is more profit, so the
     # line states the profit the rule demands rather than a verdict the desk cannot change.
     need = state["largest_day"] / CONS if state["largest_day"] > 0 else 0.0
+    skips = state.get("skipped", [])
+    locked_n = sum(1 for s in skips if s.get("reason", "").startswith("day locked"))
+    capped_n = len(skips) - locked_n
     out = [
         f"- balance **${bal:,.2f}** ({profit:+,.2f} of the ${TARGET:,.0f} target, "
         f"{100*profit/TARGET:.0f}%)",
@@ -267,8 +287,10 @@ def account_lines(state: dict) -> list[str]:
                    f"${need - profit:,.0f} more, unless a smaller best day is booked")
     out += [
         f"- status: **{status}**, {len(state['ledger'])} settled trades",
-        f"- risk cap ${RISK_CAP:.0f}/trade (30% of the buffer): "
-        f"{len(state.get('skipped', []))} signals skipped, not resized",
+        f"- risk cap ${RISK_CAP:.0f}/trade (30% of the buffer): {capped_n} signals "
+        f"skipped, not resized",
+        f"- session lock ${DAY_LOCK:.0f}: {locked_n} orders stood down once the day had "
+        f"banked",
     ]
     return out
 
@@ -401,10 +423,16 @@ def selftest() -> None:
     assert o["for_session"] > D["d"][-1]
     assert o["risk_usd"] > 0 and o["stop"] < o["level"] < o["target"]
     assert abs(o["target"] - (o["level"] + 0.5 * (o["level"] - o["stop"]))) < 1e-6
-    print("selftest ok: one causal fill, order levels ordered, 0.5R target exact")
+    # the session lock: a leg entering a day the book has already banked books nothing
+    st2 = fresh_state(leg)
+    settle(D, leg, st2, today="2999-01-01", day_profit={"2026-08-21": DAY_LOCK})
+    assert st2["ledger"] == [], st2["ledger"]
+    assert st2["skipped"][0]["reason"].startswith("day locked"), st2["skipped"]
+    print("selftest ok: one causal fill, order levels ordered, 0.5R target exact, "
+          "a banked day refuses new entries and journals why")
 
 
-def run_leg(leg: dict, args, multi: bool) -> None:
+def run_leg(leg: dict, args, multi: bool, day_profit: dict | None = None) -> None:
     """Settle, print and journal one book leg. Each leg keeps its own ledger."""
     # Local, not args.csv: assigning into args made the second leg reuse the first
     # leg's bars, so GC and CL were priced off ES levels with CL's multiplier.
@@ -434,7 +462,7 @@ def run_leg(leg: dict, args, multi: bool) -> None:
         # The guard below refuses the current bar because it may still be forming. After the
         # 22:00 UTC futures close it is final, and waiting a day would hide tonight's session.
         today = (datetime.now(timezone.utc).date() + timedelta(days=1)).isoformat()
-    fresh = [] if args.order else settle(D, leg, state, today)
+    fresh = [] if args.order else settle(D, leg, state, today, day_profit)
     o = open_order(D, leg) if leg.get("entry") == "open" else order(D, leg)
     if multi:
         print(f"\n===== {leg['id']} ({leg['micros']} micro)\n")
@@ -443,6 +471,24 @@ def run_leg(leg: dict, args, multi: bool) -> None:
         sp.write_text(json.dumps(state, indent=2) + "\n")
         out.write_text(report(leg, state, o, []))
         print(f"\n  {leg['id']}: {len(fresh)} settled, wrote {sp.name} and {out.name}")
+
+
+def book_day_profit(book: list[dict]) -> dict[str, float]:
+    """Realised book profit per session, summed over every ledger on disk.
+
+    The retired two-micro leg is excluded: it is journalled as a negative control, not
+    traded, so its paper result must not bank a session for the lock.
+    """
+    out: dict[str, float] = {}
+    for leg in book:
+        if "aggr" in leg["id"]:
+            continue
+        p = DESK / f"live-ledger-{leg['id'].replace('=', '-')}.json"
+        if not p.exists():
+            continue
+        for t in json.loads(p.read_text()).get("ledger", []):
+            out[t["date"]] = round(out.get(t["date"], 0.0) + t["usd"], 2)
+    return out
 
 
 def main() -> None:
@@ -485,8 +531,13 @@ def main() -> None:
             raise SystemExit(2)
     if not args.all:
         legs = legs[:1]
+    # The lock is book-wide, so the open-entry legs settle first: they fill at the open and
+    # the resting limits wait for a dip. Without this order the lock could fire on the leg
+    # that traded first in the day and the journal would misreport the sequence.
+    legs.sort(key=lambda l: (0 if l.get("entry") == "open" else 1, l["id"]))
+    day_profit = book_day_profit(load_book(Path(args.book)))
     for leg in legs:
-        run_leg(leg, args, multi=len(legs) > 1)
+        run_leg(leg, args, multi=len(legs) > 1, day_profit=day_profit)
 
 
 if __name__ == "__main__":

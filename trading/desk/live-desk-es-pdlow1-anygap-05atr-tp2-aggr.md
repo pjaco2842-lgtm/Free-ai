@@ -28,6 +28,7 @@ If the market gaps below the level, the limit fills at the open (better price); 
 - this leg's best day $956 = no profit to measure it against yet (limit 50%; the rule is measured on the whole account)
 - status: **running**, 20 settled trades
 - risk cap $300/trade (30% of the buffer): 1 signals skipped, not resized
+- session lock $400: 0 orders stood down once the day had banked
 
 ## Pace against your rubric
 

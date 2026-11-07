@@ -28,6 +28,7 @@ This leg fires on every session whose open differs from the last close, so it al
 - eligible at 50% only once profit reaches **$1,269** (best day $634 ÷ 0.50) — $414 more, unless a smaller best day is booked
 - status: **running**, 38 settled trades
 - risk cap $300/trade (30% of the buffer): 0 signals skipped, not resized
+- session lock $400: 0 orders stood down once the day had banked
 
 ## Pace against your rubric
 
