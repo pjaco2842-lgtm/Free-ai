@@ -6,17 +6,17 @@ Book `cl-open-gap-05atr-tp3` — 1 micro, CL=F, market at the open with the gap,
 
 ## Next session
 
-**MARKET AT THE OPEN, 1 MCL, in the direction of the gap** — for the session of 2026-11-10 (rule built from the completed bar 2026-11-09).
+**MARKET AT THE OPEN, 1 MCL, in the direction of the gap** — for the session of 2026-11-11 (rule built from the completed bar 2026-11-10).
 
 | field | value |
 |---|---|
-| open above 87.52 | **BUY 1 MCL at market** |
-| open below 87.52 | **SELL 1 MCL at market** |
-| stop | long: entry − **2.38** pts · short: entry + **2.38** pts (0.5 × ATR 4.76) |
-| target | long: entry + **7.14** pts · short: entry − **7.14** pts (3.0R) |
-| risk if stopped | **$238** = 24% of the $1000 buffer |
+| open above 85.09 | **BUY 1 MCL at market** |
+| open below 85.09 | **SELL 1 MCL at market** |
+| stop | long: entry − **2.37** pts · short: entry + **2.37** pts (0.5 × ATR 4.73) |
+| target | long: entry + **7.10** pts · short: entry − **7.10** pts (3.0R) |
+| risk if stopped | **$237** = 24% of the $1000 buffer |
 | risk cap | $300 (30% of the buffer) — inside the cap |
-| buffer left after one stop | $762 |
+| buffer left after one stop | $763 |
 
 This leg fires on every session whose open differs from the last close, so it always trades. Its measured expectation is negative — it is here to guarantee forward data, not because it is expected to earn.
 
