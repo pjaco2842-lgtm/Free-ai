@@ -6,18 +6,18 @@ Book `es-pdlow1-anygap-05atr-tp2-aggr` — 2 micro, ES=F, limit_low-1, gap:any, 
 
 ## Next session
 
-**BUY LIMIT 2 MES @ 7566.00** — for the session of 2026-11-11 (levels from the completed bar 2026-11-10).
+**BUY LIMIT 2 MES @ 7547.50** — for the session of 2026-11-12 (levels from the completed bar 2026-11-11).
 
 | field | value |
 |---|---|
-| entry (buy limit) | **7566.00** |
+| entry (buy limit) | **7547.50** |
 | condition | no gap condition |
-| distance from last close | 7577.75 → -0.16% |
-| stop | **7496.18** (0.5 × ATR, ATR 139.64) |
-| target | **7705.64** (2.0R) |
-| risk if stopped | **$698** = 70% of the $1000 buffer |
+| distance from last close | 7609.50 → -0.81% |
+| stop | **7476.93** (0.5 × ATR, ATR 141.14) |
+| target | **7688.64** (2.0R) |
+| risk if stopped | **$706** = 71% of the $1000 buffer |
 | risk cap | $300 (30% of the buffer) — **this order would NOT be sent** |
-| buffer left after one stop | $302 |
+| buffer left after one stop | $294 |
 
 If the market gaps below the level, the limit fills at the open (better price); one tick of entry and exit slippage and $1.24 per side are charged on settlement.
 
