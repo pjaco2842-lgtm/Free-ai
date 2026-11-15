@@ -22,11 +22,11 @@ This leg fires on every session whose open differs from the last close, so it al
 
 ## Account
 
-- balance **$25,653.55** (+653.55 of the $1,250 target, 52%)
-- end-of-day floor $25,649.74 — room $4
-- this leg's best day $634 = 97% of its profit (limit 50%; the rule is measured on the whole account)
-- eligible at 50% only once profit reaches **$1,269** (best day $634 ÷ 0.50) — $615 more, unless a smaller best day is booked
-- status: **running**, 41 settled trades
+- balance **$25,641.07** (+641.07 of the $1,250 target, 51%)
+- end-of-day floor $25,649.74 — room $-9
+- this leg's best day $634 = 99% of its profit (limit 50%; the rule is measured on the whole account)
+- eligible at 50% only once profit reaches **$1,269** (best day $634 ÷ 0.50) — $628 more, unless a smaller best day is booked
+- status: **breached**, 42 settled trades
 - risk cap $300/trade (30% of the buffer): 0 signals skipped, not resized
 - session lock $400: 0 orders stood down once the day had banked
 
@@ -75,8 +75,9 @@ This leg fires on every session whose open differs from the last close, so it al
 | 2026-11-10 | — | $+34.52 | $+888.69 |
 | 2026-11-11 | — | $+5.52 | $+894.21 |
 | 2026-11-12 | — | $-240.66 | $+653.55 |
+| 2026-11-13 | — | $-12.48 | $+641.07 |
 
-- best session $+634.31, average $+15.94/session
+- best session $+634.31, average $+15.26/session
 - your rubric: **keep it, no changes** (>= $500 keep, >= $200 a day keep and tweak, below that rework)
 - stand-down at -$350/session: not hit
 
@@ -125,5 +126,6 @@ This leg fires on every session whose open differs from the last close, so it al
 | 2026-11-10 | 86.43 | 88.88 | 79.07 | $245 | win | $+34.52 |
 | 2026-11-11 | 86.43 | 84.07 | 93.53 | $236 | win | $+5.52 |
 | 2026-11-12 | 86.50 | 88.86 | 79.41 | $236 | loss | $-240.66 |
+| 2026-11-13 | 88.79 | 86.47 | 95.76 | $232 | loss | $-12.48 |
 
-41 trades, 54% win, $+15.94/trade. Break-even on this book is 25.0% — below that, more trades lose money.
+42 trades, 52% win, $+15.26/trade. Break-even on this book is 25.0% — below that, more trades lose money.
