@@ -6,15 +6,15 @@ Book `gc-pdlow1-anygap-05atr-tp2-obs` — 1 micro, GC=F, limit_low-1, gap:any, l
 
 ## Next session
 
-**BUY LIMIT 1 MGC @ 3879.10** — for the session of 2026-11-16 (levels from the completed bar 2026-11-13).
+**BUY LIMIT 1 MGC @ 3835.20** — for the session of 2026-11-17 (levels from the completed bar 2026-11-16).
 
 | field | value |
 |---|---|
-| entry (buy limit) | **3879.10** |
+| entry (buy limit) | **3835.20** |
 | condition | no gap condition |
-| distance from last close | 3891.30 → -0.31% |
-| stop | **3830.29** (0.5 × ATR, ATR 97.61) |
-| target | **3976.71** (2.0R) |
+| distance from last close | 3888.00 → -1.36% |
+| stop | **3786.38** (0.5 × ATR, ATR 97.64) |
+| target | **3932.84** (2.0R) |
 | risk if stopped | **$488** = 49% of the $1000 buffer |
 | risk cap | $300 (30% of the buffer) — **this order would NOT be sent** |
 | buffer left after one stop | $512 |
