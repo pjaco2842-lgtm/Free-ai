@@ -6,18 +6,18 @@ Book `gc-pdlow1-anygap-05atr-tp2-obs` — 1 micro, GC=F, limit_low-1, gap:any, l
 
 ## Next session
 
-**BUY LIMIT 1 MGC @ 3835.20** — for the session of 2026-11-17 (levels from the completed bar 2026-11-16).
+**BUY LIMIT 1 MGC @ 3845.90** — for the session of 2026-11-18 (levels from the completed bar 2026-11-17).
 
 | field | value |
 |---|---|
-| entry (buy limit) | **3835.20** |
+| entry (buy limit) | **3845.90** |
 | condition | no gap condition |
-| distance from last close | 3888.00 → -1.36% |
-| stop | **3786.38** (0.5 × ATR, ATR 97.64) |
-| target | **3932.84** (2.0R) |
-| risk if stopped | **$488** = 49% of the $1000 buffer |
+| distance from last close | 3861.30 → -0.40% |
+| stop | **3797.67** (0.5 × ATR, ATR 96.46) |
+| target | **3942.36** (2.0R) |
+| risk if stopped | **$482** = 48% of the $1000 buffer |
 | risk cap | $300 (30% of the buffer) — **this order would NOT be sent** |
-| buffer left after one stop | $512 |
+| buffer left after one stop | $518 |
 
 If the market gaps below the level, the limit fills at the open (better price); one tick of entry and exit slippage and $1.24 per side are charged on settlement.
 
@@ -27,7 +27,7 @@ If the market gaps below the level, the limit fills at the open (better price); 
 - end-of-day floor $24,000.00 — room $597
 - this leg's best day $855 = no profit to measure it against yet (limit 50%; the rule is measured on the whole account)
 - status: **running**, 20 settled trades
-- risk cap $300/trade (30% of the buffer): 4 signals skipped, not resized
+- risk cap $300/trade (30% of the buffer): 5 signals skipped, not resized
 - session lock $400: 0 orders stood down once the day had banked
 
 ## Pace against your rubric
