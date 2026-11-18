@@ -6,18 +6,18 @@ Book `es-pdlow1-anygap-05atr-tp2` — 1 micro, ES=F, limit_low-1, gap:any, long 
 
 ## Next session
 
-**BUY LIMIT 1 MES @ 7395.25** — for the session of 2026-11-18 (levels from the completed bar 2026-11-17).
+**BUY LIMIT 1 MES @ 7362.25** — for the session of 2026-11-19 (levels from the completed bar 2026-11-18).
 
 | field | value |
 |---|---|
-| entry (buy limit) | **7395.25** |
+| entry (buy limit) | **7362.25** |
 | condition | no gap condition |
-| distance from last close | 7439.25 → -0.59% |
-| stop | **7315.10** (0.5 × ATR, ATR 160.30) |
-| target | **7555.55** (2.0R) |
-| risk if stopped | **$401** = 40% of the $1000 buffer |
+| distance from last close | 7373.25 → -0.15% |
+| stop | **7278.91** (0.5 × ATR, ATR 166.68) |
+| target | **7528.93** (2.0R) |
+| risk if stopped | **$417** = 42% of the $1000 buffer |
 | risk cap | $300 (30% of the buffer) — **this order would NOT be sent** |
-| buffer left after one stop | $599 |
+| buffer left after one stop | $583 |
 
 If the market gaps below the level, the limit fills at the open (better price); one tick of entry and exit slippage and $1.24 per side are charged on settlement.
 
@@ -27,7 +27,7 @@ If the market gaps below the level, the limit fills at the open (better price); 
 - end-of-day floor $24,107.79 — room $723
 - this leg's best day $478 = no profit to measure it against yet (limit 50%; the rule is measured on the whole account)
 - status: **running**, 20 settled trades
-- risk cap $300/trade (30% of the buffer): 2 signals skipped, not resized
+- risk cap $300/trade (30% of the buffer): 3 signals skipped, not resized
 - session lock $400: 0 orders stood down once the day had banked
 
 ## Pace against your rubric
