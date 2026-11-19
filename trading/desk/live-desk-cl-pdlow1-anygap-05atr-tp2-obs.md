@@ -6,27 +6,27 @@ Book `cl-pdlow1-anygap-05atr-tp2-obs` — 1 micro, CL=F, limit_low-1, gap:any, l
 
 ## Next session
 
-**BUY LIMIT 1 MCL @ 82.39** — for the session of 2026-11-19 (levels from the completed bar 2026-11-18).
+**BUY LIMIT 1 MCL @ 81.66** — for the session of 2026-11-20 (levels from the completed bar 2026-11-19).
 
 | field | value |
 |---|---|
-| entry (buy limit) | **82.39** |
+| entry (buy limit) | **81.66** |
 | condition | no gap condition |
-| distance from last close | 84.27 → -2.23% |
-| stop | **80.09** (0.5 × ATR, ATR 4.60) |
-| target | **86.99** (2.0R) |
-| risk if stopped | **$230** = 23% of the $1000 buffer |
+| distance from last close | 83.15 → -1.79% |
+| stop | **79.39** (0.5 × ATR, ATR 4.54) |
+| target | **86.20** (2.0R) |
+| risk if stopped | **$227** = 23% of the $1000 buffer |
 | risk cap | $300 (30% of the buffer) — inside the cap |
-| buffer left after one stop | $770 |
+| buffer left after one stop | $773 |
 
 If the market gaps below the level, the limit fills at the open (better price); one tick of entry and exit slippage and $1.24 per side are charged on settlement.
 
 ## Account
 
-- balance **$26,193.42** (+1,193.42 of the $1,250 target, 95%)
-- end-of-day floor $25,311.38 — room $882
-- this leg's best day $388 = 32% of its profit (limit 50%; the rule is measured on the whole account)
-- status: **running**, 23 settled trades
+- balance **$26,046.94** (+1,046.94 of the $1,250 target, 84%)
+- end-of-day floor $25,311.38 — room $736
+- this leg's best day $388 = 37% of its profit (limit 50%; the rule is measured on the whole account)
+- status: **running**, 24 settled trades
 - risk cap $300/trade (30% of the buffer): 0 signals skipped, not resized
 - session lock $400: 0 orders stood down once the day had banked
 
@@ -57,8 +57,9 @@ If the market gaps below the level, the limit fills at the open (better price); 
 | 2026-11-12 | — | $+288.52 | $+1,311.38 |
 | 2026-11-16 | — | $-212.48 | $+1,098.90 |
 | 2026-11-17 | — | $+94.52 | $+1,193.42 |
+| 2026-11-18 | — | $-146.48 | $+1,046.94 |
 
-- best session $+387.59, average $+51.89/session
+- best session $+387.59, average $+43.62/session
 - your rubric: **rework it** (>= $500 keep, >= $200 a day keep and tweak, below that rework)
 - stand-down at -$350/session: not hit
 
@@ -89,5 +90,6 @@ If the market gaps below the level, the limit fills at the open (better price); 
 | 2026-11-12 | 85.81 | 83.45 | 90.53 | $236 | win | $+288.52 |
 | 2026-11-16 | 87.80 | 85.52 | 92.37 | $228 | loss | $-212.48 |
 | 2026-11-17 | 85.02 | 82.70 | 89.67 | $232 | win | $+94.52 |
+| 2026-11-18 | 84.68 | 82.40 | 89.25 | $228 | loss | $-146.48 |
 
-23 trades, 65% win, $+51.89/trade. Break-even on this book is 33.3% — below that, more trades lose money.
+24 trades, 62% win, $+43.62/trade. Break-even on this book is 33.3% — below that, more trades lose money.
