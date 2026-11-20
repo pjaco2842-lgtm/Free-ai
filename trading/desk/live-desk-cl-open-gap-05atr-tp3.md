@@ -6,27 +6,27 @@ Book `cl-open-gap-05atr-tp3` — 1 micro, CL=F, market at the open with the gap,
 
 ## Next session
 
-**MARKET AT THE OPEN, 1 MCL, in the direction of the gap** — for the session of 2026-11-20 (rule built from the completed bar 2026-11-19).
+**MARKET AT THE OPEN, 1 MCL, in the direction of the gap** — for the session of 2026-11-23 (rule built from the completed bar 2026-11-20).
 
 | field | value |
 |---|---|
-| open above 83.15 | **BUY 1 MCL at market** |
-| open below 83.15 | **SELL 1 MCL at market** |
-| stop | long: entry − **2.27** pts · short: entry + **2.27** pts (0.5 × ATR 4.54) |
-| target | long: entry + **6.81** pts · short: entry − **6.81** pts (3.0R) |
-| risk if stopped | **$227** = 23% of the $1000 buffer |
+| open above 82.24 | **BUY 1 MCL at market** |
+| open below 82.24 | **SELL 1 MCL at market** |
+| stop | long: entry − **2.06** pts · short: entry + **2.06** pts (0.5 × ATR 4.11) |
+| target | long: entry + **6.17** pts · short: entry − **6.17** pts (3.0R) |
+| risk if stopped | **$206** = 21% of the $1000 buffer |
 | risk cap | $300 (30% of the buffer) — inside the cap |
-| buffer left after one stop | $773 |
+| buffer left after one stop | $794 |
 
 This leg fires on every session whose open differs from the last close, so it always trades. Its measured expectation is negative — it is here to guarantee forward data, not because it is expected to earn.
 
 ## Account
 
-- balance **$25,563.17** (+563.17 of the $1,250 target, 45%)
-- end-of-day floor $25,649.74 — room $-87
-- this leg's best day $634 = 113% of its profit (limit 50%; the rule is measured on the whole account)
-- eligible at 50% only once profit reaches **$1,269** (best day $634 ÷ 0.50) — $705 more, unless a smaller best day is booked
-- status: **breached**, 45 settled trades
+- balance **$25,519.69** (+519.69 of the $1,250 target, 42%)
+- end-of-day floor $25,649.74 — room $-130
+- this leg's best day $634 = 122% of its profit (limit 50%; the rule is measured on the whole account)
+- eligible at 50% only once profit reaches **$1,269** (best day $634 ÷ 0.50) — $749 more, unless a smaller best day is booked
+- status: **breached**, 46 settled trades
 - risk cap $300/trade (30% of the buffer): 0 signals skipped, not resized
 - session lock $400: 0 orders stood down once the day had banked
 
@@ -79,8 +79,9 @@ This leg fires on every session whose open differs from the last close, so it al
 | 2026-11-16 | — | $-232.94 | $+408.13 |
 | 2026-11-17 | — | $-89.48 | $+318.65 |
 | 2026-11-18 | — | $+244.52 | $+563.17 |
+| 2026-11-19 | — | $-43.48 | $+519.69 |
 
-- best session $+634.31, average $+12.51/session
+- best session $+634.31, average $+11.30/session
 - your rubric: **keep it, no changes** (>= $500 keep, >= $200 a day keep and tweak, below that rework)
 - stand-down at -$350/session: not hit
 
@@ -133,5 +134,6 @@ This leg fires on every session whose open differs from the last close, so it al
 | 2026-11-16 | 88.65 | 86.37 | 95.50 | $228 | loss | $-232.94 |
 | 2026-11-17 | 85.16 | 87.48 | 78.19 | $232 | loss | $-89.48 |
 | 2026-11-18 | 85.75 | 88.03 | 78.90 | $228 | win | $+244.52 |
+| 2026-11-19 | 82.82 | 85.13 | 75.88 | $231 | loss | $-43.48 |
 
-45 trades, 51% win, $+12.51/trade. Break-even on this book is 25.0% — below that, more trades lose money.
+46 trades, 50% win, $+11.30/trade. Break-even on this book is 25.0% — below that, more trades lose money.
