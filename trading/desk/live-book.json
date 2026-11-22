@@ -65,11 +65,19 @@
       "why": "RESEARCH-LOG (t) and (v). The legacy sweep still reproduces them on the same bars: 84.8% win and a 96% pass rate, from the same rule, purely by resolution.",
       "size_survival_by_78pct": "the 1 micro 76% / 2 micro 65% survival table was built on the retracted win rate and is withdrawn"
     },
-    "size_rule": "One micro. Do not escalate on win-rate grounds: two micros doubles a $175 stop to $350, which is 35% of the buffer per trade, and nothing measured reaches the win rate that would justify it.",
+    "size_rule": "One micro. The stop is 0.5 ATR narrowed to a $250 fixed ceiling (50 ES points), so the dollars at risk do not grow with volatility and no signal is refused for being wide. 2R target = $500. Two micros would put $500 at risk on one trade, which is twice what this leg has measured.",
     "why_this_one": "It is the highest measured pass rate of any configuration whose order type can actually be placed (59%), it trades 0.18 times a session so it will actually fire, and a 2R target only needs 30.8% wins to break even rather than the 67.6% that 0.5R demanded.",
     "what_is_not_proven": "No daily-bar rule in this repo has a statistically separable edge once 3,584 configurations are corrected for and index drift is removed. The best surviving line earns $2.49 per session at one micro. This book is the best of a weak field, not a known winner.",
     "kill_rule": "Two consecutive full stops (-$350) or -$700 in a session: stop for the day and log it. A breach of the trailing floor ends the attempt, not the research.",
-    "contract": "MES"
+    "contract": "MES",
+    "risk_cap": 300,
+    "book_review_2026_11_22": {
+      "measured": "risknorm.py, 2023-01-01 to 2026-11-20, one micro, causal resolution, session lock and 50% rule. Alone: 421 trades, 55% win, +$27.91/trade, pass 64.6%, breach 18.7%, worst day -$301, max DD -$1,692, 63 median sessions. Drift null (weekday-matched random longs, 100 draws): alpha +$28.16/trade, t +3.90.",
+      "why": "It is the only leg with a positive forward record, the only one whose edge beats its own random-entry null, and the only configuration that improves BOTH the pass rate and the breach rate over the book it replaced. The $300 cap stays exactly as adopted in (xix); this leg is simply the one allowed to use it.",
+      "one_leg": "Every two-leg book measured on the same walk is worse than this leg alone: ES+GC 46.2% pass / 39.3% breach, ES+NQ 31.4% / 38.2%, ES+CL+GC 57.7% / 32.4%. The reason is the 50% consistency add-on: two correlated dip-buyers can bank $800-$1,100 in one session, which needs $1,600-$2,200 of profit to be eligible. Single-leg books had a 0% consistency failure rate."
+    },
+    "max_stop_usd": 250,
+    "measurement_2026_11_22": "risknorm.py, 2023+ one micro, causal fills, $400 lock, 50% rule. skip $300: 421 trades, 64.6% pass, 18.7% breach, +$27.91/trade. fixed $250 ceiling: 453 trades, 63.6% pass, 19.7% breach, +$30.63/trade, worst day -$301, max DD -$1,754, median 63 sessions. The two are within noise of each other; the fixed ceiling is taken because it always trades -- on 2026-11-22 the skip policy refused a $432 order for the seventh session in a row."
   },
   {
     "id": "es-pdlow1-anygap-05atr-tp2-aggr",
@@ -85,7 +93,7 @@
     "resolution": "proven",
     "status": "retired-negative",
     "do_not_trade": true,
-    "variant": "aggressive \u2014 identical rule, twice the size",
+    "variant": "aggressive — identical rule, twice the size",
     "start": "2026-11-01",
     "first_session": "2026-11-02",
     "daily_targets": [
@@ -118,7 +126,9 @@
     },
     "size_rule": "Two micros, kept only as a measured negative control: one stop is $472 = 47% of the buffer, and 18.2% of attempts are blown against 13.5% passed. Do not trade this leg. It is journalled so the ledger can show why more size is not the lever.",
     "kill_rule": "One stop -$472; two stops in a session (-$944) ends the attempt.",
-    "contract": "MES"
+    "contract": "MES",
+    "active": false,
+    "retired_note": "2026-11-22: marked active:false. It was already status retired-negative / do_not_trade, but the runner filtered on active alone, so the two-micro leg was still being settled (20 rows, -$338.66, and 3 forward rows at +$651.72 that were excluded from the book total by id). A control leg must not be able to enter; the ledger is kept as the record."
   },
   {
     "id": "gc-pdlow1-anygap-05atr-tp2-obs",
@@ -132,7 +142,7 @@
     "dir": "long",
     "micros": 1,
     "resolution": "proven",
-    "status": "observation-negative",
+    "status": "retired-observation",
     "do_not_trade": true,
     "start": "2026-11-01",
     "first_session": "2026-11-02",
@@ -159,7 +169,9 @@
     },
     "size_rule": "One micro. Two would be 43-75% of the buffer per stop.",
     "kill_rule": "Two stops in a session ends it for the day.",
-    "contract": "MGC"
+    "contract": "MGC",
+    "active": false,
+    "retired": "2026-11-22: 0 fills in 18 forward sessions, 7 of them refused by the $300 cap (risk $416-$514). A leg that cannot fill is not a leg. Measured in risknorm.py it is not broken -- a fixed $250 stop (narrowing the stop instead of skipping) gives 439 trades, +$34.45/trade, 57.6% pass, 19.9% breach, alpha t +4.82 -- but adding it to ES drops the book from 64.6% pass / 18.7% breach to 46.2% / 39.3% because the pair fails the 50% rule. Kept as a measured observation, not traded."
   },
   {
     "id": "cl-pdlow1-anygap-05atr-tp2-obs",
@@ -173,7 +185,7 @@
     "dir": "long",
     "micros": 1,
     "resolution": "proven",
-    "status": "observation-negative",
+    "status": "retired-negative",
     "do_not_trade": true,
     "start": "2026-11-01",
     "first_session": "2026-11-02",
@@ -200,7 +212,9 @@
     },
     "size_rule": "One micro. Two would be 43-75% of the buffer per stop.",
     "kill_rule": "Two stops in a session ends it for the day.",
-    "contract": "MCL"
+    "contract": "MCL",
+    "active": false,
+    "retired": "2026-11-22: forward 11 trades, 5 wins, -$187.21, and the drift null does not clear -- +$1.49/trade against a -$5.42 null is alpha +$6.91 at t 1.05, under the bar. It also cannot carry the account on its own (16.1% pass, 35.6% breach) and it adds correlated loss days to a book that is limited by consistency, not by profit. Retired rather than resized; ledger kept."
   },
   {
     "id": "cl-open-gap-05atr-tp3",

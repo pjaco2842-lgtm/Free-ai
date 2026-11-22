@@ -13,11 +13,11 @@ Book `es-pdlow1-anygap-05atr-tp2` — 1 micro, ES=F, limit_low-1, gap:any, long 
 | entry (buy limit) | **7123.75** |
 | condition | no gap condition |
 | distance from last close | 7128.75 → -0.07% |
-| stop | **7037.45** (0.5 × ATR, ATR 172.61) |
-| target | **7296.36** (2.0R) |
-| risk if stopped | **$432** = 43% of the $1000 buffer |
-| risk cap | $300 (30% of the buffer) — **this order would NOT be sent** |
-| buffer left after one stop | $568 |
+| stop | **7073.75** (0.5 × ATR, narrowed to the $250 fixed ceiling, ATR 172.61) |
+| target | **7223.75** (2.0R) |
+| risk if stopped | **$250** = 25% of the $1000 buffer |
+| risk cap | $300 — inside the cap |
+| buffer left after one stop | $750 |
 
 If the market gaps below the level, the limit fills at the open (better price); one tick of entry and exit slippage and $1.24 per side are charged on settlement.
 
@@ -27,7 +27,7 @@ If the market gaps below the level, the limit fills at the open (better price); 
 - end-of-day floor $24,107.79 — room $723
 - this leg's best day $478 = no profit to measure it against yet (limit 50%; the rule is measured on the whole account)
 - status: **running**, 20 settled trades
-- risk cap $300/trade (30% of the buffer): 6 signals skipped, not resized
+- risk cap $300/trade, and a fixed $250 stop ceiling that narrows the stop instead of skipping the trade: 6 signals skipped, not resized
 - session lock $400: 0 orders stood down once the day had banked
 
 ## Pace against your rubric

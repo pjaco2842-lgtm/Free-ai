@@ -1974,3 +1974,102 @@ eight. The only leg with a positive forward record cannot get an order through t
 all, while the cap was built to trim GC's fat stops (36% of its signals against 6% of ES's).
 The book now trades one micro of CL and nothing else on most days. That is the binding
 constraint, and it is the next thing measured, not guessed.
+
+## 2026-11-22 (xxiii) — the book was the problem: one leg, fixed dollars
+
+The ask was to fix a losing month and change what the measurement supports. The forward
+record is 27 trades, 11 wins, **-$357.08**, and (xxii) left the binding constraint written
+down but unmeasured: the $300 cap was standing down ES — the only leg with a positive
+forward record — on six consecutive sessions, while the legs the cap was built to restrain
+were the ones still entering. Gold had **no fills in eighteen sessions** (seven refused by
+the cap at $416-$514). Two things were also wrong mechanically, and both are fixed here.
+
+**Two live defects, found while auditing the ledgers.** The two-micro leg marked
+`retired-negative` / `do_not_trade` was still being settled every session: the runner
+filtered on `active` alone, and that leg never had `active: false`. Its ledger held 20 rows
+(-$338.66) and it was one flag away from entering. Separately, deciding "one ledger per leg"
+on `len(active_legs) > 1` meant that when the book shrank to one leg the runner fell back to
+the shared single-leg ledger and replayed every bar since 2016 into it. Both are fixed; the
+retired legs now carry `active: false` and the per-leg ledger is decided on the book, not on
+what survived retirement.
+
+**The measurement (`risknorm.py`).** Everything below is one micro, the causal fill engine,
+the $400 session lock, the end-of-day trailing floor, the $25,100 lock and the 50%
+consistency add-on, walked from every 2023+ starting session. The pre-registered bar: adopt a
+change only if the pass rate improves without the breach rate getting worse, and only if the
+leg clears its drift null. Two policies were compared per leg — `skip` (the current cap) and
+`fixed` (keep the signal, narrow the stop to a dollar ceiling, target still 2R of the risk
+actually taken).
+
+| leg | policy | trades | $/trade | pass% | breach% |
+|---|---|---:|---:|---:|---:|
+| ES prior-low | skip $300 | 421 | +$27.91 | **64.6%** | **18.7%** |
+| ES prior-low | fixed $250 | 453 | +$30.63 | 63.6% | 19.7% |
+| ES prior-low | fixed $300 | 453 | +$30.75 | 59.0% | 25.6% |
+| GC prior-low | skip $300 | 279 | +$10.29 | 12.2% | 32.1% |
+| GC prior-low | **fixed $250** | 439 | +$34.45 | **57.6%** | 19.9% |
+| CL prior-low | skip $250 | 412 | +$1.49 | 16.1% | 35.6% |
+| NQ prior-low | skip $300 | 181 | +$42.27 | 46.3% | 3.6% |
+| NQ prior-low | fixed $250 | 436 | +$49.99 | 71.6% | 28.0% |
+
+Drift null (weekday-matched random long entries at the open, same stop and target, 100
+draws): **ES alpha +$28.16/trade, t +3.90**; **GC alpha +$39.05, t +4.82**; CL **+$6.91,
+t +1.05** — fails; NQ **+$35.49, t +1.85** at the skip-$300 policy — fails the bar. ES's
+prior-low dip is the first thing in this repo that separates from its own null at t > 3, and
+it is the only leg the forward record agrees with.
+
+**The finding that decided the book: the constraints were in the wrong order.** Books of two
+and three legs reach the target *more often* than one leg — and are disqualified by the 50%
+consistency add-on when they do:
+
+| book | trades | net | worst day | max DD | reached% | pass% | of runs reaching target, failed 50% | breach% |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| ES + CL + GC (the book as it stood) | 1126 | +$15,102 | -$505 | -$2,174 | 62.7% | 57.7% | 8% | 32.4% |
+| ES + GC (fixed $250) | 860 | +$26,158 | -$550 | -$2,841 | 60.1% | 46.2% | 23% | 39.3% |
+| ES + NQ (fixed $250) | 857 | +$29,570 | -$555 | -$3,144 | 61.4% | 31.4% | **49%** | 38.2% |
+| ES + CL + GC + NQ (fixed) | 1296 | +$36,588 | -$803 | -$4,282 | 58.6% | 31.3% | **47%** | 41.3% |
+| **ES alone, skip $300** | 421 | +$11,749 | **-$301** | **-$1,692** | 64.6% | **64.6%** | **0%** | **18.7%** |
+| NQ alone, fixed $250 | 436 | +$21,794 | -$253 | -$2,145 | 71.6% | 71.6% | 0% | 28.0% |
+
+Every single-leg book has a **0%** consistency failure rate: one trade a session, a 2R win
+is $500-$576, which is under the $625 that a $1,250 target allows in one day. Two correlated
+dip-buyers can bank $800-$1,100 in the same session, and that day then demands $1,600-$2,200
+of profit to be eligible. More legs did not add edge — they added days the account cannot
+digest. That is the same lesson as 11-02's +$634 gap day, generalised.
+
+Also measured and **rejected**: stop-entry families on ES and CL (`nr_break-2` = 34% and 26%
+win, -$49 and -$55 a trade, 90-95% breach — a prior-day-low *stop* entry buys the top of the
+range); NQ at fixed $250 despite the 71.6% pass, because its null t is 1.85 and its breach is
+28.0% against ES's 18.7%; and a cooldown after a big day (already rejected in (xxi)).
+
+**Adopted.**
+
+1. **One traded leg: ES prior-low, 0.5 ATR stop narrowed to a $250 fixed ceiling, 2R target,
+   one micro, one trade a session.** The `max_stop_usd` field is new in the runner: it
+   narrows the stop instead of skipping the signal, so the dollars at risk do not grow with
+   volatility and an order is never refused for being wide. Tonight's order is the proof:
+   the skip policy refused $432 (the seventh refusal in a row), the fixed ceiling sends the
+   same trade at **$250, stop 7073.75, target 7223.75**.
+2. **CL prior-low retired** (`active: false`): forward -$187.21, alpha t 1.05, and it cannot
+   carry the account (16.1% pass, 35.6% breach) — it was correlated loss, not diversification.
+3. **GC prior-low retired to observation** (`active: false`): zero fills in eighteen sessions.
+   Its fixed-$250 record (57.6% pass, t 4.82) is recorded in the book; it is not traded
+   because adding it to ES moves the book to 46.2% pass / 39.3% breach.
+4. **The two-micro control leg switched off** (`active: false`) — it was still settling.
+5. The **$300 cap, the $400 session lock and 50% consistency stay exactly as adopted**. On a
+   single-leg book the lock changes nothing (measured: identical at none/200/300/400/600,
+   because the leg takes at most one trade a session) and is kept as a guard against a leg
+   being added back.
+
+**Held for next week, not adopted today.** An ES 200-day trend filter (long only while the
+prior close is above the 200-day average) measured 67.8% pass / **12.0%** breach on 402
+trades. That is better on both axes, but it is one point in a 3-filter grid, and stacking it
+on tonight's change would make this week's forward data unattributable. It is pre-registered
+here as the next single change, to be adopted only if it holds on its own sample again.
+
+**What to watch this week.** The desk should trade about 0.45 times a session and every order
+should show a $250 stop and a $500 target; the skipped counter should stay at 0; a forward
+trade is a win if it makes $500 and a loss if it loses $250. The record continues from 27
+trades / -$357.08 at these settings — nothing about the past is restated. If the forward
+expectancy after ten trades is worse than the measured +$30.63, the trigger is written: cut
+the ceiling before touching the entry.

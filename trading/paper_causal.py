@@ -61,6 +61,26 @@ def load_book(path: Path) -> list[dict]:
     return json.loads(path.read_text())
 
 
+def leg_cap(leg: dict) -> float:
+    """The dollars this leg may risk on one trade (the book's cap unless it says otherwise)."""
+    return float(leg.get("risk_cap", RISK_CAP))
+
+
+def stop_points(leg: dict, atr: float, pv: float) -> float:
+    """The stop in points: 0.5 ATR, narrowed if the leg carries a fixed-dollar ceiling.
+
+    Skipping a wide-stop trade is not the only way to keep the dollars fixed; a narrower
+    stop keeps the trade and fixes the risk. Measured in risknorm.py: for gold the fixed
+    stop was the difference between no fills in eighteen forward sessions and a 57.6% pass
+    rate, and for ES the flat cap had refused the order on six consecutive sessions.
+    """
+    pts = leg["stop"] * atr
+    ceil_usd = leg.get("max_stop_usd")
+    if ceil_usd:
+        pts = min(pts, float(ceil_usd) / (pv * leg["micros"]))
+    return pts
+
+
 def next_session(last: str) -> str:
     d = datetime.strptime(last, "%Y-%m-%d").date() + timedelta(days=1)
     while d.weekday() >= 5:
@@ -84,7 +104,7 @@ def order(D: dict, leg: dict) -> dict:
     atr = D["atr"][i]
     level = min(D["l"][i - leg["n"] + 1:i + 1])
     close = D["c"][i]
-    risk_pts = leg["stop"] * atr
+    risk_pts = stop_points(leg, atr, pv)
     m = E.EXITS[leg["exit"]]
     px_risk = risk_pts * pv * leg["micros"]
     return {
@@ -101,10 +121,12 @@ def order(D: dict, leg: dict) -> dict:
         "target": level + m * risk_pts,
         "risk_usd": px_risk,
         "risk_share": 100.0 * px_risk / MAX_LOSS,
-        "cap_usd": RISK_CAP,
-        "capped": px_risk > RISK_CAP,
+        "cap_usd": leg_cap(leg),
+        "capped": px_risk > leg_cap(leg),
         "buffer_after_stop": MAX_LOSS - px_risk,
         "tick": tick,
+        "stop_rule": (f"{leg['stop']} × ATR, narrowed to the ${leg['max_stop_usd']:.0f} "
+                      f"fixed ceiling" if leg.get("max_stop_usd") else f"{leg['stop']} × ATR"),
     }
 
 
@@ -116,11 +138,11 @@ def order_lines(o: dict, leg: dict) -> list[str]:
         f"| entry (buy limit) | **{o['level']:.2f}** |",
         f"| condition | {o['gap_condition']} |",
         f"| distance from last close | {o['last_close']:.2f} → {o['distance_pct']:+.2f}% |",
-        f"| stop | **{o['stop']:.2f}** ({leg['stop']} × ATR, ATR {o['atr']:.2f}) |",
+        f"| stop | **{o['stop']:.2f}** ({o['stop_rule']}, ATR {o['atr']:.2f}) |",
         f"| target | **{o['target']:.2f}** ({E.EXITS[leg['exit']]}R) |",
         f"| risk if stopped | **${o['risk_usd']:.0f}** = {o['risk_share']:.0f}% of the "
         f"${MAX_LOSS:.0f} buffer |",
-        f"| risk cap | ${o['cap_usd']:.0f} (30% of the buffer) — "
+        f"| risk cap | ${o['cap_usd']:.0f} — "
         + ("**this order would NOT be sent**" if o["capped"] else "inside the cap") + " |",
         f"| buffer left after one stop | ${o['buffer_after_stop']:.0f} |", "",
         "If the market gaps below the level, the limit fills at the open (better price); "
@@ -133,14 +155,14 @@ def open_order(D: dict, leg: dict) -> dict:
     i = D["n"] - 1
     pv = E.SPECS[leg["symbol"]]["mult"]
     atr = D["atr"][i]
-    risk_pts = leg["stop"] * atr
+    risk_pts = stop_points(leg, atr, pv)
     m = E.EXITS[leg["exit"]]
     px_risk = risk_pts * pv * leg["micros"]
     return {"for_session": next_session(D["d"][-1]), "from_bar": D["d"][-1],
             "last_close": D["c"][i], "atr": atr, "stop_pts": risk_pts,
             "target_pts": m * risk_pts, "risk_usd": px_risk,
-            "risk_share": 100.0 * px_risk / MAX_LOSS, "cap_usd": RISK_CAP,
-            "capped": px_risk > RISK_CAP,
+            "risk_share": 100.0 * px_risk / MAX_LOSS, "cap_usd": leg_cap(leg),
+            "capped": px_risk > leg_cap(leg),
             "buffer_after_stop": MAX_LOSS - px_risk, "tick": E.SPECS[leg["symbol"]]["tick"],
             "contract": leg.get("contract", "MES"), "micros": leg["micros"]}
 
@@ -160,7 +182,7 @@ def open_order_lines(o: dict, leg: dict) -> list[str]:
         f"({E.EXITS[leg['exit']]}R) |",
         f"| risk if stopped | **${o['risk_usd']:.0f}** = {o['risk_share']:.0f}% of the "
         f"${MAX_LOSS:.0f} buffer |",
-        f"| risk cap | ${o['cap_usd']:.0f} (30% of the buffer) — "
+        f"| risk cap | ${o['cap_usd']:.0f} — "
         + ("**this order would NOT be sent**" if o["capped"] else "inside the cap") + " |",
         f"| buffer left after one stop | ${o['buffer_after_stop']:.0f} |", "",
         "This leg fires on every session whose open differs from the last close, so it always "
@@ -203,7 +225,8 @@ def settle(D: dict, leg: dict, state: dict, today: str,
             entry, kind = sig
             side = 1
         atr = D["atr"][i - 1]
-        risk_usd = leg["stop"] * atr * pv * leg["micros"]
+        risk_pts = stop_points(leg, atr, pv)
+        risk_usd = risk_pts * pv * leg["micros"]
         banked = dp.get(D["d"][i], 0.0)
         if DAY_LOCK and banked >= DAY_LOCK:   # the session is made; no new risk in it
             skips = state.setdefault("skipped", [])
@@ -212,13 +235,13 @@ def settle(D: dict, leg: dict, state: dict, today: str,
                               "reason": f"day locked: book already +${banked:.0f} "
                                         f"(lock ${DAY_LOCK:.0f})"})
             continue
-        if risk_usd > RISK_CAP:          # wide stop: the cap skips it, it is not resized
+        if risk_usd > leg_cap(leg):      # wide stop: the cap skips it, it is not resized
             skips = state.setdefault("skipped", [])
             if not any(s["date"] == D["d"][i] for s in skips):
                 skips.append({"date": D["d"][i], "risk": round(risk_usd, 2),
-                              "reason": f"stop ${risk_usd:.0f} > cap ${RISK_CAP:.0f}"})
+                              "reason": f"stop ${risk_usd:.0f} > cap ${leg_cap(leg):.0f}"})
             continue
-        one = E.trade_pnl(D, i, entry, kind, leg["stop"], E.EXITS[leg["exit"]],
+        one = E.trade_pnl(D, i, entry, kind, risk_pts / atr, E.EXITS[leg["exit"]],
                           pv, tick, leg["resolution"], side=side)
         if one is None:
             continue
@@ -229,9 +252,9 @@ def settle(D: dict, leg: dict, state: dict, today: str,
                       else f"buy limit {leg['micros']} @ {entry:.2f}"),
             "entry": round(entry, 2), "micros": leg["micros"],
             "side": "long" if side > 0 else "short",
-            "stop": round(entry - side * leg["stop"] * atr, 2),
-            "target": round(entry + side * E.EXITS[leg["exit"]] * leg["stop"] * atr, 2),
-            "risk": round(leg["stop"] * atr * pv * leg["micros"], 2),
+            "stop": round(entry - side * risk_pts, 2),
+            "target": round(entry + side * E.EXITS[leg["exit"]] * risk_pts, 2),
+            "risk": round(risk_usd, 2),
             "usd": round(one * leg["micros"], 2),
             "result": "win" if one > 0 else "loss",
             "resolution": leg["resolution"],
@@ -259,7 +282,7 @@ def settle(D: dict, leg: dict, state: dict, today: str,
     return fresh
 
 
-def account_lines(state: dict) -> list[str]:
+def account_lines(state: dict, leg: dict) -> list[str]:
     bal = START + state["equity"]
     floor = max(state["peak_eod"] - MAX_LOSS, LOCK_AT) if state["peak_eod"] >= LOCK_TRIG \
         else state["peak_eod"] - MAX_LOSS
@@ -287,8 +310,10 @@ def account_lines(state: dict) -> list[str]:
                    f"${need - profit:,.0f} more, unless a smaller best day is booked")
     out += [
         f"- status: **{status}**, {len(state['ledger'])} settled trades",
-        f"- risk cap ${RISK_CAP:.0f}/trade (30% of the buffer): {capped_n} signals "
-        f"skipped, not resized",
+        f"- risk cap ${leg_cap(leg):.0f}/trade"
+        + (f", and a fixed ${leg['max_stop_usd']:.0f} stop ceiling that narrows the stop "
+           "instead of skipping the trade" if leg.get("max_stop_usd") else "")
+        + f": {capped_n} signals skipped, not resized",
         f"- session lock ${DAY_LOCK:.0f}: {locked_n} orders stood down once the day had "
         f"banked",
     ]
@@ -347,7 +372,7 @@ def report(leg: dict, state: dict, o: dict | None, rows: list[str]) -> str:
         L += open_order_lines(o, leg)
     else:
         L += order_lines(o, leg)
-    L += ["", "## Account", ""] + account_lines(state) + [""]
+    L += ["", "## Account", ""] + account_lines(state, leg) + [""]
     L += ["## Pace against your rubric", ""] + pace_lines(leg, state) + [""]
     if state["ledger"]:
         L += ["## Ledger", "",
@@ -428,8 +453,14 @@ def selftest() -> None:
     settle(D, leg, st2, today="2999-01-01", day_profit={"2026-08-21": DAY_LOCK})
     assert st2["ledger"] == [], st2["ledger"]
     assert st2["skipped"][0]["reason"].startswith("day locked"), st2["skipped"]
+    # a fixed-dollar ceiling narrows the stop to exactly the ceiling, it does not skip
+    fixed = dict(leg, max_stop_usd=300.0)     # this fixture's stop is 1.0 ATR, $5/pt
+    assert abs(stop_points(fixed, 40.0, 5.0) - 40.0) < 1e-9   # $200 risk: under the cap
+    assert abs(stop_points(fixed, 100.0, 5.0) * 5.0 - 300.0) < 1e-9  # $500: narrowed
+    assert abs(stop_points(leg, 100.0, 5.0) - 100.0) < 1e-9   # no ceiling: unchanged
     print("selftest ok: one causal fill, order levels ordered, 0.5R target exact, "
-          "a banked day refuses new entries and journals why")
+          "a banked day refuses new entries and journals why, a fixed ceiling narrows "
+          "the stop to exactly its dollars")
 
 
 def run_leg(leg: dict, args, multi: bool, day_profit: dict | None = None) -> None:
@@ -476,12 +507,13 @@ def run_leg(leg: dict, args, multi: bool, day_profit: dict | None = None) -> Non
 def book_day_profit(book: list[dict]) -> dict[str, float]:
     """Realised book profit per session, summed over every ledger on disk.
 
-    The retired two-micro leg is excluded: it is journalled as a negative control, not
-    traded, so its paper result must not bank a session for the lock.
+    Legs marked `active: false` are excluded: they are journalled as the record of what was
+    tested (the retired two-micro control, the retired CL and GC legs), not traded, so their
+    paper result must not bank a session for the lock.
     """
     out: dict[str, float] = {}
     for leg in book:
-        if "aggr" in leg["id"]:
+        if not leg.get("active", True):
             continue
         p = DESK / f"live-ledger-{leg['id'].replace('=', '-')}.json"
         if not p.exists():
@@ -522,15 +554,20 @@ def main() -> None:
         demo()
         return
 
-    legs = load_book(Path(args.book))
+    book = load_book(Path(args.book))
+    # One ledger per leg whenever the book is a multi-leg book. This is decided on the
+    # book, not on the legs left after retirements: when the book shrank to one active
+    # leg, `len(legs) > 1` became false and the runner fell back to the shared single-leg
+    # ledger, which had no history, so it replayed every bar from 2016 into it.
+    multi = len(book) > 1
     # A leg marked active: false is kept in the book as the record of what was tested,
     # but it never enters again. Retirement follows a trigger written down in advance.
-    legs = [l for l in legs if l.get("active", True)]
+    legs = [l for l in book if l.get("active", True)]
     if args.leg:
         legs = [l for l in legs if args.leg in l["id"]]
         if not legs:
             print(f"no leg matches {args.leg!r}; the book holds "
-                  + ", ".join(l["id"] for l in load_book(Path(args.book))))
+                  + ", ".join(l["id"] for l in book))
             raise SystemExit(2)
     if not args.all:
         legs = legs[:1]
@@ -538,9 +575,9 @@ def main() -> None:
     # the resting limits wait for a dip. Without this order the lock could fire on the leg
     # that traded first in the day and the journal would misreport the sequence.
     legs.sort(key=lambda l: (0 if l.get("entry") == "open" else 1, l["id"]))
-    day_profit = book_day_profit(load_book(Path(args.book)))
+    day_profit = book_day_profit(book)
     for leg in legs:
-        run_leg(leg, args, multi=len(legs) > 1, day_profit=day_profit)
+        run_leg(leg, args, multi=multi, day_profit=day_profit)
 
 
 if __name__ == "__main__":
