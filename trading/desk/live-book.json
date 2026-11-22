@@ -216,7 +216,9 @@
     "dir": "both",
     "micros": 1,
     "resolution": "open",
-    "status": "research-negative",
+    "status": "retired-negative",
+    "active": false,
+    "retired": "2026-11-22, at 13 forward trades: 4 wins, -$495.74 (-$38.13/trade) against a measured -$3.09, and its own paper account -$130 through the end-of-day floor. The ten-session gate written in (xix) fired on both conditions, so the leg is retired rather than resized. Ledger kept as the record. RESEARCH-LOG (xxii).",
     "start": "2026-11-01",
     "first_session": "2026-11-02",
     "daily_targets": [

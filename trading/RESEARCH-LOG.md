@@ -1937,3 +1937,40 @@ its date, the risk avoided and the amount already banked, and the desk's account
 reports both counters — stop-cap skips and lock stand-downs — separately. The selftest
 asserts that a banked day refuses an entry and says why. `profitlock.py --selftest` pins the
 sequencing arithmetic.
+
+## 2026-11-22 (xxii) — the ten-session verdict: the open-gap leg is retired
+
+The gate written in (xix) and pre-registered in (xxi): re-test the CL open-gap leg at ten
+forward sessions; retire it if its forward expectation is negative **and** its own paper
+account is through the end-of-day floor. Both are now true, at thirteen trades, so the leg
+is retired rather than resized.
+
+| forward, 1 micro | value |
+|---|---:|
+| trades | 13 (4 wins, 9 losses) |
+| net | **-$495.74** |
+| per trade | **-$38.13** (measured: -$3.09) |
+| own paper account | $25,519.69 |
+| end-of-day floor | $25,649.74 |
+| through the floor by | **-$130** |
+
+It cost the book twice over. It produced the only outlier the book has — +$634.31 on 11-02,
+the day that is 602% of net — and it lost money doing it: without that single trade the
+forward book is -$950.91 over 25 trades. Under the 50% rule a $634 day needs $1,269 of
+profit behind it, so the leg manufactured exactly the day the account cannot digest, and
+paid $496 for the privilege. Dollar cost and consistency cost pointed the same way, which is
+why this is not a judgement call.
+
+**What the book keeps** (all one micro, all inside their own accounts): ES prior-low
++$325.87 forward on 3 trades; CL prior-low +$117.71 on 10 trades with its own account at 84%
+of the $1,250 target; GC prior-low no fill yet. The retired leg's ledger stays on disk and in
+`live-book.json` as the record, and `active: false` means the runner will not enter it again:
+retirement is a decision with a written trigger, not the quiet deletion of an inconvenient
+ledger.
+
+**The problem this hides, and the next measurement.** The $300 stop cap has now stood down
+ES on four consecutive sessions (risk $381, $402, $416, $426) and GC on seven of its last
+eight. The only leg with a positive forward record cannot get an order through the cap at
+all, while the cap was built to trim GC's fat stops (36% of its signals against 6% of ES's).
+The book now trades one micro of CL and nothing else on most days. That is the binding
+constraint, and it is the next thing measured, not guessed.

@@ -523,6 +523,9 @@ def main() -> None:
         return
 
     legs = load_book(Path(args.book))
+    # A leg marked active: false is kept in the book as the record of what was tested,
+    # but it never enters again. Retirement follows a trigger written down in advance.
+    legs = [l for l in legs if l.get("active", True)]
     if args.leg:
         legs = [l for l in legs if args.leg in l["id"]]
         if not legs:

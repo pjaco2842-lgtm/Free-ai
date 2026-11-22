@@ -1,7 +1,7 @@
 {
   "created": "2026-11-01T20:42:08Z",
   "book": "gc-pdlow1-anygap-05atr-tp2-obs",
-  "last": "2026-11-13",
+  "last": "2026-11-20",
   "ledger": [
     {
       "date": "2026-09-16",
@@ -284,6 +284,11 @@
       "date": "2026-11-19",
       "risk": 513.75,
       "reason": "stop $514 > cap $300"
+    },
+    {
+      "date": "2026-11-20",
+      "risk": 506.61,
+      "reason": "stop $507 > cap $300"
     }
   ]
 }
