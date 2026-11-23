@@ -6,15 +6,15 @@ Book `es-pdlow1-anygap-05atr-tp2` — 1 micro, ES=F, limit_low-1, gap:any, long 
 
 ## Next session
 
-**BUY LIMIT 1 MES @ 7123.75** — for the session of 2026-11-23 (levels from the completed bar 2026-11-20).
+**BUY LIMIT 1 MES @ 6992.00** — for the session of 2026-11-24 (levels from the completed bar 2026-11-23).
 
 | field | value |
 |---|---|
-| entry (buy limit) | **7123.75** |
+| entry (buy limit) | **6992.00** |
 | condition | no gap condition |
-| distance from last close | 7128.75 → -0.07% |
-| stop | **7073.75** (0.5 × ATR, narrowed to the $250 fixed ceiling, ATR 172.61) |
-| target | **7223.75** (2.0R) |
+| distance from last close | 7112.00 → -1.69% |
+| stop | **6942.00** (0.5 × ATR, narrowed to the $250 fixed ceiling, ATR 199.21) |
+| target | **7092.00** (2.0R) |
 | risk if stopped | **$250** = 25% of the $1000 buffer |
 | risk cap | $300 — inside the cap |
 | buffer left after one stop | $750 |
